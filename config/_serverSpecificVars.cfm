@@ -15,6 +15,7 @@
 
 <cfset javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
 
+<cfset application.stPlugins["farcrysolrpro"] = {} />
 <cfset application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
 	javaloaderInstance = javaloader,
 	host = application.fapi.getConfig(key = "solrserver", name = "host", default = "localhost"),
