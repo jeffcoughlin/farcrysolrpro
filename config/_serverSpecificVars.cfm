@@ -15,15 +15,14 @@
 
 <cfset javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
 
-<!--- TODO: replace w/ FarCry config values --->
 <cfset application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
 	javaloaderInstance = javaloader,
-	host = "localhost",
-	port = "8983",
-	path = "/solr",
-	queueSize = 100,
-	threadCount = 5,
-	binaryEnabled = true
+	host = application.fapi.getConfig(key = "solrserver", name = "host", default = "localhost"),
+	port = application.fapi.getConfig(key = "solrserver", name = "port", default = "8983"),
+	path = application.fapi.getConfig(key = "solrserver", name = "path", default = "/solr"),
+	queueSize = application.fapi.getConfig(key = "solrserver", name = "queueSize", default = 100),
+	threadCount = application.fapi.getConfig(key = "solrserver", name = "threadCount", default = 5),
+	binaryEnabled = application.fapi.getConfig(key = "solrserver", name = "binaryEnabled", default = true)
 ) />
 
 <cfsetting enablecfoutputonly="false" />
