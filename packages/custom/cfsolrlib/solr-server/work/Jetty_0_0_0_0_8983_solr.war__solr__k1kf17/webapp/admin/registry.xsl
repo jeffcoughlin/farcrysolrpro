@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 <!-- $Id: registry.xsl 1075192 2011-02-28 00:50:09Z uschindler $ -->
-<!-- $URL: http://svn.apache.org/repos/asf/lucene/dev/branches/lucene_solr_3_2/solr/src/webapp/web/admin/registry.xsl $ -->
+<!-- $URL: https://svn.apache.org/repos/asf/lucene/dev/branches/lucene_solr_3_5/solr/webapp/web/admin/registry.xsl $ -->
 
 <xsl:stylesheet
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

@@ -15,11 +15,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 --%>
-<!-- $Id: header.jsp 1031778 2010-11-05 20:29:20Z ryan $ -->
+<!-- $Id: header.jsp 1151947 2011-07-28 18:07:54Z hossman $ -->
 <%@ page import="org.apache.solr.common.util.NamedList,
 				 org.apache.solr.common.util.SimpleOrderedMap,
 				 org.apache.solr.request.LocalSolrQueryRequest,
-				 org.apache.solr.request.SolrQueryResponse,
+				 org.apache.solr.response.SolrQueryResponse,
 				 org.apache.solr.request.SolrRequestHandler,
                                  java.util.Map"%>
 <%@ page import="org.apache.solr.handler.ReplicationHandler" %>

@@ -18,7 +18,7 @@
 
 <config>
 
-  <luceneMatchVersion>LUCENE_32</luceneMatchVersion>
+  <luceneMatchVersion>LUCENE_35</luceneMatchVersion>
 
   <!-- Set this to 'false' if you want solr to continue working after it has 
        encountered an severe configuration error.  In a production environment, 
@@ -52,7 +52,6 @@
     <maxMergeDocs>2147483647</maxMergeDocs>
     <maxFieldLength>10000</maxFieldLength>
     <writeLockTimeout>1000</writeLockTimeout>
-    <commitLockTimeout>10000</commitLockTimeout>
 
     <!--
      Expert:

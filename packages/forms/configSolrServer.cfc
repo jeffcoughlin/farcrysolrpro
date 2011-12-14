@@ -122,14 +122,14 @@
 			var paths = [];
 			var solrjLibPath = "/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solrj-lib/";
 			arrayAppend(paths,expandPath(solrjLibPath & "commons-io-1.4.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "commons-codec-1.4.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-api-1.5.5.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-jdk14-1.5.5.jar"));
+			arrayAppend(paths,expandPath(solrjLibPath & "commons-codec-1.5.jar"));
+			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-api-1.6.1.jar"));
+			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-jdk14-1.6.1.jar"));
 			arrayAppend(paths,expandPath(solrjLibPath & "commons-httpclient-3.1.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "apache-solr-solrj-3.2.0.jar"));
+			arrayAppend(paths,expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"));
 			arrayAppend(paths,expandPath(solrjLibPath & "geronimo-stax-api_1.0_spec-1.0.1.jar"));
 			arrayAppend(paths,expandPath(solrjLibPath & "wstx-asl-3.2.7.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "jcl-over-slf4j-1.5.5.jar"));
+			arrayAppend(paths,expandPath(solrjLibPath & "jcl-over-slf4j-1.6.1.jar"));
 		</cfscript>
 
 		<cfset var javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
