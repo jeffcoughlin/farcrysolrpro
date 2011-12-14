@@ -116,7 +116,11 @@
 	</cffunction>
 	
 	<cffunction name="setupSolrLibrary" access="public" output="false" returntype="void" hint="Sets up CFSolrLib">
-		<cfargument name="fields" type="struct" required="false" default="#application.config['solrserver']#" />
+		<cfargument name="fields" type="struct" required="false" default="#structNew()#" />
+		
+		<cfif structCount(arguments.fields) eq 0>
+			<cfset arguments.fields = application.config['solrserver'] />
+		</cfif>
 		
 		<cfscript>
 			var paths = [];
