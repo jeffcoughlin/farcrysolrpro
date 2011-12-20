@@ -15,6 +15,8 @@
 	<cfproperty ftSeq="180" ftFieldset="Solr Content Type" ftLabel="Index Rule Data?" name="bIndexRuleData" ftType="boolean" type="boolean" default="0" ftDefault="0" ftHint="You can choose to disable this feature and still preserve your settings below." />
 	<cfproperty ftSeq="185" ftFieldset="Solr Content Type" ftLabel="Indexed Rules" name="lIndexedRules" ftType="longchar" type="longchar" default="" hint="Using longchar in case there are many rules in the list and FarCry 6.0.x does not support precision." />
 	
+	<cfproperty ftSeq="190" ftFieldset="Solr Content Type" ftLabel="Core Property Boost Values" name="lCorePropertyBoost" ftType="longchar" type="longchar" default="" hint="A list of boost values in field:boostvalue format.  Ex: label:5,datetimecreated:10 would indicate a boost value of 5 for label and 10 for datetimecreated." />
+	
 	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
 	
 	<cffunction name="hasIndexedProperty" access="public" hint="Checks if a content type is indexing a single property" output="false" returntype="boolean">
@@ -26,7 +28,7 @@
 			from solrProIndexedProperty p 
 			join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data 
 			where p.fieldName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.fieldName#" />
-			and cxp.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			and cxp.parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		<cfreturn q.recordCount />
 	</cffunction>

@@ -23,7 +23,7 @@
 		<!--- assure all fieldBoost values are numeric --->
 		<cfparam name="form.indexedProperties" type="string" default="" />
 		<cfloop collection="#form#" item="f">
-			<cfif left(f, len('fieldBoost_')) eq 'fieldBoost_'>
+			<cfif left(f, len('fieldBoost_')) eq 'fieldBoost_' or left(f, len('coreFieldBoost_')) eq 'coreFieldBoost_'>
 				<cfif not isNumeric(form[f]) and listFindNoCase(form.indexedProperties, listlast(f,"_"))>
 					<ft:advice 
 						objectid="#stProperties.objectid#" 
@@ -45,6 +45,11 @@
 		
 		<ft:processFormObjects typename="solrProContentType">
 			
+			<cfparam name="form.resultTitleField" type="string" default="label" />
+			<cfparam name="form.resultSummaryField" type="string" default="" />
+			<cfset stProperties["resultTitleField"] = form.resultTitleField />
+			<cfset stProperties["resultSummaryField"] = form.resultSummaryField  />
+			
 			<!--- clear the array of indexed properties --->
 			<cfparam name="stProperties.aIndexedProperties" type="array" default="#arrayNew(1)#" />
 			<cfset oldIndexedProperties = duplicate(stProperties.aIndexedProperties) />
@@ -64,7 +69,8 @@
 					<!--- already exists, update it --->
 					<cfset stCurrent = oIndexedProperty.getByContentTypeAndFieldname(stproperties.objectid, prop) />
 					<cfset structAppend(stCurrent, stIndexedProperty, true) />
-					<cfset oIndexedProperty.setData(stProperties = stIndexedProperty) />
+					<cfset oIndexedProperty.setData(stProperties = stCurrent) />
+					<cfset stIndexedProperty.objectid = stCurrent.objectid />
 				<cfelse>
 					<!--- new indexed property, create it --->
 					<cfset stResult = oIndexedProperty.createData(stProperties = stIndexedProperty) />
@@ -87,6 +93,14 @@
 			<!--- build the list of indexed rules --->
 			<cfparam name="form.lIndexedRules" type="string" default="" />
 			<cfset stProperties["lIndexedRules"] = form.lIndexedRules />
+			
+			<!--- build the list of core property boost values --->
+			<cfset stProperties.lCorePropertyBoost = "" />
+			<cfloop collection="#form#" item="f">
+				<cfif left(f,len('coreFieldBoost_')) eq 'coreFieldBoost_' and isNumeric(form[f])>
+					<cfset stProperties.lCorePropertyBoost = listAppend(stProperties.lCorePropertyBoost, listLast(f,"_") & ":" & form[f]) />
+				</cfif>
+			</cfloop> 
 			
 		</ft:processFormObjects>
 		
@@ -210,17 +224,27 @@
 					
 					if (!$(this).is(":checked")) {
 						// remove all
-						lFieldTypes.val("");
-						displayFieldTypesDiv.empty();
+						$j("##displayFieldTypes_" + thisFieldName).hide();
+						$j("##fieldType_" + thisFieldName).attr("disabled", true);
+						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", true);
+						$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
+						$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
 					} else {
 						// grab the lFieldTypes value and add the items to the display div
-						var aFieldTypes = lFieldTypes.val().split(",");
-						displayFieldTypesDiv.empty();
-						for (var x = 0; x < aFieldTypes.length; x++) {
-							var fieldType = aFieldTypes[x].split(":")[0];
-							var bStored = aFieldTypes[x].split(":")[1];
-							displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><label for="chkStore_' + thisFieldName + '_' + fieldType + '">' + fieldType + '</label> <input class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + '" type="checkbox" id="chkStore_' + thisFieldName + '_' + fieldType + '" name="chkStore.' + thisFieldName + '.' + fieldType + '" /></div>');
+						if (lFieldTypes.val().length > 0) {
+							displayFieldTypesDiv.empty();
+							var aFieldTypes = lFieldTypes.val().split(",");
+							for (var x = 0; x < aFieldTypes.length; x++) {
+								var fieldType = aFieldTypes[x].split(":")[0];
+								var bStored = aFieldTypes[x].split(":")[1];
+								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><label for="chkStore_' + thisFieldName + '_' + fieldType + '">' + fieldType + '</label> <input title="Store this field in Solr?" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + '" type="checkbox" id="chkStore_' + thisFieldName + '_' + fieldType + '" name="chkStore.' + thisFieldName + '.' + fieldType + '" /></div>');
+							}
 						}
+						$j("##displayFieldTypes_" + thisFieldName).show();
+						$j("##fieldType_" + thisFieldName).attr("disabled", false);
+						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
+						$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
+						$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
 					}
 					activateFieldTypeRemoveButtons();
 					activateStoreCheckboxes();
@@ -292,6 +316,11 @@
 			}
 			
 			function setupTableInteraction() {
+				
+				// activate the checkboxes
+				$j('input[name="indexedProperties"]').change(function(event){
+					updateFieldTypeSelectionDisplay();
+				});
 				
 				// activate the "add" buttons
 				$j("button.btnAddFieldType").click(function(event){

@@ -89,6 +89,12 @@
 
 <cfset counter = 0 />
 
+<!--- parse the core property boosts --->
+<cfset stCorePropertyBoosts = {} />
+<cfloop array="#listToArray(stobj.lCorePropertyBoost)#" index="i">
+	<cfset stCorePropertyBoosts[listFirst(i,":")] = listLast(i,":") />
+</cfloop>
+
 <cfloop list="#lProps#" index="prop">
 	<cfif arrayFindNoCase(aCoreFields,prop)>
 		
@@ -102,7 +108,7 @@
 				</td>
 				<td>
 					<div class="combobox">
-						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" />
+						<input type="text" class="fieldBoost" name="coreFieldBoost_#prop#" id="coreFieldBoost_#prop#" value="<cfif structKeyExists(stCorePropertyBoosts, prop)>#stCorePropertyBoosts[prop]#<cfelse>5</cfif>" />
 					</div>
 				</td>
 			</tr>
