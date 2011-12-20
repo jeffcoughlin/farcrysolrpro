@@ -17,6 +17,20 @@
 	
 	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
 	
+	<cffunction name="hasIndexedProperty" access="public" hint="Checks if a content type is indexing a single property" output="false" returntype="boolean">
+		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the content type" />
+		<cfargument name="fieldName" type="string" required="true" />
+		<cfset var q = "" />
+		<cfquery name="q" datasource="#application.dsn#">
+			select p.objectid 
+			from solrProIndexedProperty p 
+			join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data 
+			where p.fieldName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.fieldName#" />
+			and cxp.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+		</cfquery>
+		<cfreturn q.recordCount />
+	</cffunction>
+	
 	<cffunction name="getRules" access="public" hint="Get list of all indexable rules (rules with at least one string field)" output="false" returntype="array">
 		
 		<cfset var aRules = [] />

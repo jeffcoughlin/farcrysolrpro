@@ -5,14 +5,16 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfset request.fc.bShowTray = false />
+<cfset oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 
-<cfparam name="url.typename" default="" />
+<cfparam name="url.contentType" default="#stobj.contentType#" />
 
-<cfset lProps = getPropertiesByType(typename = url.typename) />
+<!--- get the properties for this content type --->
+<cfset lProps = getPropertiesByType(typename = url.contentType) />
 <cfset aFieldTypes = getSolrFieldTypes() />
 
 <!--- load the fields that are defined in the schema.xml --->
-<cfset aFields = getSolrFields() />
+<cfset aCoreFields = getSolrFields() />
 
 <cfoutput>
 <table id="tblCustomProperties" class="objectAdmin">
@@ -31,13 +33,15 @@
 <cfset counter = 0 />
 
 <cfloop list="#lProps#" index="prop">
-	<cfif not arrayFindNoCase(aFields,prop)>
+	<cfif not arrayFindNoCase(aCoreFields,prop)>
 		
 		<cfset counter++ />
 		
+		<cfset stIndexedProperty = oIndexedProperty.getByContentTypeAndFieldname(contentTypeId = stobj.objectid, fieldname = prop) />
+		
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
-				<td><input type="checkbox" name="fieldNames" id="fieldNames_#prop#" value="#prop#" /></td>
+				<td><input type="checkbox" name="indexedProperties" id="fieldNames_#prop#" value="#prop#" <cfif structCount(stIndexedProperty)>checked="checked"</cfif> /></td>
 				<td>#prop#</td>
 				<td>
 					<select id="fieldType_#prop#">
@@ -51,11 +55,13 @@
 					<!--- this will hold the field types created for this field --->
 					<div id="displayFieldTypes_#prop#"></div>
 					
-					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" />
+					<!--- TODO: change to hidden field for go live --->
+					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" <cfif structKeyExists(stIndexedProperty, "lFieldTypes")>value="#stIndexedProperty.lFieldTypes#"</cfif> />
+					<!---<textarea name="lFieldTypes_#prop#" id="lFieldTypes_#prop#"><cfif structKeyExists(stIndexedProperty, "lFieldTypes")>#stIndexedProperty.lFieldTypes#</cfif></textarea>--->
 				</td>
 				<td>
 					<div class="combobox">
-						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" />
+						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" value="<cfif structKeyExists(stIndexedProperty, 'fieldBoost')>#stIndexedProperty.fieldBoost#<cfelse>5</cfif>" />
 					</div>
 				</td>
 			</tr>
@@ -84,7 +90,7 @@
 <cfset counter = 0 />
 
 <cfloop list="#lProps#" index="prop">
-	<cfif arrayFindNoCase(aFields,prop)>
+	<cfif arrayFindNoCase(aCoreFields,prop)>
 		
 		<cfset counter++ />
 		

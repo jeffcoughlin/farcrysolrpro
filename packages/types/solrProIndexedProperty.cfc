@@ -4,4 +4,24 @@
 	<cfproperty ftSeq="120" ftFieldset="Indexed Property" name="lFieldTypes" type="longchar" ftType="longchar" required="true" ftHint="A list of field types to use for this field." />
 	<cfproperty ftSeq="130" ftFieldset="Indexed Property" name="fieldBoost" type="numeric" ftType="numeric" required="true" default="5" ftDefault="5" ftHint="The boost value to apply for this field." />
 	
+	<cffunction name="getByContentTypeAndFieldname" access="public" output="false" returntype="struct">
+		<cfargument name="contentTypeId" required="true" type="uuid" hint="The ObjectID of the solrProContentType record" />
+		<cfargument name="fieldName" required="true" type="string" />
+		
+		<cfset var q = "" />
+		
+		<cfquery name="q" datasource="#application.dsn#">
+			select p.objectid from solrProIndexedProperty p join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data
+			where cxp.parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentTypeId#" />
+			and p.fieldName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.fieldName#" />
+		</cfquery>
+		
+		<cfif q.recordCount>
+			<cfreturn getData(q.objectid[1]) />
+		<cfelse>
+			<cfreturn {} />
+		</cfif>
+		
+	</cffunction>
+	
 </cfcomponent>
