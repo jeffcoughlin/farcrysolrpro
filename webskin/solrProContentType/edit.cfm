@@ -180,11 +180,51 @@
 				});
 				
 				// setup the boost "dropdown"
-				/*
-				$j("select.fieldBoost").combobox({
-					data: [1,2,3,5,10,15,20,50]
+				activateBoostDropdowns();
+				
+			}
+			
+			function activateBoostDropdowns() {
+				
+				$j('.combobox input').autocomplete({
+					source: [ "1", "2", "3", "5", "10", "15", "20", "50" ],
+					minLength: 0
+				}).addClass( "ui-widget ui-widget-content ui-corner-left" );
+				
+				// create and activate the button
+				$j(".combobox").each(function(i){
+					
+					var input = $(this).find("input");
+					var button = $('<button type="button">Open</button>');
+					
+					button.button({
+						text: false,
+						icons: {
+							primary: "ui-icon-triangle-1-s"
+						}
+					}).removeClass( "ui-corner-all" ).addClass( "ui-corner-right ui-button-icon" ).click(function (event) {
+							openCombobox(input);
+					});
+					
+					input.after(button);
+					
 				});
-				*/
+				
+			}
+			
+			function openCombobox(target) {
+				
+				// if its open, close it
+				if (target.autocomplete("widget").is(":visible")) {
+					target.autocomplete("close");
+					return;
+				}
+
+				// open the combobox
+				$(this).blur();
+				target.autocomplete("search","");
+				target.focus();
+				
 			}
 			
 			function loadIndexedPropertyHTML(objectid,typename) {

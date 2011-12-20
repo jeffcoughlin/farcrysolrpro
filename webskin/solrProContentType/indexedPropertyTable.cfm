@@ -14,8 +14,6 @@
 <!--- load the fields that are defined in the schema.xml --->
 <cfset aFields = getSolrFields() />
 
-<!--- TODO: break up custom fields and default fields --->
-
 <cfoutput>
 <table id="tblCustomProperties" class="objectAdmin">
 	<caption>Custom Properties</caption>
@@ -57,16 +55,9 @@
 					<textarea name="lFieldTypes_#prop#" id="lFieldTypes_#prop#"></textarea>
 				</td>
 				<td>
-					<select class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="5" selected="selected">5</option>
-						<option value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-						<option value="50">50</option>
-					</select>
+					<div class="combobox">
+						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" />
+					</div>
 				</td>
 			</tr>
 		</cfoutput>
@@ -107,16 +98,9 @@
 					#getSolrFieldTypeForProperty(prop)#
 				</td>
 				<td>
-					<select class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="5" selected="selected">5</option>
-						<option value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-						<option value="50">50</option>
-					</select>
+					<div class="combobox">
+						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" />
+					</div>
 				</td>
 			</tr>
 		</cfoutput>
