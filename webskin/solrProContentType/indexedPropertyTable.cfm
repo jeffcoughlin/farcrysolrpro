@@ -51,8 +51,7 @@
 					<!--- this will hold the field types created for this field --->
 					<div id="displayFieldTypes_#prop#"></div>
 					
-					<!--- TODO: change to hidden field --->
-					<textarea name="lFieldTypes_#prop#" id="lFieldTypes_#prop#"></textarea>
+					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" />
 				</td>
 				<td>
 					<div class="combobox">
@@ -74,7 +73,6 @@
 	<caption>Core Properties</caption>
 	<thead>
 		<tr>
-			<th>&nbsp;</th>
 			<th>Field Name</th>
 			<th>Solr Field Type</th>
 			<th>Field Boosting</th>
@@ -92,7 +90,6 @@
 		
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
-				<td><input type="checkbox" checked="checked" onclick="this.checked = true;" name="fieldNames" id="fieldNames_#prop#" value="#prop#" /></td>
 				<td>#prop#</td>
 				<td>
 					#getSolrFieldTypeForProperty(prop)#

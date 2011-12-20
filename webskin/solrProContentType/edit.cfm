@@ -10,6 +10,37 @@
 <skin:loadJs id="jquery-ui" />
 <skin:loadCss id="jquery-ui" />
 
+<!---<ft:processform action="Save">
+	
+	<!--- do some validation first --->
+	<ft:processFormObjects typename="solrProContentType" bSessionOnly="true" r_stObject="stObj">
+		
+		<!--- assume success --->
+		<cfset bContinueSave = true />
+		
+	</ft:processFormObjects>
+		
+</ft:processform>
+
+<cfif bContinueSave>
+	
+	<ft:processform action="Save" exit="true">
+		
+		<ft:processFormObjects typename="solrProContentType">
+			
+			<!--- build the property list --->
+			
+			
+			<!--- build the list of indexed rules --->
+			<cfparam name="form.lIndexedRules" type="string" default="" />
+			<cfset stProperties["lIndexedRules"] = form.lIndexedRules />
+			
+		</ft:processFormObjects>
+		
+	</ft:processform>
+
+</cfif>--->
+
 <ft:processform action="Cancel" exit="true" />
 
 <ft:form>
@@ -48,6 +79,27 @@
 		
 	</ft:fieldset>
 	
+	<ft:fieldset legend="Related Rules" helpSection="TODO: MORE TO COME">
+		
+		<ft:object stObject="#stobj#" lFields="bIndexRuleData" r_stPrefix="rulePrefix" />
+		
+		<ft:field label="Indexed Rules" bMultiField="true">
+			
+			<cfset aRules = application.fapi.getContentType("solrProContentType").getRules() />
+			
+			<cfloop array="#aRules#" index="rule">
+				<cfoutput>
+				<div class="rule">
+					<input type="checkbox" name="lIndexedRules" id="lIndexedRules_#rule.typename#" value="#rule.typename#" <cfif listFindNoCase(stobj.lIndexedRules, rule.typename)>checked="checked"</cfif> />
+					<label for="lIndexedRules_#rule.typename#">#rule.displayname#<br /><span class="indexableFields">(#rule.indexableFields#)</span></label>
+				</div>
+				</cfoutput>
+			</cfloop>
+			
+		</ft:field>
+		
+	</ft:fieldset>
+	
 	<ft:farcryButtonPanel>
 		<ft:farcryButton type="submit" text="Complete" value="save" validate="true" />
 		<ft:farcryButton type="submit" text="Cancel" value="cancel" validate="false" confirmText="Are you sure you wish to discard your changes?" />
@@ -61,12 +113,24 @@
 			
 			$j(document).ready(function(){
 				
+				<cfif stobj.bIndexRuleData eq 0>
+				$j(".rule").closest(".ctrlHolder").hide();
+				</cfif>
+				
+				$j('###rulePrefix#bIndexRuleData').change(function(event){
+					if ($j(this).is(':checked')) {
+						$j(".rule").closest(".ctrlHolder").show();
+					} else {
+						$j(".rule").closest(".ctrlHolder").hide();
+					}
+				});
+				
 				if ($j('###generalPrefix#contentType').val().length > 0) {
 					
 					// load the data for the resultTitleField and resultSummaryField dropdowns
 					loadContentTypeFields($j('###generalPrefix#contentType').val());
 					
-					//load the HTML for the table of indexed properties
+					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
 					
 				}
@@ -76,7 +140,7 @@
 					// load the data for the resultTitleField and resultSummaryField dropdowns
 					loadContentTypeFields($j('###generalPrefix#contentType').val());
 					
-					// TODO: load the HTML for the table of indexed properties
+					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
 					
 				});
@@ -246,7 +310,9 @@
 					},
 					error: function(req, status, err) {
 						
-						console.log(err);
+						var contentType = $j('###generalPrefix#contentType');
+						var message = '<p class="errorField">There was an error loading the indexed fields for that content type.  Make sure you have created an web server mapping for /farcrysolrpro. See documentation for more information.</p>';
+						contentType.closest(".ctrlHolder").addClass("error").prepend(message);
 						
 					}
 				});
@@ -300,6 +366,10 @@
 							
 						}
 						
+						// mark the selected value based on stobj
+						title.find("option[value='#stobj.resultTitleField#']").attr("selected","selected");
+						summary.find("option[value='#stobj.resultSummaryField#']").attr("selected","selected");
+						 
 					},
 					error: function(req,status,err){
 						

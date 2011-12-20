@@ -12,12 +12,63 @@
 	
 	<cfproperty ftSeq="170" ftFieldset="Solr Content Type" ftLabel="Indexed Properties" name="aIndexedProperties" ftType="array" type="array" ftJoin="solrProIndexedProperty" ftHint="The properties for this content type that will be indexed." />
 	
+	<cfproperty ftSeq="180" ftFieldset="Solr Content Type" ftLabel="Index Rule Data?" name="bIndexRuleData" ftType="boolean" type="boolean" default="0" ftDefault="0" ftHint="You can choose to disable this feature and still preserve your settings below." />
+	<cfproperty ftSeq="185" ftFieldset="Solr Content Type" ftLabel="Indexed Rules" name="lIndexedRules" ftType="longchar" type="longchar" default="" hint="Using longchar in case there are many rules in the list and FarCry 6.0.x does not support precision." />
+	
 	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
+	
+	<cffunction name="getRules" access="public" hint="Get list of all indexable rules (rules with at least one string field)" output="false" returntype="array">
+		
+		<cfset var aRules = [] />
+		<cfset var q = queryNew("typename,displayname,indexableFields,lowerdisplayname") />
+		<cfset var rule = "" />
+		<cfset var lIndexedTypes = "nstring,string,longchar,richtext,country,state,hidden,category" />
+		
+		<cfloop collection="#application.rules#" item="rule">
+			
+			<cfif rule neq "container">
+				
+				<!--- build a list of indexable fields --->
+				<cfset var props = application.fapi.getContentTypeMetadata(typename = rule, md = "stProps", default = "") />
+				<cfset var prop = "" />
+				<cfset var lIndexableFields = "" />
+				
+				<cfloop collection="#props#" item="prop">
+					<cfif (listFindNoCase(lIndexedTypes, props[prop].metadata.type) or listFindNoCase(lIndexedTypes, props[prop].metadata.ftType))>
+						<cfset lIndexableFields = listAppend(lIndexableFields, prop) />
+					</cfif>
+				</cfloop>
+			
+				<cfset queryAddRow(q) />
+				<cfset querySetCell(q, "typename", rule) />
+				<cfset querySetCell(q, "displayname", application.stcoapi[rule].displayname & " (" & rule & ")") />
+				<cfset querySetCell(q, "indexableFields", lIndexableFields) />
+				<cfset querySetCell(q, "lowerdisplayname", lcase(application.stcoapi[rule].displayname)) />
+				
+			</cfif>
+			
+		</cfloop>
+		
+		<cfquery dbtype="query" name="q">
+		SELECT typename,displayname,indexableFields FROM q ORDER BY lowerdisplayname
+		</cfquery>
+		
+		<cfloop query="q">
+			<cfset arrayAppend(aRules, {
+				typename = q.typename[q.currentRow],
+				displayname = q.displayName[q.currentRow],
+				indexableFields = q.indexableFields[q.currentRow]
+			}) />
+		</cfloop>
+		
+		<cfreturn aRules />
+		
+	</cffunction> 
 	
 	<cffunction name="getContentTypes" access="public" hint="Get list of all searchable content types." output="false" returntype="string">
 		<cfset var listdata = "" />
 		<cfset var qListData = queryNew("typename,displayname,lowerdisplayname") />
-		
+		<cfset var type = "" />
 		<cfloop collection="#application.types#" item="type">
 			<cfset queryAddRow(qListData) />
 			<cfset querySetCell(qListData, "typename", type) />
@@ -26,12 +77,11 @@
 		</cfloop>
 		
 		<cfquery dbtype="query" name="qListData">
-		SELECT typename,displayname FROM qListData
-		ORDER BY lowerdisplayname
+		SELECT typename,displayname FROM qListData ORDER BY lowerdisplayname
 		</cfquery>
 		
 		<cfloop query="qListData">
-			<cfset listdata = listAppend(listdata, "#qlistdata.typename#:#qlistdata.displayname#") />
+			<cfset listdata = listAppend(listdata, "#qlistdata.typename[qlistdata.currentrow]#:#qlistdata.displayname[qlistdata.currentrow]#") />
 		</cfloop>
 		
 		<cfreturn listData />
