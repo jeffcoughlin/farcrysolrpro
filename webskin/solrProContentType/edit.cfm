@@ -174,6 +174,29 @@
 	
 	<skin:htmlhead id="solrProContentType-edit">
 		<cfoutput>
+		<style type="text/css" media="all">
+			.fieldType {
+				padding: 0.25em 0 0.25em 0.5em;
+			}
+			.fieldType label {
+				margin-left: 0.25em;
+				margin-right: 0.25em;
+			}
+			##indexedProperties {
+				max-width: 600px;
+				min-width: 500px;
+			}
+			##tblCustomProperties {
+				width: 100%;
+			}
+			##tblCustomProperties thead tr th:nth-child(3) {
+				min-width: 30%;
+				width: 50%;
+			}
+			##tblCustomProperties tbody tr td:nth-child(3), ##tblCustomProperties tbody tr td:nth-child(4) {
+				white-space: nowrap;
+			}
+		</style>
 		<script type="text/javascript">
 			
 			var fieldTypes = [];
@@ -253,6 +276,18 @@
 			}
 			
 			function activateFieldTypeRemoveButtons() {
+				
+				$j("button.btnRemoveFieldType").button({
+					text: false,
+					icons: { 
+						primary: "ui-icon-close" 
+					}
+				}).css({
+					"width": "1.4em",
+					"height": "1.4em",
+					"vertical-align": "middle"
+				});
+				
 				$j("button.btnRemoveFieldType").click(function(event){
 					
 					var rel = $j(this).attr("rel").split(".");
@@ -347,6 +382,17 @@
 					
 				});
 				
+				$j("button.btnAddFieldType").button({
+					text: false,
+					icons: { 
+						primary: "ui-icon-plus" 
+					}
+				}).css({
+					"width": "1.4em",
+					"height": "1.4em",
+					"vertical-align": "middle"
+				});
+				
 				// setup the boost "dropdown"
 				activateBoostDropdowns();
 				
@@ -357,7 +403,9 @@
 				$j('.combobox input').autocomplete({
 					source: [ "1", "2", "3", "5", "10", "15", "20", "50" ],
 					minLength: 0
-				}).addClass( "ui-widget ui-widget-content ui-corner-left" );
+				}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
+					"vertical-align": "middle"
+				});
 				
 				// create and activate the button
 				$j(".combobox").each(function(i){
@@ -370,7 +418,11 @@
 						icons: {
 							primary: "ui-icon-triangle-1-s"
 						}
-					}).removeClass( "ui-corner-all" ).addClass( "ui-corner-right ui-button-icon" ).click(function (event) {
+					}).removeClass( "ui-corner-all" ).addClass( "ui-corner-right ui-button-icon" ).css({
+						"width": "1.4em",
+						"height": "1.4em",
+						"vertical-align": "middle"
+					}).click(function (event) {
 							openCombobox(input);
 					});
 					

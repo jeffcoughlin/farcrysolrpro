@@ -23,7 +23,7 @@
 		<tr>
 			<th>&nbsp;</th>
 			<th>Field Name</th>
-			<th>Solr Field Type</th>
+			<th>Solr Field Type(s)</th>
 			<th>Field Boosting</th>
 		</tr>
 	</thead>
@@ -98,21 +98,27 @@
 <cfloop list="#lProps#" index="prop">
 	<cfif arrayFindNoCase(aCoreFields,prop)>
 		
-		<cfset counter++ />
+		<cfset fieldType = getSolrFieldTypeForProperty(prop) />
 		
-		<cfoutput>
-			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
-				<td>#prop#</td>
-				<td>
-					#getSolrFieldTypeForProperty(prop)#
-				</td>
-				<td>
-					<div class="combobox">
-						<input type="text" class="fieldBoost" name="coreFieldBoost_#prop#" id="coreFieldBoost_#prop#" value="<cfif structKeyExists(stCorePropertyBoosts, prop)>#stCorePropertyBoosts[prop]#<cfelse>5</cfif>" />
-					</div>
-				</td>
-			</tr>
-		</cfoutput>
+		<cfif fieldType neq "ignored">
+			
+			<cfset counter++ />
+			
+			<cfoutput>
+				<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
+					<td>#prop#</td>
+					<td>
+						#fieldType#
+					</td>
+					<td>
+						<div class="combobox">
+							<input type="text" class="fieldBoost" name="coreFieldBoost_#prop#" id="coreFieldBoost_#prop#" value="<cfif structKeyExists(stCorePropertyBoosts, prop)>#stCorePropertyBoosts[prop]#<cfelse>5</cfif>" />
+						</div>
+					</td>
+				</tr>
+			</cfoutput>
+			
+		</cfif>
 	</cfif>
 </cfloop>
 
