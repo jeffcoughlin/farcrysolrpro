@@ -52,10 +52,10 @@
      indexed per value, slightly larger index size, and faster range queries.
      A precisionStep of 0 disables indexing at different precision levels.
     -->
-    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <!--<fieldType name="tint" class="solr.TrieIntField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
     <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
     <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
-    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>-->
 
     <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
          is a more restricted form of the canonical representation of dateTime
@@ -94,11 +94,11 @@
       value verbatim (and hence don't support range queries, since the
       lexicographic ordering isn't equal to the numeric ordering)
     -->
-    <fieldType name="pint" class="solr.IntField" omitNorms="true"/>
+    <!--<fieldType name="pint" class="solr.IntField" omitNorms="true"/>
     <fieldType name="plong" class="solr.LongField" omitNorms="true"/>
     <fieldType name="pfloat" class="solr.FloatField" omitNorms="true"/>
     <fieldType name="pdouble" class="solr.DoubleField" omitNorms="true"/>
-    <fieldType name="pdate" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="pdate" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>-->
 
 
     <!--
@@ -111,10 +111,10 @@
       but with a lexicographic ordering the same as the numeric ordering,
       so that range queries work correctly.
     -->
-    <fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+    <!--<fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="sfloat" class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="sdouble" class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sdouble" class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>-->
 
 
     <!-- The "RandomSortField" is not used to store or search any
@@ -436,28 +436,56 @@
 		<field name="versionid" type="ignored" indexed="false" stored="false" required="false" />
 		<field name="status" type="ignored" indexed="false" stored="false" required="false" />
 		
+		<!-- field to store rule content -->
+		<field name="rulecontent" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		
 		<!-- a field to use for random sorting -->
 		<field name="random" type="random" />
 		
 		<!-- dynamic fields -->
 		
-		<dynamicField name="*_i"  type="int" indexed="true" stored="true"/>
-		<dynamicField name="*_s"  type="string" indexed="true" stored="true"/>
-		<dynamicField name="*_l"  type="long" indexed="true" stored="true"/>
-		<dynamicField name="*_t"  type="text_general" indexed="true" stored="true"/>
-		<!-- multi value text field could be used for multiple rule instances on a single page for example -->
-		<dynamicField name="*_txt" type="text_general" indexed="true" stored="true" multiValued="true"/>
-		<dynamicField name="*_b"  type="boolean" indexed="true" stored="true"/>
-		<dynamicField name="*_f"  type="float" indexed="true" stored="true"/>
-		<dynamicField name="*_d"  type="double" indexed="true" stored="true"/>
+		<!-- TODO: add more dynamic fields to handle stored/not stored -->
 		
-		<dynamicField name="*_dt" type="date" indexed="true" stored="true"/>
+		<!-- NOTE: fc* prefixed fields are FarCry Solr Pro plugin specific.  fcDataTypes indicates FarCry datatypes that the Solr field is suggested for.  If unsure, or it doesn't match up well with a FarCry datatype, leave it blank. -->
 		
-		<dynamicField name="*_phonetic_txt" type="phonetic" indexed="true" stored="false" multiValued="true" />
+		<dynamicField name="*_int_stored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="true"/>
+		<dynamicField name="*_int_notstored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_string_stored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true"/>
+		<dynamicField name="*_string_notstored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false" />
+		
+		<dynamicField name="*_array_stored" type="string" fcDisplayName="Array" fcId="array" fcDataTypes="array" indexed="true" stored="true" multiValued="true" />
+		<dynamicField name="*_array_notstored" type="string" fcDisplayName="Array" fcId="array" fcDataTypes="array" indexed="true" stored="false" multiValued="true" />
+		
+		<dynamicField name="*_long_stored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="true"/>
+		<dynamicField name="*_long_notstored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="false"/>
+		
+		<!-- using the text general fields, and will ship with a stopwords.txt file that assumes english.  users are free to add their own field types and use a language specific stopwords file -->
+		<dynamicField name="*_text_stored"  type="text_general" fcDisplayName="Text (General)" fcId="text_general" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true"/>
+		<dynamicField name="*_text_notstored"  type="text_general" fcDisplayName="Text (General)" fcId="text_general" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_boolean_stored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="true"/>
+		<dynamicField name="*_boolean_notstored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="false" />
+		
+		<dynamicField name="*_float_stored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="true"/>
+		<dynamicField name="*_float_notstored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_double_stored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="true"/>
+		<dynamicField name="*_double_notstored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_date_stored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="true"/>
+		<dynamicField name="*_date_notstored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_location_stored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="true"/>
+		<dynamicField name="*_location_notstored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="false"/>
+		
+		<dynamicField name="*_phonetic" type="phonetic" fcDisplayName="Phonetic" fcId="phonetic" fcDataTypes="string,nstring,longchar,variablename,email,color" indexed="true" stored="false" multiValued="true" />
 		
 	</fields>
 	
-	<copyField source="*_t" dest="*_phonetic_txt" />
+	<!-- copy all text fields to a phonetic version to allow for phonetic searching on those fields -->
+	<!-- <copyField source="*_text_stored" dest="*_phonetic" />
+	<copyField source="*_text_notstored" dest="*_phonetic" /> -->
 	
 	<uniqueKey>objectid</uniqueKey>
 	
