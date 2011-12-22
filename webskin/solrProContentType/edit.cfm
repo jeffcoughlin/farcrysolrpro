@@ -137,10 +137,13 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Advanced Options">
-		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate" />
+		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave" />
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Indexed Properties" helpSection="The properties for this content type that will be indexed.">
+		
+		<!--- TODO: add a note telling users that all Text (General) fields will be copied to a phonetic field to allow phonetic searching. 
+		No need to add a separate phonetic field as well for those fields --->
 		
 		<cfoutput><div id="indexedProperties"></div></cfoutput>
 		
@@ -260,7 +263,8 @@
 							for (var x = 0; x < aFieldTypes.length; x++) {
 								var fieldType = aFieldTypes[x].split(":")[0];
 								var bStored = aFieldTypes[x].split(":")[1];
-								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><label for="chkStore_' + thisFieldName + '_' + fieldType + '">' + fieldType + '</label> <input title="Store this field in Solr?" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + '" type="checkbox" id="chkStore_' + thisFieldName + '_' + fieldType + '" name="chkStore.' + thisFieldName + '.' + fieldType + '" /></div>');
+								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><label for="chkStore_' + thisFieldName + '_' + fieldType + '">' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</label> <input title="Store this field in Solr?" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + '" type="checkbox" id="chkStore_' + thisFieldName + '_' + fieldType + '" name="chkStore.' + thisFieldName + '.' + fieldType + '" /></div>');
+								$j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").attr("disabled",true);
 							}
 						}
 						$j("##displayFieldTypes_" + thisFieldName).show();
@@ -268,6 +272,8 @@
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
 						$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
 						$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
+						
+						
 					}
 					activateFieldTypeRemoveButtons();
 					activateStoreCheckboxes();
@@ -316,6 +322,8 @@
 					// remove it from the div
 					$j("##fieldType_" + fieldName + '_' + fieldTypeToRemove).remove();
 					
+					$j("##fieldType_" + fieldName + " option[value='" + fieldTypeToRemove + "']").removeAttr("disabled");
+					
 				});
 			}
 			
@@ -360,25 +368,33 @@
 				// activate the "add" buttons
 				$j("button.btnAddFieldType").click(function(event){
 					
+					
 					var thisFieldName = $j(this).attr("rel");
 					var thisFieldType = $j("##fieldType_" + thisFieldName);
 					
-					var displayFieldTypesDiv = $j("##displayFieldTypes_" + thisFieldName);
-					var lFieldTypes = $j("##lFieldTypes_" + thisFieldName);
+					if (thisFieldType.val() != "") {
 					
-					if (lFieldTypes.val().length) {
-						var aFieldTypes = lFieldTypes.val().split(",");	
-					} else {
-						var aFieldTypes = [];
+						var displayFieldTypesDiv = $j("##displayFieldTypes_" + thisFieldName);
+						var lFieldTypes = $j("##lFieldTypes_" + thisFieldName);
+						
+						if (lFieldTypes.val().length) {
+							var aFieldTypes = lFieldTypes.val().split(",");
+						}
+						else {
+							var aFieldTypes = [];
+						}
+						
+						if (aFieldTypes.indexOf(thisFieldType.val() + ":0") == -1 && aFieldTypes.indexOf(thisFieldType.val() + ":1") == -1) {
+							aFieldTypes.push(thisFieldType.val() + ":0");
+						}
+						
+						lFieldTypes.val(aFieldTypes.join(","));
+						
+						updateFieldTypeSelectionDisplay();
+						
+						thisFieldType.find("option:selected").removeAttr("selected");
+						
 					}
-					
-					if (aFieldTypes.indexOf(thisFieldType.val() + ":0") == -1 && aFieldTypes.indexOf(thisFieldType.val() + ":1") == -1) {
-						aFieldTypes.push(thisFieldType.val() + ":0");
-					}
-					
-					lFieldTypes.val(aFieldTypes.join(","));
-
-					updateFieldTypeSelectionDisplay();
 					
 				});
 				

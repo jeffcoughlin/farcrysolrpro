@@ -3,7 +3,6 @@
 	<cfproperty ftSeq="110" ftFieldset="Solr Content Type" ftLabel="Title" name="title" bLabel="true" ftType="string" type="nstring" required="true" ftValidation="required" ftHint="The name of this content type.  This will appear on the search form and will allow users to search a specific content type." />
 	<cfproperty ftSeq="120" ftFieldset="Solr Content Type" ftLabel="Content Type" name="contentType" ftType="list" type="nstring" ftListData="getContentTypes" ftRenderType="dropdown" required="true" ftValidation="required" ftHint="The content type being indexed." />
 	
-	<!--- TODO: for resultTitleField and resultSummaryField we need to load the available values based on the value of contentType.  We could use an ftWatch or write custom jQuery on the edit.cfm --->
 	<cfproperty ftSeq="130" ftFieldset="Solr Content Type" ftLabel="Result Title" name="resultTitleField" ftType="list" type="nstring" required="true" ftValidation="required" ftHint="The field that will be used for the search result title." />
 	<cfproperty ftSeq="140" ftFieldset="Solr Content Type" ftLabel="Result Summary" name="resultSummaryField" ftType="list" type="nstring" required="true" ftValidation="required" ftHint="The field that will be used for the search result summary." />
 	
@@ -17,7 +16,55 @@
 	
 	<cfproperty ftSeq="190" ftFieldset="Solr Content Type" ftLabel="Core Property Boost Values" name="lCorePropertyBoost" ftType="longchar" type="longchar" default="" hint="A list of boost values in field:boostvalue format.  Ex: label:5,datetimecreated:10 would indicate a boost value of 5 for label and 10 for datetimecreated." />
 	
+	<cfproperty ftSeq="210" ftFieldset="Solr Content Type" ftLabel="Index on Save?" name="bIndexOnSave" ftType="boolean" type="boolean" ftHint="Should this content type be indexed whenever a record is saved? If not, the content type will only be indexed by a separate scheduled task." />
+	
 	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
+	
+	<cffunction name="getRuleContent" access="public" output="false" returntype="array">
+		<cfargument name="objectid" required="true" type="uuid" hint="The objectid of the object to get rule content for" />
+		<cfargument name="lRuleTypes" required="true" type="string" hint="A list of rule typenames to check" />
+		
+		<cfset var a = [] />
+		<cfset var qRulesToIndex = "" />
+		
+		<cfquery name="qRulesToIndex" datasource="#application.dsn#">
+			select 
+				cxr.data, 
+				cxr.typename 
+			from 
+				container c 
+				join container_aRules cxr on c.objectID = cxr.parentid
+			where 
+				cxr.typename in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lRuleTypes#" />) 
+				and c.label like <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#%" />
+		</cfquery>
+		
+		<cfloop query="qRulesToIndex">
+		
+			<cfset var qData = "" />
+			
+			<cfset var rule = getRules(ruleTypename = qRulesToIndex.typename[qRulesToIndex.currentRow]) />
+			
+			<cfif arrayLen(rule)>
+				
+				<cfquery name="qData" datasource="#application.dsn#">
+					select #rule[1].indexableFields# from #qRulesToIndex.typename[qRulesToIndex.currentRow]# where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qRulesToIndex.data[qRulesToIndex.currentRow]#" />
+				</cfquery>
+				
+				<cfloop query="qData">
+					<cfset var col = "" />
+					<cfloop list="#qData.columnList#" index="col">
+						<cfset arrayAppend(a, qData[col][qData.currentRow]) />
+					</cfloop>
+				</cfloop>
+				
+			</cfif>
+		
+		</cfloop>
+		
+		<cfreturn a />
+
+	</cffunction>
 	
 	<cffunction name="hasIndexedProperty" access="public" hint="Checks if a content type is indexing a single property" output="false" returntype="boolean">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the content type" />
@@ -35,34 +82,36 @@
 	
 	<cffunction name="getRules" access="public" hint="Get list of all indexable rules (rules with at least one string field)" output="false" returntype="array">
 		
+		<cfargument name="ruleTypename" required="false" type="string" />
+		
 		<cfset var aRules = [] />
 		<cfset var q = queryNew("typename,displayname,indexableFields,lowerdisplayname") />
 		<cfset var rule = "" />
 		<cfset var lIndexedTypes = "nstring,string,longchar,richtext,country,state,hidden,category" />
 		
 		<cfloop collection="#application.rules#" item="rule">
-			
-			<cfif rule neq "container">
+			<cfif (not structKeyExists(arguments,"ruleTypename")) or (structKeyExists(arguments,"ruleTypename") and arguments.ruleTypename eq rule)>
+				<cfif rule neq "container">
+					
+					<!--- build a list of indexable fields --->
+					<cfset var props = application.fapi.getContentTypeMetadata(typename = rule, md = "stProps", default = "") />
+					<cfset var prop = "" />
+					<cfset var lIndexableFields = "" />
+					
+					<cfloop collection="#props#" item="prop">
+						<cfif (listFindNoCase(lIndexedTypes, props[prop].metadata.type) or listFindNoCase(lIndexedTypes, props[prop].metadata.ftType))>
+							<cfset lIndexableFields = listAppend(lIndexableFields, prop) />
+						</cfif>
+					</cfloop>
 				
-				<!--- build a list of indexable fields --->
-				<cfset var props = application.fapi.getContentTypeMetadata(typename = rule, md = "stProps", default = "") />
-				<cfset var prop = "" />
-				<cfset var lIndexableFields = "" />
-				
-				<cfloop collection="#props#" item="prop">
-					<cfif (listFindNoCase(lIndexedTypes, props[prop].metadata.type) or listFindNoCase(lIndexedTypes, props[prop].metadata.ftType))>
-						<cfset lIndexableFields = listAppend(lIndexableFields, prop) />
-					</cfif>
-				</cfloop>
-			
-				<cfset queryAddRow(q) />
-				<cfset querySetCell(q, "typename", rule) />
-				<cfset querySetCell(q, "displayname", application.stcoapi[rule].displayname & " (" & rule & ")") />
-				<cfset querySetCell(q, "indexableFields", lIndexableFields) />
-				<cfset querySetCell(q, "lowerdisplayname", lcase(application.stcoapi[rule].displayname)) />
-				
+					<cfset queryAddRow(q) />
+					<cfset querySetCell(q, "typename", rule) />
+					<cfset querySetCell(q, "displayname", application.stcoapi[rule].displayname & " (" & rule & ")") />
+					<cfset querySetCell(q, "indexableFields", lIndexableFields) />
+					<cfset querySetCell(q, "lowerdisplayname", lcase(application.stcoapi[rule].displayname)) />
+					
+				</cfif>
 			</cfif>
-			
 		</cfloop>
 		
 		<cfquery dbtype="query" name="q">
@@ -114,6 +163,13 @@
 		
 	</cffunction>
 	
+	<cffunction name="getFarCryDataTypeForProperty" access="public" output="false" returntype="string">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="propertyName" required="true" type="string" />
+		<cfset var properties = application.fapi.getContentTypeMetadata(typename = arguments.typename, md = "stProps", default = "") />
+		<cfreturn properties[arguments.propertyName].metadata.type />
+	</cffunction>
+	
 	<cffunction name="getTextPropertiesByType" access="public" output="false" returntype="string">
 		<cfargument name="typename" required="true" type="string" />
 		
@@ -135,13 +191,20 @@
 	
 	<cffunction name="getSolrFieldTypes" access="public" output="false" returntype="array" hint="Parses the field types from the schema.xml file">
 		
+		<cfargument name="fcDataType" type="string" required="false" default="" hint="A FarCry data type to use to filter" />
+		
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
-		<cfset var fieldTypes = xmlSearch(schemaXmlFile, "//schema/types/fieldType | //schema/types/fieldtype") />
+		<cfset var fieldTypes = xmlSearch(schemaXmlFile, "//schema/fields/dynamicField | //schema/fields/dynamicfield") />
 		<cfset var fieldType = "" />
 		
 		<cfloop array="#fieldTypes#" index="fieldType">
-			<cfset arrayAppend(a,fieldType.xmlAttributes["name"]) />
+			<cfparam name="fieldType.xmlAttributes.fcDataTypes" default="" />
+			<cfif len(trim(fcDataType)) eq 0 or (listFindNoCase(fieldType.xmlAttributes['fcDataTypes'], arguments.fcDataType))>
+				<cfif not arrayFindNoCase(a, fieldType.xmlAttributes["fcId"] & ":" & fieldType.xmlAttributes["fcDisplayName"] & ":" & fieldType.xmlAttributes["fcDataTypes"])>
+					<cfset arrayAppend(a, fieldType.xmlAttributes["fcId"] & ":" & fieldType.xmlAttributes["fcDisplayName"] & ":" & fieldType.xmlAttributes["fcDataTypes"]) />
+				</cfif>
+			</cfif>	
 		</cfloop>
 		
 		<cfreturn a />
@@ -149,14 +212,16 @@
 	</cffunction>
 	
 	<cffunction name="getSolrFields" access="public" output="false" returntype="array" hint="Gets the fields defined in the schema.xml file">
-		
+		<cfargument name="lOmitFields" type="string" required="false" default="" hint="A list of fields to omit" />
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
 		<cfset var fields = xmlSearch(schemaXmlFile, "//schema/fields/field") />
 		<cfset var field = "" />
 		
 		<cfloop array="#fields#" index="field">
-			<cfset arrayAppend(a, field.xmlAttributes["name"]) />
+			<cfif not listFindNoCase(arguments.lOmitFields, field.xmlAttributes["name"])>
+				<cfset arrayAppend(a, field.xmlAttributes["name"]) />
+			</cfif>
 		</cfloop>
 		
 		<cfreturn a />
