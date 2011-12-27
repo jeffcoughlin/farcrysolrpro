@@ -212,6 +212,9 @@
 			##tblCustomProperties {
 				width: 100%;
 			}
+			##tblCustomProperties tbody tr td:nth-child(1) {
+				padding-top: .8em;
+			}
 			##tblCustomProperties thead tr th:nth-child(3) {
 				min-width: 30%;
 				width: 50%;
