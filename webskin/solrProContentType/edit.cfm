@@ -45,6 +45,7 @@
 		
 		<ft:processFormObjects typename="solrProContentType">
 			
+			<!--- TODO: make sure teaser and title fields are being STORED in Solr! --->
 			<cfparam name="form.resultTitleField" type="string" default="label" />
 			<cfparam name="form.resultSummaryField" type="string" default="" />
 			<cfset stProperties["resultTitleField"] = form.resultTitleField />

@@ -245,4 +245,26 @@
 		
 	</cffunction>
 	
+	<cffunction name="getAllContentTypes" access="public" output="false" returntype="query">
+		<cfset var q = "" />
+		<cfquery name="q" datasource="#application.dsn#">
+			select objectid from solrProContentType;
+		</cfquery>
+		<cfreturn q />
+	</cffunction>
+	
+	<cffunction name="commit" access="public" output="false" returntype="void">
+		<cfset application.stplugins["farcrysolrpro"].cfsolrlib.commit() />
+	</cffunction>
+	
+	<cffunction name="optimize" access="public" output="false" returntype="void">
+		<cfset application.stplugins["farcrysolrpro"].cfsolrlib.optimize() />
+	</cffunction>
+	
+	<cffunction name="add" access="public" output="false" returntype="void">
+		<cfargument name="doc" type="array" required="true" hint="An array of field objects, with name, value, and an optional boost attribute. {name:""Some Name"",value:""Some Value""[,boost:5]}" />
+		<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
+	</cffunction>
+	
 </cfcomponent>
