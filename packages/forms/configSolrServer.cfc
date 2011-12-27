@@ -153,12 +153,16 @@
 	<cffunction name="process" access="public" output="false" returntype="struct">
 		<cfargument name="fields" type="struct" required="true" />
 		
-		<!--- set up javaloader and cfsolrlib --->
-		
-		<cfset setupSolrLibrary(fields = arguments.fields) />
-		
-		<!--- ensure solr is properly set up --->
-		<cfset setupSolrDefaults() />
+		<!--- only run if the config has been set at least once, manually --->
+		<cfif arguments.fields.bConfigured eq 1>
+			
+			<!--- set up javaloader and cfsolrlib --->	
+			<cfset setupSolrLibrary(fields = arguments.fields) />
+			
+			<!--- ensure solr is properly set up --->
+			<cfset setupSolrDefaults() />
+			
+		</cfif>
 		
 		<cfreturn super.process(argumentCollection = arguments) />
 	</cffunction>
