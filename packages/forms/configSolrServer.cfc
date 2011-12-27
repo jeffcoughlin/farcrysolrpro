@@ -1,4 +1,4 @@
-<cfcomponent output="false" extends="farcry.core.packages.forms.forms" displayname="Solr Server" key="solrserver" hint="Configures Solr Server settings">
+<cfcomponent output="false" extends="farcry.core.packages.forms.forms" displayname="Solr Pro Plugin" key="solrserver" hint="Configures Solr Server settings">
 	
 	<cfproperty ftSeq="110" ftFieldset="Solr Server" name="host" type="nstring" default="localhost" required="true" ftDefault="localhost" ftType="string" ftValidation="required" ftLabel="Host" ftHint="The hostname of the server (default: localhost)" />
 	<cfproperty ftSeq="120" ftFieldset="Solr Server" name="port" type="nstring" default="8983" required="true" ftDefault="8983" ftType="string" ftValidation="required,digits" ftLabel="Port" ftHint="The port number of the server (default: 8983)" />
@@ -14,7 +14,7 @@
 		<cfargument name="bOverwrite" type="boolean" required="false" default="false" />
 		
 		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
-		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/solrconf") />
+		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/conf") />
 		<cfset var qTemplateFiles = "" />
 		<cfset var destdir = instanceDir & "/conf" />
 		
