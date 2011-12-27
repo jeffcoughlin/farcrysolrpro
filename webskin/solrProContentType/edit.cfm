@@ -273,6 +273,7 @@
 						$j("##displayFieldTypes_" + thisFieldName).hide();
 						$j("##fieldType_" + thisFieldName).attr("disabled", true);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", true);
+						$j("##customField_" + thisFieldName).addClass("ui-state-disabled");
 						$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
 						$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
 					} else {
@@ -290,10 +291,10 @@
 						$j("##displayFieldTypes_" + thisFieldName).show();
 						$j("##fieldType_" + thisFieldName).attr("disabled", false);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
+						$j("##customField_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
 						$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
 						$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
-						
-						
+												
 					}
 					activateFieldTypeRemoveButtons();
 					activateStoreCheckboxes();

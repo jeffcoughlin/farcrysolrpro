@@ -42,7 +42,7 @@
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
 				<td><input type="checkbox" name="indexedProperties" id="fieldNames_#prop#" value="#prop#" <cfif structCount(stIndexedProperty)>checked="checked"</cfif> /></td>
-				<td>#prop#</td>
+				<td id="customField_#prop#">#prop#</td>
 				<td>
 					<select id="fieldType_#prop#" class="fieldTypeDropdown">
 						<option value="">-- Select One --</option>
