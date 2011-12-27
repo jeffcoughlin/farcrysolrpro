@@ -605,6 +605,8 @@
 							
 							if (data[x].toLowerCase() == currentTitle) {
 								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
+							} else if (currentTitle.length == 0 && data[x].toLowerCase() == "title") {
+								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
 							} else if (currentTitle.length == 0 && data[x].toLowerCase() == "label") {
 								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
 							} else {
