@@ -24,7 +24,7 @@
 			<th>&nbsp;</th>
 			<th>Field Name</th>
 			<th>Solr Field Type(s)</th>
-			<th>Field Boosting</th>
+			<!---<th>Field Boosting</th>--->
 		</tr>
 	</thead>
 	<tbody>
@@ -78,11 +78,11 @@
 					
 					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" <cfif structKeyExists(stIndexedProperty, "lFieldTypes")>value="#stIndexedProperty.lFieldTypes#"</cfif> />
 				</td>
-				<td>
+				<!---<td>
 					<div class="combobox">
 						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" value="<cfif structKeyExists(stIndexedProperty, 'fieldBoost')>#stIndexedProperty.fieldBoost#<cfelse>5</cfif>" />
 					</div>
-				</td>
+				</td>--->
 			</tr>
 		</cfoutput>
 	</cfif>

@@ -61,8 +61,7 @@
 				
 				<cfset stIndexedProperty = {
 					fieldName = prop,
-					lFieldTypes = form['lFieldTypes_' & prop],
-					fieldBoost = form['fieldBoost_' & prop]
+					lFieldTypes = form['lFieldTypes_' & prop]
 				} />
 				
 				<cfif structKeyExists(stProperties,"objectid") and hasIndexedProperty(stproperties.objectid, prop)>
@@ -203,6 +202,17 @@
 	<skin:htmlhead id="solrProContentType-edit">
 		<cfoutput>
 		<style type="text/css" media="all">
+			.combobox a {
+				text-decoration: none;
+				vertical-align: middle;
+				padding-right: 0.4em;
+			}
+			.combobox a:hover {
+				background: transparent;
+			}
+			.combobox input {
+				width: 4em;
+			}
 			.fieldType {
 				padding: 0.25em 0 0.25em 0.5em;
 			}
@@ -210,10 +220,13 @@
 				margin-left: 0.25em;
 				margin-right: 0.25em;
 			}
-			.fieldType div.buttonset {
-				display: inline;
-				vertical-align: middle;
+			.fieldType div.fieldTypeAttributes {
 				float: right;
+				vertical-align: middle;
+			}
+			.fieldType div.fieldTypeAttributes div {
+				display: inline;
+				padding-left: 0.5em;
 			}
 			.fieldType div.buttonset label:not(.ui-state-active) span {
 				color: ##888 !important;
@@ -253,8 +266,7 @@
 				padding-top: .8em;
 			}
 			##tblCustomProperties thead tr th:nth-child(3) {
-				min-width: 30%;
-				width: 50%;
+				width: 55%;
 			}
 			##tblCustomProperties tbody tr td:nth-child(3), ##tblCustomProperties tbody tr td:nth-child(4) {
 				white-space: nowrap;
@@ -327,23 +339,42 @@
 					var displayFieldTypesDiv = $j("##displayFieldTypes_" + thisFieldName);
 					var lFieldTypes = $j("##lFieldTypes_" + thisFieldName);
 					
-					if (!$(this).is(":checked")) {
+					if (!$j(this).is(":checked")) {
 						// remove all
 						$j("##displayFieldTypes_" + thisFieldName).hide();
 						$j("##fieldType_" + thisFieldName).attr("disabled", true);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", true);
 						$j("##customField_" + thisFieldName).addClass("ui-state-disabled");
-						$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
-						$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
+						//$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
+						//$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
 					} else {
 						// grab the lFieldTypes value and add the items to the display div
 						if (lFieldTypes.val().length > 0) {
 							displayFieldTypesDiv.empty();
 							var aFieldTypes = lFieldTypes.val().split(",");
 							for (var x = 0; x < aFieldTypes.length; x++) {
-								var fieldType = aFieldTypes[x].split(":")[0];
-								var bStored = aFieldTypes[x].split(":")[1];
-								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"> <div class="buttonset"><input value="1" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + ' type="radio" id="chkStore_' + thisFieldName + '_' + fieldType + '_on" name="chkStore.' + thisFieldName + '.' + fieldType + '" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_on">Stored</label><input class="chkStore" ' + ((bStored == 0) ? 'checked="checked"' : '') + '  name="chkStore.' + thisFieldName + '.' + fieldType + '" type="radio" value="0" id="chkStore_' + thisFieldName + '_' + fieldType + '_off" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_off">Not Stored</label></div><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><span>' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</span></div>');
+								var parsed = aFieldTypes[x].split(":");
+								var fieldType = parsed[0];
+								var bStored = parsed[1];
+								var boostValue = parsed[2];
+								
+								   var html = '<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"> ';
+								html = html + '<button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button>';
+								html = html + '<span>' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</span>';
+								html = html + '<div class="fieldTypeAttributes">';
+								html = html + '<div class="buttonset">';
+								html = html + '<input value="1" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + ' type="radio" id="chkStore_' + thisFieldName + '_' + fieldType + '_on" name="chkStore.' + thisFieldName + '.' + fieldType + '" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_on">Stored</label>';
+								html = html + '<input class="chkStore" ' + ((bStored == 0) ? 'checked="checked"' : '') + '  name="chkStore.' + thisFieldName + '.' + fieldType + '" type="radio" value="0" id="chkStore_' + thisFieldName + '_' + fieldType + '_off" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_off">Not Stored</label>';
+								html = html + '</div>';
+								html = html + '<div class="combobox">';
+								// combobox id uses underscores instead of period because of an issue with jquery selectors and periods
+								html = html + '<label for="fieldBoost_' + thisFieldName + '_' + fieldType + '">Boost:</label>';
+								html = html + '<input type="text" rel="' + thisFieldName + '.' + fieldType + '" class="fieldBoost" name="fieldBoost_' + thisFieldName + '.' + fieldType + '" id="fieldBoost_' + thisFieldName + '_' + fieldType + '" value="' + boostValue + '" />';
+								html = html + '</div>';
+								html = html + '</div>';
+								html = html + '</div>';
+								
+								displayFieldTypesDiv.append(html);
 								$j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").attr("disabled",true);
 							}
 						}
@@ -355,9 +386,12 @@
 						$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
 												
 					}
-					activateFieldTypeRemoveButtons();
-					activateStoreCheckboxes();
+					
 				});
+				
+				activateFieldTypeRemoveButtons();
+				activateStoreCheckboxes();
+				activateBoostDropdowns();
 				
 				// setup stored/not stored toggle
 				$j( ".fieldType div.buttonset" ).buttonset();
@@ -425,12 +459,7 @@
 						
 						for (var i = 0; i < aFieldTypes.length; i++) {
 							if (aFieldTypes[i].split(":")[0] == fieldType) {
-								/*if (aFieldTypes[i].split(":")[1] == 1) {
-									aFieldTypes[i] = fieldType + ":0";
-								} else {
-									aFieldTypes[i] = fieldType + ":1";
-								}*/
-								aFieldTypes[i] = fieldType + ":" + $j(this).val();
+								aFieldTypes[i] = fieldType + ":" + $j(this).val() + ":" + aFieldTypes[i].split(":")[2];
 								break;
 							}
 						}
@@ -468,8 +497,17 @@
 							var aFieldTypes = [];
 						}
 						
-						if (aFieldTypes.indexOf(thisFieldType.val() + ":0") == -1 && aFieldTypes.indexOf(thisFieldType.val() + ":1") == -1) {
-							aFieldTypes.push(thisFieldType.val() + ":0");
+						// make sure this type has not already been added
+						bAlreadyExists = false;
+						for (var i = 0; i < aFieldTypes.length; i++) {
+							if (aFieldTypes[i].split(":")[0] == thisFieldType.val()) {
+								bAlreadyExists = true;
+								break;
+							}
+						}
+						// if not add with default "stored" value, and boost value
+						if (bAlreadyExists == false) {
+							aFieldTypes.push(thisFieldType.val() + ":0:5");
 						}
 						
 						lFieldTypes.val(aFieldTypes.join(","));
@@ -494,7 +532,30 @@
 				});
 				
 				// setup the boost "dropdown"
-				activateBoostDropdowns();
+				//activateBoostDropdowns();
+				
+			}
+			
+			function handleBoostChange(target) {
+				
+				// grab the hidden field for this field/fieldtype
+				var fieldName = $j(target).attr("rel").split(".")[0];
+				var fieldType = $j(target).attr("rel").split(".")[1];
+				var hidden = $j("##lFieldTypes_" + fieldName);
+				
+				// grab the current value of the hidden field
+				var aFieldTypes = hidden.val().split(',');
+				
+				// loop over the list until you find the field type we are changing
+				for (var i = 0; i < aFieldTypes.length; i++) {
+					if (aFieldTypes[i].split(":")[0].toLowerCase() == fieldType.toLowerCase()) {
+						// update the boost value
+						aFieldTypes[i] = fieldType.toLowerCase() + ":"  + aFieldTypes[i].split(":")[1] + ":" + $j(target).val();
+						break;
+					}
+				}
+				// write the new string to the hidden field's value
+				hidden.val(aFieldTypes.join(","));
 				
 			}
 			
@@ -502,16 +563,39 @@
 				
 				$j('.combobox input').autocomplete({
 					source: [ "1", "2", "3", "5", "10", "15", "20", "50" ],
-					minLength: 0
+					minLength: 0,
+					change: function (event) {
+						handleBoostChange(this);
+					},
 				}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
 					"vertical-align": "middle"
+				});
+				
+				// activate the label
+				$j('.combobox label').each(function(i){
+					var labelText = $j(this).text();
+					var target = $j(this).attr("for");
+					$j(this).html("<a>" + labelText + "</a>");
+					$j(this).find("a").click(function(event){
+						event.preventDefault();
+						openCombobox($j("##" + target));
+					});
 				});
 				
 				// create and activate the button
 				$j(".combobox").each(function(i){
 					
-					var input = $(this).find("input");
-					var button = $('<button type="button">Open</button>');
+					if ($j(this).find("button").length > 0) {
+						return false;
+					}
+					
+					var input = $j(this).find("input");
+					var button = $j('<button type="button">Open</button>');
+					
+					// add a change handler for the input
+					input.change(function(event){
+						handleBoostChange(this);
+					});
 					
 					button.button({
 						text: false,
@@ -541,7 +625,7 @@
 				}
 
 				// open the combobox
-				$(this).blur();
+				$j(this).blur();
 				target.autocomplete("search","");
 				target.focus();
 				
