@@ -195,6 +195,9 @@
 		
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
+		<cfif not fileExists(schemaXmlFile)>
+			<!--- TODO: XML file doesn't exist. Need a solution or message to user --->
+		</cfif>
 		<cfset var fieldTypes = xmlSearch(schemaXmlFile, "//schema/fields/dynamicField | //schema/fields/dynamicfield") />
 		<cfset var fieldType = "" />
 		
