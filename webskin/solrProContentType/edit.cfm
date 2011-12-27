@@ -175,6 +175,31 @@
 		<ft:farcryButton type="submit" text="Cancel" value="cancel" validate="false" confirmText="Are you sure you wish to discard your changes?" />
 	</ft:farcryButtonPanel>
 	
+	<cfoutput>
+		<div id="helpInfo" class="ui-widget-content ui-corner-all">
+			<h3 class="ui-widget-header ui-corner-all">Information &amp; Tips</h3>
+			<ul id="helpInfoUl">
+				<li class="ui-icon ui-icon-circle-check">
+					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+				</li>
+				<li style="float: none;">
+					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+				</li>
+			</ul>
+			<!---
+			<h4 class="ui-icon ui-icon-circle-check" style="float:left; margin: .2em 7px 50px 0;">
+				<!---<span class="ui-icon ui-icon-circle-check" style="float:left; margin: .2em 7px 50px 0;"></span>--->
+				Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.
+			</h4>
+			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+			--->
+		</div>
+	</cfoutput>
+	
 	<skin:htmlhead id="solrProContentType-edit">
 		<cfoutput>
 		<style type="text/css" media="all">
@@ -221,6 +246,25 @@
 			}
 			##tblCustomProperties tbody tr td:nth-child(3), ##tblCustomProperties tbody tr td:nth-child(4) {
 				white-space: nowrap;
+			}
+			##helpInfo {
+				padding: 0.4em;
+				position: relative;
+				margin: 1em 0;
+				min-width: 500px;
+				max-width: 800px;
+			}
+			##helpInfo h3 {
+				margin: 0 0 1em 0;
+				padding: 0.4em;
+				text-align: center;
+			}
+			##helpInfoUl li {
+				float: left;
+			}
+			##helpInfoUl li h4,
+			##helpInfoUl li p {
+				margin-left: 25px;
 			}
 		</style>
 		<script type="text/javascript">
