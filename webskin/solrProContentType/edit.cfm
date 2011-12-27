@@ -120,7 +120,7 @@
 		<ft:object stObject="#stobj#" lFields="title,contentType" r_stPrefix="generalPrefix" />
 	</ft:fieldset>
 	
-	<ft:fieldset legend="Search Result Data">
+	<ft:fieldset legend="Search Result Defaults">
 		
 		<ft:field label="Result Title" hint="The field that will be used for the search result title.">
 			<cfoutput>
@@ -593,33 +593,18 @@
 					datatype: "json",
 					success: function(data,status,req){
 						
-						summary.append('<option value="">-- Solr Default --</option>');
+						summary.append('<option value="">-- None --</option>');
 						
 						var currentTitle = "#lcase(stobj.resultTitleField)#";
 						var currentSummary = "#lcase(stobj.resultSummaryField)#";
-							
+						
 						for (var x = 0; x < data.length; x++) {
 							
 							var titleHtml = "";
 							var summaryHtml = "";
-							
-							if (data[x].toLowerCase() == currentTitle) {
-								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
-							} else if (currentTitle.length == 0 && data[x].toLowerCase() == "title") {
-								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
-							} else if (currentTitle.length == 0 && data[x].toLowerCase() == "label") {
-								var titleHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
-							} else {
-								var titleHtml = '<option value="' + data[x] + '">' + data[x] + '</option>';
-							}
-							
-							if (data[x].toLowerCase() == currentSummary) {
-								var summaryHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
-							} else if (currentTitle.length == 0 && data[x].toLowerCase() == "teaser") {
-								var summaryHtml = '<option value="' + data[x] + '" selected="selected">' + data[x] + '</option>';
-							} else {
-								var summaryHtml = '<option value="' + data[x] + '">' + data[x] + '</option>';
-							}
+	
+							var titleHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
+							var summaryHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
 							
 							title.append(titleHtml);
 							summary.append(summaryHtml);
@@ -627,8 +612,23 @@
 						}
 						
 						// mark the selected value based on stobj
-						title.find("option[value='#stobj.resultTitleField#']").attr("selected","selected");
-						summary.find("option[value='#stobj.resultSummaryField#']").attr("selected","selected");
+						if (currentTitle.length > 0) {
+							title.find("option[value='" + currentTitle + "']").attr("selected", "selected");
+						} else {
+							// first look for title
+							title.find("option[value='title']").attr("selected", true);
+							
+							// fall back to label
+							if (title.find("option[value='title']").length == 0) {
+								title.find("option[value='label']").attr("selected", true);
+							}
+						}
+						if (currentSummary.length > 0) {
+							summary.find("option[value='" + currentSummary + "']").attr("selected", "selected");
+						} else {
+							// if we have a "teaser" field, default to that
+							summary.find("option[value='teaser']").attr("selected", true);
+						}
 						 
 					},
 					error: function(req,status,err){
