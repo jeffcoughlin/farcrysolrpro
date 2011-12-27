@@ -206,9 +206,21 @@
 			.fieldType {
 				padding: 0.25em 0 0.25em 0.5em;
 			}
-			.fieldType label {
+			.fieldType span {
 				margin-left: 0.25em;
 				margin-right: 0.25em;
+			}
+			.fieldType div.buttonset {
+				display: inline;
+				vertical-align: middle;
+				float: right;
+			}
+			.fieldType div.buttonset label:not(.ui-state-active) span {
+				color: ##888 !important;
+			}
+			.fieldType div.buttonset label span {
+				font-size: 0.8em;
+				padding: 0.1em 0.4em;
 			}
 			table.fcproperties {
 				margin: .85em 0;
@@ -231,7 +243,7 @@
 				background: none repeat scroll 0 0 ##F1F1F1;
 			}
 			##indexedProperties {
-				max-width: 650px;
+				max-width: 700px;
 				min-width: 500px;
 			}
 			##tblCustomProperties {
@@ -331,7 +343,7 @@
 							for (var x = 0; x < aFieldTypes.length; x++) {
 								var fieldType = aFieldTypes[x].split(":")[0];
 								var bStored = aFieldTypes[x].split(":")[1];
-								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><label for="chkStore_' + thisFieldName + '_' + fieldType + '">' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</label> <input title="Store this field in Solr?" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + '" type="checkbox" id="chkStore_' + thisFieldName + '_' + fieldType + '" name="chkStore.' + thisFieldName + '.' + fieldType + '" /></div>');
+								displayFieldTypesDiv.append('<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"> <div class="buttonset"><input value="1" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + ' type="radio" id="chkStore_' + thisFieldName + '_' + fieldType + '_on" name="chkStore.' + thisFieldName + '.' + fieldType + '" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_on">Stored</label><input class="chkStore" ' + ((bStored == 0) ? 'checked="checked"' : '') + '  name="chkStore.' + thisFieldName + '.' + fieldType + '" type="radio" value="0" id="chkStore_' + thisFieldName + '_' + fieldType + '_off" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_off">Not Stored</label></div><button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button><span>' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</span></div>');
 								$j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").attr("disabled",true);
 							}
 						}
@@ -346,6 +358,9 @@
 					activateFieldTypeRemoveButtons();
 					activateStoreCheckboxes();
 				});
+				
+				// setup stored/not stored toggle
+				$j( ".fieldType div.buttonset" ).buttonset();
 				
 			}
 			
@@ -410,11 +425,12 @@
 						
 						for (var i = 0; i < aFieldTypes.length; i++) {
 							if (aFieldTypes[i].split(":")[0] == fieldType) {
-								if (aFieldTypes[i].split(":")[1] == 1) {
+								/*if (aFieldTypes[i].split(":")[1] == 1) {
 									aFieldTypes[i] = fieldType + ":0";
 								} else {
 									aFieldTypes[i] = fieldType + ":1";
-								}
+								}*/
+								aFieldTypes[i] = fieldType + ":" + $j(this).val();
 								break;
 							}
 						}
