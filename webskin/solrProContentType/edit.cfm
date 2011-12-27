@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Edit --->
-<!--- @@author: Sean Coyne (www.n42designs.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
 <!--- @@cacheStatus: -1 --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -185,8 +185,28 @@
 				margin-left: 0.25em;
 				margin-right: 0.25em;
 			}
+			table.fcproperties {
+				margin: .85em 0;
+				border-collapse: collapse;
+				font-size: 1em;
+			}
+			table.fcproperties caption {
+				font: bold 145% arial;
+				padding: 5px 10px;
+				text-align: left;
+			}
+			table.fcproperties td,
+			table.fcproperties th {
+				border: 1px solid ##eee;
+				padding: .6em 10px;
+				text-align: left;
+				vertical-align: top;
+			}
+			table.fcproperties tr.alt {
+				background: none repeat scroll 0 0 ##F1F1F1;
+			}
 			##indexedProperties {
-				max-width: 600px;
+				max-width: 650px;
 				min-width: 500px;
 			}
 			##tblCustomProperties {

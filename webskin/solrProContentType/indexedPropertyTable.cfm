@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Indexed Property Table --->
-<!--- @@author: Sean Coyne (sean@n42designs.com) --->
+<!--- @@author: Sean Coyne (sean@n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -17,10 +17,10 @@
 <cfset aCoreFields = getSolrFields(lOmitFields = "random") />
 
 <cfoutput>
-<table id="tblCustomProperties" class="objectAdmin">
+<table id="tblCustomProperties" class="ui-widget ui-widget-content fcproperties">
 	<caption>Custom Properties</caption>
 	<thead>
-		<tr>
+		<tr class="ui-widget-header">
 			<th>&nbsp;</th>
 			<th>Field Name</th>
 			<th>Solr Field Type(s)</th>
@@ -94,10 +94,10 @@
 </cfoutput>
 
 <cfoutput>
-<table id="tblCoreProperties" class="objectAdmin">
+<table id="tblCoreProperties" class="ui-widget ui-widget-content fcproperties">
 	<caption>Core Properties</caption>
 	<thead>
-		<tr>
+		<tr class="ui-widget-header">
 			<th>Field Name</th>
 			<th>Solr Field Type</th>
 			<th>Field Boosting</th>
