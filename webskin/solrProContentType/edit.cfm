@@ -214,6 +214,9 @@
 			.combobox input {
 				width: 4em;
 			}
+			.fieldTypeDropdown {
+				vertical-align: middle;
+			}
 			.fieldType {
 				padding: 0.25em 0 0.25em 0.5em;
 			}
@@ -221,13 +224,22 @@
 				margin-left: 0.25em;
 				margin-right: 0.25em;
 			}
-			.fieldType div.fieldTypeAttributes {
-				float: right;
+			.fieldType div.fieldTypeAttributesLeft {
+				min-width: 35em;
+			}
+			.fieldType div.fieldTypeAttributesLeft span {
 				vertical-align: middle;
 			}
-			.fieldType div.fieldTypeAttributes div {
+			.fieldType div.fieldTypeAttributesRight {
+				float: right;
+			}
+			.fieldType div.fieldTypeAttributesRight div {
 				display: inline;
 				padding-left: 0.5em;
+				vertical-align: middle;
+			}
+			.fieldType div.fieldTypeAttributesRight div input {
+				vertical-align: middle;
 			}
 			.fieldType div.buttonset label:not(.ui-state-active) span {
 				color: ##888 !important;
@@ -257,7 +269,7 @@
 				background: none repeat scroll 0 0 ##F1F1F1;
 			}
 			##indexedProperties {
-				max-width: 700px;
+				max-width: 800px;
 				min-width: 500px;
 			}
 			##tblCustomProperties {
@@ -268,8 +280,6 @@
 			}
 			##tblCustomProperties thead tr th:nth-child(3) {
 				width: 55%;
-			}
-			##tblCustomProperties tbody tr td:nth-child(3), ##tblCustomProperties tbody tr td:nth-child(4) {
 				white-space: nowrap;
 			}
 			##helpInfo {
@@ -360,9 +370,7 @@
 								var boostValue = parsed[2];
 								
 								   var html = '<div class="fieldType" id="fieldType_' + thisFieldName + '_' + fieldType + '"> ';
-								html = html + '<button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button>';
-								html = html + '<span>' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</span>';
-								html = html + '<div class="fieldTypeAttributes">';
+								html = html + '<div class="fieldTypeAttributesRight">';
 								html = html + '<div class="buttonset">';
 								html = html + '<input value="1" class="chkStore" ' + ((bStored == 1) ? 'checked="checked"' : '') + ' type="radio" id="chkStore_' + thisFieldName + '_' + fieldType + '_on" name="chkStore.' + thisFieldName + '.' + fieldType + '" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_on">Stored</label>';
 								html = html + '<input class="chkStore" ' + ((bStored == 0) ? 'checked="checked"' : '') + '  name="chkStore.' + thisFieldName + '.' + fieldType + '" type="radio" value="0" id="chkStore_' + thisFieldName + '_' + fieldType + '_off" /><label for="chkStore_' + thisFieldName + '_' + fieldType + '_off">Not Stored</label>';
@@ -372,6 +380,10 @@
 								html = html + '<label for="fieldBoost_' + thisFieldName + '_' + fieldType + '">Boost:</label>';
 								html = html + '<input type="text" rel="' + thisFieldName + '.' + fieldType + '" class="fieldBoost" name="fieldBoost_' + thisFieldName + '.' + fieldType + '" id="fieldBoost_' + thisFieldName + '_' + fieldType + '" value="' + boostValue + '" />';
 								html = html + '</div>';
+								html = html + '</div>';
+								html = html + '<div class="fieldTypeAttributesLeft">';
+								html = html + '<button class="btnRemoveFieldType" type="button" rel="' + thisFieldName + '.' + fieldType + '">Remove</button>';
+								html = html + '<span>' + $j("##fieldType_" + thisFieldName + " option[value='" + fieldType + "']").text() + '</span>';
 								html = html + '</div>';
 								html = html + '</div>';
 								
@@ -383,8 +395,8 @@
 						$j("##fieldType_" + thisFieldName).attr("disabled", false);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
 						$j("##customField_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
-						$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
-						$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
+						//$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
+						//$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
 												
 					}
 					
