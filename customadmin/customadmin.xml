@@ -6,7 +6,7 @@
 			<menu mergeType="merge" sequence="10" id="farcrysolrpromenu" label="Setup" labelType="value">
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrpromenuitem01" label="Content Types" link="/admin/customadmin.cfm?module=customlists/solrProContentType.cfm&amp;plugin=farcrysolrpro" />
 				<menuitem sequence="20" mergeType="merge" id="farcrysolrpromenuitem02" label="Elevation" link="/admin/customadmin.cfm?module=customlists/elevation.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="30" mergeType="merge" id="farcrysolrpromenuitem03" label="Record Boosting" link="/admin/customadmin.cfm?module=customlists/recordboosting.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="30" mergeType="merge" id="farcrysolrpromenuitem03" label="Document Boosting" link="/admin/customadmin.cfm?module=customlists/solrProDocumentBoost.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
 		</subsection>

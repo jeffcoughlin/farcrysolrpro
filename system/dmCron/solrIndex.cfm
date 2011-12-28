@@ -95,8 +95,8 @@
 			</cfif>
 		</cfloop>
 		
-		<!--- TODO: write this method - grab any related rule records and index those as well --->
-		<!---<cfset ruleContent = oContentType.getRuleContent(objectid = qContentToIndex.objectid[qContentToIndex.currentRow], lRuleTypes = stContentType.lIndexedRules) />
+		<!--- grab any related rule records and index those as well --->
+		<cfset ruleContent = oContentType.getRuleContent(objectid = qContentToIndex.objectid[qContentToIndex.currentRow], lRuleTypes = stContentType.lIndexedRules) />
 		<cfset arrayAppend(doc, {
 		 	name = "rulecontent", 
 		 	value = ruleContent 
@@ -104,7 +104,7 @@
 		<cfset arrayAppend(doc, {
 		 	name = "rulecontent_phonetic", 
 		 	value = ruleContent 
-		}) />--->
+		}) />
 		
 		<!--- add core boost values to document --->
 		<cfloop array="#doc#" index="i">

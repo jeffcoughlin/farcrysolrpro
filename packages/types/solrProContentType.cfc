@@ -248,7 +248,7 @@
 	<cffunction name="getAllContentTypes" access="public" output="false" returntype="query">
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
-			select objectid from solrProContentType;
+			select objectid, contentType from solrProContentType;
 		</cfquery>
 		<cfreturn q />
 	</cffunction>
