@@ -15,6 +15,7 @@
 
 <cfset oContentType = application.fapi.getContentType("solrProContentType") />
 <cfset oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
+<cfset oDocumentBoost = application.fapi.getContentType("solrProDocumentBoost") />
 
 <!--- get all the content types that are being indexed --->
 <cfset qContentTypes = oContentType.getAllContentTypes() />
@@ -115,12 +116,16 @@
 			</cfif>
 		</cfloop>
 		
-		<!--- TODO: document level boosting --->
-		<cfset docBoost = 10 />
+		<!--- check if this record has a document level boost --->
+		<cfset docBoost = oDocumentBoost.getBoostValueForDocument(documentId = stRecord.objectid) />
 		
 		<!--- add it to solr --->
 		<!--- TODO: adding files is slightly different, address this in future --->
-		<cfset oContentType.add(doc = doc, docBoost = docBoost) />
+		<cfset args = { doc = doc } />
+		<cfif isNumeric(docBoost)>
+			<cfset args.docBoost = docBoost />
+		</cfif>
+		<cfset oContentType.add(argumentCollection = args) />
 		
 	</cfloop>
 	
