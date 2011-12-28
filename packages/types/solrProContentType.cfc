@@ -163,6 +163,13 @@
 		
 	</cffunction>
 	
+	<cffunction name="getFTTypeForProperty" access="public" output="false" returntype="string">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="propertyName" required="true" type="string" />
+		<cfset var properties = application.fapi.getContentTypeMetadata(typename = arguments.typename, md = "stProps", default = "") />
+		<cfreturn properties[arguments.propertyName].metadata.ftType />
+	</cffunction>
+	
 	<cffunction name="getFarCryDataTypeForProperty" access="public" output="false" returntype="string">
 		<cfargument name="typename" required="true" type="string" />
 		<cfargument name="propertyName" required="true" type="string" />
@@ -263,8 +270,56 @@
 	
 	<cffunction name="add" access="public" output="false" returntype="void">
 		<cfargument name="doc" type="array" required="true" hint="An array of field objects, with name, value, and an optional boost attribute. {name:""Some Name"",value:""Some Value""[,boost:5]}" />
+		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
-		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
+		
+		<!--- determine if we have any file fields --->
+		<cfset var bFoundFileField = false />
+		<cfset var fileFieldName = "" />
+		<cfset var prop = "" />
+		<cfset var stLiteralData = {} />
+		<cfset var id = "" />
+		
+		<!--- TODO: this assumes we have only 1 file field.  need to address multiple files for the same record --->
+		<cfloop array="#arguments.doc#" index="prop">
+			<cfif len(prop.farcryField) and getFTTypeForProperty(arguments.typename,prop.farcryField) eq "file">
+				<cfset bFoundFileField = true />
+				<cfset fileFieldName = prop.name />
+				<cfbreak />
+			</cfif>
+		</cfloop>
+		
+		<cfif bFoundFileField>
+			<!--- TODO: call addFile --->
+			
+			<!--- build the literal data struct --->
+			<cfloop array="#arguments.doc#" index="prop">
+				<cfif prop.name neq fileFieldName and prop.name neq "objectid">
+					<cfset stLiteralData[prop.name] = prop.value />
+				<cfelseif prop.name eq "objectid">
+					<cfset id = prop.value />
+				</cfif>
+			</cfloop>
+			
+			<!--- TODO: build boost struct --->
+			
+			<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.addFile(
+				id = id,
+				file = "",
+				fmap = { "content" = fileFieldName },
+				saveMetadata = false,
+				literalData = {},
+				boost = { fileFieldName = 5 }
+			) />	
+				
+		<cfelse>
+			<!--- remove farcryField key from all structs in the doc array --->
+			<cfloop array="#arguments.doc#" index="prop">
+				<cfset structDelete(prop,"farcryField") />
+			</cfloop>
+			<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
+		</cfif>
+		
 	</cffunction>
 	
 </cfcomponent>

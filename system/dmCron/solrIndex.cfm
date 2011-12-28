@@ -64,7 +64,8 @@
 					
 					<cfset arrayAppend(doc, {
 						name = lcase(field),
-						value = stRecord[field]
+						value = stRecord[field],
+						farcryField = field
 					}) />
 					
 				<cfelse>
@@ -84,7 +85,8 @@
 						<cfset arrayAppend(doc, {
 							name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
 							value = stRecord[field],
-							boost = typeSetup.boostValue
+							boost = typeSetup.boostValue,
+							farcryField = field
 						}) />
 						
 					</cfloop>
@@ -100,11 +102,13 @@
 		<cfset ruleContent = oContentType.getRuleContent(objectid = qContentToIndex.objectid[qContentToIndex.currentRow], lRuleTypes = stContentType.lIndexedRules) />
 		<cfset arrayAppend(doc, {
 		 	name = "rulecontent", 
-		 	value = ruleContent 
+		 	value = ruleContent,
+		 	farcryField = ""
 		}) />
 		<cfset arrayAppend(doc, {
 		 	name = "rulecontent_phonetic", 
-		 	value = ruleContent 
+		 	value = ruleContent,
+		 	farcryField = "" 
 		}) />
 		
 		<!--- add core boost values to document --->
@@ -121,7 +125,7 @@
 		
 		<!--- add it to solr --->
 		<!--- TODO: adding files is slightly different, address this in future --->
-		<cfset args = { doc = doc } />
+		<cfset args = { doc = doc, typename = stRecord.typename } />
 		<cfif isNumeric(docBoost)>
 			<cfset args.docBoost = docBoost />
 		</cfif>

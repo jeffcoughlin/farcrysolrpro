@@ -1,4 +1,4 @@
-<cfset sampleSolrInstance = createObject("component","components.cfsolrlib").init(APPLICATION.javaloader,"localhost","8983","/solr") />
+<cfset sampleSolrInstance = createObject("component","components.cfsolrlib").init(APPLICATION.javaloader,"localhost","8983","/solr/test") />
 
 <cfquery name="getArt" datasource="cfartgallery">
 SELECT artID, artname, description
@@ -9,7 +9,6 @@ FROM art
 	// example for indexing content from a database
 	for (i=1;i LTE getArt.recordcount;i=i+1) {
 		thisDoc = arrayNew(1);
-		
 		thisDoc = sampleSolrInstance.addField(thisDoc,"id",getArt.artID[i]);
 		thisDoc = sampleSolrInstance.addField(thisDoc,"title",getArt.artname[i]);
 		thisDoc = sampleSolrInstance.addField(thisDoc,"text",getArt.description[i]);

@@ -68,9 +68,11 @@
        the classpath, this is useful for including all jars in a
        directory.
     -->
-  <!--<lib dir="../../contrib/extraction/lib" />
-  <lib dir="../../contrib/clustering/lib/" />
-  <lib dir="../../contrib/velocity/lib" />-->
+  <!--<lib dir="/Users/sean/Sites/_frameworks/FarCry/farcrysolrpro/packages/custom/cfsolrlib/solr-server/contrib/extraction/lib" />-->
+  <lib dir="../../../plugins/farcrysolrpro/packages/custom/cfsolrlib/contrib/extraction/lib" />
+  <lib dir="../../../plugins/farcrysolrpro/packages/custom/cfsolrlib/contrib/lib" />
+  <!--<lib dir="../contrib/clustering/lib" />
+  <lib dir="../contrib/velocity/lib" />-->
 
   <!-- When a regex is specified in addition to a directory, only the
        files in that directory which completely match the regex
@@ -897,9 +899,7 @@
        http://wiki.apache.org/solr/ExtractingRequestHandler 
 
     -->
-  <requestHandler name="/update/extract" 
-                  startup="lazy"
-                  class="solr.extraction.ExtractingRequestHandler" >
+  <requestHandler name="/update/extract" class="solr.extraction.ExtractingRequestHandler" ><!--startup="lazy"-->
     <lst name="defaults">
       <!-- All the main content goes into "text"... if you need to return
            the extracted text or do highlighting, use a stored field. -->
