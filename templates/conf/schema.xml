@@ -166,8 +166,8 @@
 		
 		<field name="objectid" type="string" indexed="true" stored="true" required="true" />
 		<field name="label" type="string" indexed="true" stored="true" required="true" />
-		<field name="datetimecreated" type="date" indexed="true" stored="true" required="true" />
-		<field name="datetimelastupdated" type="date" indexed="true" stored="true" required="true" />
+		<field name="datetimecreated" type="date" indexed="true" stored="true" required="false" />
+		<field name="datetimelastupdated" type="date" indexed="true" stored="true" required="false" />
 		<field name="createdby" type="string" indexed="true" stored="true" required="true" />
 		<field name="lastupdatedby" type="string" indexed="true" stored="true" required="true" />
 		<field name="ownedby" type="string" indexed="true" stored="true" required="true" />
@@ -206,6 +206,8 @@
 			title_string_notstored
 			
 		-->
+		
+		<dynamicField name="ignored_*" type="ignored" indexed="false" stored="false"/>
 		
 		<dynamicField name="*_int_stored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="true"/>
 		<dynamicField name="*_int_notstored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="false"/>
