@@ -18,6 +18,8 @@
 	
 	<cfproperty ftSeq="210" ftFieldset="Solr Content Type" ftLabel="Index on Save?" name="bIndexOnSave" ftType="boolean" type="boolean" ftHint="Should this content type be indexed whenever a record is saved? If not, the content type will only be indexed by a separate scheduled task." />
 	
+	<cfproperty ftSeq="310" ftFieldset="Solr Content Type Stats" ftLabel="Current Index Count" name="indexRecordCount" ftType="integer" type="integer" ftDefault="0" default="0" ftDisplayOnly="true" hint="Solr record count for this type. Updated when content item is indexed" />
+
 	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
 	
 	<cffunction name="getRuleContent" access="public" output="false" returntype="array">

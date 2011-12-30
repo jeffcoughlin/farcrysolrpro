@@ -1,6 +1,12 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true" requestTimeOut="9999" />
 <!--- @@displayname: Solr Index --->
-<!--- @@author: Sean Coyne (www.n42designs.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+
+<!--- Start timer --->
+<cfset tickBegin = GetTickCount() />
+
+<!---<cfoutput><p>Running. . .</p></cfoutput>
+<cfflush />--->
 
 <cfset request.fc.bShowTray = false />
 
@@ -19,6 +25,9 @@
 
 <!--- get all the content types that are being indexed --->
 <cfset qContentTypes = oContentType.getAllContentTypes() />
+
+<cfset aStats = [] />
+
 <cfloop query="qContentTypes">
 	
 	<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
@@ -39,6 +48,10 @@
 		</cfif>
 		</cfquery>
 	</cfif>
+	<cfset stStats = {} />
+	<cfset stStats["typeName"] = qContentTypes.contentType />
+	<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
+	<cfset arrayAppend(aStats, stStats) />
 	
 	<!--- parse core property boosts --->
 	<cfset aCorePropBoosts = listToArray(stContentType.lCorePropertyBoost) />
@@ -131,6 +144,10 @@
 		</cfif>
 		<cfset oContentType.add(argumentCollection = args) />
 		
+		<!--- If there were no errors, update indexRecordCount --->
+		<cfset stContentType.indexRecordCount = qContentToIndex.recordCount />
+		<cfset stResult_indexType = oContentType.setData(stProperties=stContentType) />
+
 	</cfloop>
 	
 	<!--- TODO: delete any records in the index that are no longer in the database (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
@@ -149,6 +166,30 @@
 <cfset stContentType.buildtodate = now() />
 <cfset oContentType.setData(stProperties = stContentType) />
 
-<cfoutput><h1>Done!</h1></cfoutput>
+<cffunction name="millisecondsToDate" access="public" output="false" returnType="date">
+  <cfargument name="strMilliseconds" type="string" required="true" />
+  <!---
+  Converts epoch milleseconds to a date timestamp.
+  @param strMilliseconds      The number of milliseconds. (Required)
+  @return Returns a date.
+  @author Steve Parks (steve@adeptdeveloper.com)
+  @version 1, May 20, 2005
+  --->  
+  <cfreturn dateAdd("s", strMilliseconds/1000, "january 1 1970 00:00:00") />
+</cffunction>
+
+<cfset processTime = GetTickCount() - tickBegin />
+
+<cfoutput>
+<p>Process complete</p>
+<h3>Stats</h3>
+<p>Process took <strong>#timeFormat(millisecondsToDate(processTime), "HH:mm:ss")#</strong> to complete <span style="color: ##333333;">(hours:min:sec)</span></p>
+<h4>Content Types Indexed</h4>
+	<ul>
+		<cfloop array="#aStats#" index="statResult">
+			<li><strong>Type:</strong> [#statResult.typeName#]&nbsp;&nbsp;&mdash;&nbsp;&nbsp;<strong>Record Count:</strong> [#statResult.indexRecordCount#]</li>
+		</cfloop>
+	</ul>
+</cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

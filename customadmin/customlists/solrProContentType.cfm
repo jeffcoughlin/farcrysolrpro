@@ -10,8 +10,8 @@
 
 <ft:objectadmin 
 	typename="solrProContentType"
-	columnList="title,contentType,datetimecreated" 
-	sortableColumns="title,contentType,datetimelastUpdated"
+	columnList="title,contentType,indexRecordCount,datetimecreated" 
+	sortableColumns="title,contentType,indexRecordCount,datetimelastUpdated"
 	lFilterFields="title,contentType"
 	sqlorderby="title"
 	plugin="farcrysolrpro" />
