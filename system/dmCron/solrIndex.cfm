@@ -49,7 +49,7 @@
 		</cfquery>
 	</cfif>
 	<cfset stStats = {} />
-	<cfset stStats["typeName"] = qContentTypes.contentType />
+	<cfset stStats["typeName"] = qContentTypes.contentType[qContentTypes.currentRow] />
 	<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
 	<cfset arrayAppend(aStats, stStats) />
 	
@@ -59,6 +59,9 @@
 	<cfloop array="#aCorePropBoosts#" index="i">
 		<cfset stPropBoosts[listFirst(i,":")] = listLast(i,":") /> 
 	</cfloop>
+	
+	<!--- get a list of FarCry properties for this type --->
+	<cfset lFarCryProps = oContentType.getPropertiesByType(typename = stContentType.contentType) /> 
 	
 	<cfloop query="qContentToIndex">
 		
@@ -75,11 +78,24 @@
 				
 				<cfif arrayFindNoCase(aCoreFields, field)>
 					
-					<cfset arrayAppend(doc, {
-						name = lcase(field),
-						value = stRecord[field],
-						farcryField = field
-					}) />
+					<!--- if this is a legit FC property then set the farcryField, otherwise leave it blank --->
+					<cfif listFindNoCase(lFarCryProps, field)>
+						
+						<cfset arrayAppend(doc, {
+							name = lcase(field),
+							value = stRecord[field],
+							farcryField = field
+						}) />
+						
+					<cfelse>
+						
+						<cfset arrayAppend(doc, {
+							name = lcase(field),
+							value = stRecord[field],
+							farcryField = ""
+						}) />
+						
+					</cfif>
 					
 				<cfelse>
 						
