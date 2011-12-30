@@ -14,29 +14,37 @@
 		<cfargument name="bOverwrite" type="boolean" required="false" default="false" />
 		
 		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
+		<cfset var aTemplateFolders = ["conf","data"] />
+		
+		
 		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/conf") />
 		<cfset var qTemplateFiles = "" />
 		<cfset var destdir = instanceDir & "/conf" />
 		
 		<!--- copy schema and other config files to conf directory --->
-
-		<cfdirectory action="list" directory="#templateDir#" recurse="true" name="qTemplateFiles" type="file" />
-
-		<cfloop query="qTemplateFiles">
-		    <!--- get the subdir under source dir if there --->
-		    <cfset var subdir = replace(directory, templateDir, "") />
-		    <cfif len(subdir)>
-		        <!--- create the dir in dest if not there --->
-		        <cfif not directoryExists(destdir & "/" & subdir)>
-		            <cfdirectory action="create" directory="#destdir#/#subdir#" mode="777" />
-		        </cfif>
-		    </cfif>
-		    <cfif arguments.bOverwrite or not fileExists("#destdir#/#subdir#/#name#")>
-				<cflog application="true" log="configSolrServer" type="information" text="copying file to #destdir#/#subdir#/#name#" />
-		    	<cffile action="copy" source="#directory#/#name#" destination="#destdir#/#subdir#/#name#" mode="777" />
-			<cfelse>
-				<cflog application="true" log="configSolrServer" type="information" text="skipping file #destdir#/#subdir#/#name#" />
-			</cfif>
+		<cfloop array="#aTemplateFolders#" index="templateFolder">
+			<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/#templateFolder#") />
+			<cfset var qTemplateFiles = "" />
+			<cfset var destdir = instanceDir & "/#templateFolder#" />
+			
+			<cfdirectory action="list" directory="#templateDir#" recurse="true" name="qTemplateFiles" type="file" />
+	
+			<cfloop query="qTemplateFiles">
+			    <!--- get the subdir under source dir if there --->
+			    <cfset var subdir = replace(directory, templateDir, "") />
+			    <cfif len(subdir)>
+			        <!--- create the dir in dest if not there --->
+			        <cfif not directoryExists(destdir & "/" & subdir)>
+			            <cfdirectory action="create" directory="#destdir#/#subdir#" mode="777" />
+			        </cfif>
+			    </cfif>
+			    <cfif arguments.bOverwrite or not fileExists("#destdir#/#subdir#/#name#")>
+					<cflog application="true" log="configSolrServer" type="information" text="copying file to #destdir#/#subdir#/#name#" />
+			    	<cffile action="copy" source="#directory#/#name#" destination="#destdir#/#subdir#/#name#" mode="777" />
+				<cfelse>
+					<cflog application="true" log="configSolrServer" type="information" text="skipping file #destdir#/#subdir#/#name#" />
+				</cfif>
+			</cfloop>			
 		</cfloop>
 		
 	</cffunction>
@@ -69,8 +77,6 @@
 		
 		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
 		<cfset var solrXmlLocation = application.fapi.getConfig(key = "solrserver", name = "solrXmlLocation") />
-		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/solrconf") />
-		<cfset var qTemplateFiles = "" />
 		<cfset var solrXml = "" />
 		
 		<!--- ensure solr.xml exists --->
