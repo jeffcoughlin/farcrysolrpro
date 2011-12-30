@@ -53,7 +53,7 @@
 	<cfargument name="q" type="string" required="true" hint="Your query string" />
 	<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
 	<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
-	<cfargument name="params" type="struct" required="false" default="#structNew#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
+	<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
 	<cfset var thisQuery = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows) />
 	<cfset var thisParam = "" />
 	<cfset var response = "" />
@@ -140,11 +140,12 @@
 	<cfargument name="metadataPrefix" required="false" type="string" default="attr_" hint="Metadata dynamic field prefix" />
 	<cfargument name="literalData" required="false" type="struct" hint="A struct of data to add as literal fields. The struct key will be used as the field name, and the value as the field's value. NOTE: You cannot have a literal field with the same name as a metadata field.  Solr will throw an error if you attempt to override metadata with a literal field" />
 	<cfargument name="boost" required="false" type="struct" hint="A struct of boost values.  The struct key will be the field name to boost, and its value is the numeric boost value" />
+	<cfargument name="idFieldName" required="false" type="string" default="id" hint="The name of the unique id field in the Solr schema" />
 	
 	<cfset var docRequest = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.request.ContentStreamUpdateRequest").init("/update/extract") />
 	<cfset var thisKey = "" />
 	<cfset docRequest.addFile(createObject("java","java.io.File").init(ARGUMENTS.file)) />
-	<cfset docRequest.setParam("literal.id",ARGUMENTS.id) />
+	<cfset docRequest.setParam("literal.#arguments.idFieldName#",ARGUMENTS.id) />
 	<cfif ARGUMENTS.saveMetadata>
 		<cfset docRequest.setParam("uprefix",metadataPrefix) />
 	</cfif>

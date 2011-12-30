@@ -26,6 +26,8 @@
 <!--- get all the content types that are being indexed --->
 <cfset qContentTypes = oContentType.getAllContentTypes() />
 
+<!--- TODO: delete any records that have a typename value that is not in the list of indexed typenames --->
+
 <cfset aStats = [] />
 
 <cfloop query="qContentTypes">
@@ -121,9 +123,7 @@
 					</cfloop>
 					
 				</cfif>
-							
-				<!--- TODO: if field is a "file" field, then add the file and map the file's content to the target field in the schema --->
-				
+					
 			</cfif>
 		</cfloop>
 		
@@ -153,7 +153,6 @@
 		<cfset docBoost = oDocumentBoost.getBoostValueForDocument(documentId = stRecord.objectid) />
 		
 		<!--- add it to solr --->
-		<!--- TODO: adding files is slightly different, address this in future --->
 		<cfset args = { doc = doc, typename = stRecord.typename } />
 		<cfif isNumeric(docBoost)>
 			<cfset args.docBoost = docBoost />

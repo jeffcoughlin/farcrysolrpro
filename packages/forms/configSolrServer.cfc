@@ -60,15 +60,15 @@
 		
 		<!--- ensure instanceDir exists --->
 		<cfif not directoryExists(instanceDir)>
-			<cfset directoryCreate(instanceDir) />
+			<cfdirectory action="create" directory="#instanceDir#" mode="777" />
 		</cfif>
 		
 		<!--- ensure collection directories exist --->
 		<cfif not directoryExists(instanceDir & "/conf")>
-			<cfset directoryCreate(instanceDir & "/conf") />
+			<cfdirectory action="create" directory="#instanceDir#/conf" mode="777" />
 		</cfif>
 		<cfif not directoryExists(instanceDir & "/data")>
-			<cfset directoryCreate(instanceDir & "/data") />
+			<cfdirectory action="create" directory="#instanceDir#/data" mode="777" />
 		</cfif>
 		
 	</cffunction>
@@ -140,13 +140,13 @@
 			arrayAppend(paths,expandPath(solrjLibPath & "geronimo-stax-api_1.0_spec-1.0.1.jar"));
 			arrayAppend(paths,expandPath(solrjLibPath & "wstx-asl-3.2.7.jar"));
 			arrayAppend(paths,expandPath(solrjLibPath & "jcl-over-slf4j-1.6.1.jar"));
+			arrayAppend(paths,expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.0.jar"));
 		</cfscript>
-
-		<cfset var javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
-
+		
 		<cfset application.stPlugins["farcrysolrpro"] = {} />
+		<cfset application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
-			javaloaderInstance = javaloader,
+			javaloaderInstance = application.stPlugins["farcrysolrpro"].javaloader,
 			host = arguments.fields["host"],
 			port = arguments.fields["port"],
 			path = arguments.fields["path"],

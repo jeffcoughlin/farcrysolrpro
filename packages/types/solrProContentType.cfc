@@ -20,7 +20,29 @@
 	
 	<cfproperty ftSeq="310" ftFieldset="Solr Content Type Stats" ftLabel="Current Index Count" name="indexRecordCount" ftType="integer" type="integer" ftDefault="0" default="0" ftDisplayOnly="true" hint="Solr record count for this type. Updated when content item is indexed" />
 
-	<!--- TODO: override delete method to delete child array objects when a parent record is deleted --->
+	<cffunction name="onDelete" returntype="void" access="public" output="false" hint="Is called after the object has been removed from the database">
+		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
+		<cfargument name="stObject" type="struct" required="true" hint="The object" />
+		
+		<!--- on delete, remove all indexed records for this typename from solr --->	
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
+		<cfset commit() />
+		
+		<!--- delete any indexed properties for this content type --->
+		<cfset var oProperty = application.fapi.getContentType("solrProIndexedProperty") />
+		<cfset var id = "" />
+		<cfloop array="#stObject.aIndexedProperties#" index="id">
+			<cftry>
+				<cfset oProperty.delete(id) />
+				<cfcatch>
+					<!--- do nothing --->
+				</cfcatch>
+			</cftry>
+		</cfloop>
+		
+		<cfset super.onDelete(argumentCollection = arguments) />
+		
+	</cffunction>
 	
 	<cffunction name="getRuleContent" access="public" output="false" returntype="array">
 		<cfargument name="objectid" required="true" type="uuid" hint="The objectid of the object to get rule content for" />
@@ -213,7 +235,7 @@
 		<cfloop array="#fieldTypes#" index="fieldType">
 			<cfparam name="fieldType.xmlAttributes.fcDataTypes" default="" />
 			<cfif len(trim(fcDataType)) eq 0 or (listFindNoCase(fieldType.xmlAttributes['fcDataTypes'], arguments.fcDataType))>
-				<cfif not arrayFindNoCase(a, fieldType.xmlAttributes["fcId"] & ":" & fieldType.xmlAttributes["fcDisplayName"] & ":" & fieldType.xmlAttributes["fcDataTypes"])>
+				<cfif structKeyExists(fieldType.xmlAttributes,"fcId") and not arrayFindNoCase(a, fieldType.xmlAttributes["fcId"] & ":" & fieldType.xmlAttributes["fcDisplayName"] & ":" & fieldType.xmlAttributes["fcDataTypes"])>
 					<cfset arrayAppend(a, fieldType.xmlAttributes["fcId"] & ":" & fieldType.xmlAttributes["fcDisplayName"] & ":" & fieldType.xmlAttributes["fcDataTypes"]) />
 				</cfif>
 			</cfif>	
@@ -275,52 +297,76 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
 		
-		<!--- determine if we have any file fields --->
-		<cfset var bFoundFileField = false />
-		<cfset var fileFieldName = "" />
 		<cfset var prop = "" />
-		<cfset var stLiteralData = {} />
-		<cfset var id = "" />
+		<cfset var httpresult = "" />
+		<cfset var ftType = "" />
+		<cfset var filePath = "" />
+		<cfset var xml = "" />
+		<!---<cfset var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init() />--->
+		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
 		
-		<!--- TODO: this assumes we have only 1 file field.  need to address multiple files for the same record --->
-		<cfloop array="#arguments.doc#" index="prop">
-			<cfif len(prop.farcryField) and getFTTypeForProperty(arguments.typename,prop.farcryField) eq "file">
-				<cfset bFoundFileField = true />
-				<cfset fileFieldName = prop.name />
-				<cfbreak />
+		<cfloop array="#doc#" index="prop">
+			
+			<!--- determine if this property is a "file" or "image" field, if so, send to Tika for extraction --->
+			<cfif len(prop.farcryField)>
+				
+				<cfset ftType = getFTTypeForProperty(arguments.typename,prop.farcryField) />
+				
+				<cfif listFindNoCase("image,file", ftType)>
+					
+					<cfif ftType eq "image">
+						<!--- due to a bug in farcry, check to see if the image path in the database had the image webroot, if not add that --->
+						<cfif application.fapi.getImageWebroot() eq left(prop.value,len(application.fapi.getImageWebroot()))>
+							<cfset filePath = prop.value />
+						<cfelse>
+							<cfset filePath = application.fapi.getImageWebroot() & prop.value />
+						</cfif>
+					<cfelse>
+						<cfset filePath = application.fapi.getFileWebroot() & prop.value />
+					</cfif>
+					
+					<cfset filePath = expandPath(filePath) />
+					
+					<cfif fileExists(filePath)>
+						
+						<!--- TODO: determine a proper solution for indexing file contents --->
+						<!--- TODO: make sure we have a supported file type before passing it to Tika --->
+						
+						<!--- send the file to Tika for extraction, use the result to set the "value" for this property --->
+						<!---<cfhttp method="POST" url="#solrUrl#" result="httpresult">
+							<cfhttpparam type="url" name="extractOnly" value="true" />
+							<cfhttpparam type="url" name="extractFormat" value="text" />
+							<cfhttpparam type="url" name="resource.name" value="#getFileFromPath(filePath)#" />
+							<cfhttpparam type="body" value="#fileReadBinary(filePath)#" />
+						</cfhttp>
+						<!--- ensure we got a positive (200) response --->
+						<cfif httpResult.statusCode eq "200 OK" and isXml(httpResult.fileContent)>
+							<!--- parse the XML --->
+							<cfset xml = xmlParse(httpResult.fileContent) />
+							<cfset prop.value = xml["response"]["str"].xmlText />
+						<cfelse>
+							<cfset prop.value = "" />
+						</cfif>--->
+						<cfset prop.value = "" />
+						
+						<!---<cfset prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath)) />--->
+						
+						<!---<cfexecute name="java" arguments="-jar #expandPath('/')#tika-app-1.0.jar --text #filePath#" variable="prop.value" timeout="9999" />--->
+						
+					<cfelse>
+						<cfset prop.value = "" />
+					</cfif>
+					
+				</cfif>
+				
 			</cfif>
+			
+			<!--- remove farcryField key from all structs in the doc array --->
+			<cfset structDelete(prop,"farcryField") />
+			
 		</cfloop>
 		
-		<cfif bFoundFileField>
-			<!--- TODO: call addFile --->
-			
-			<!--- build the literal data struct --->
-			<cfloop array="#arguments.doc#" index="prop">
-				<cfif prop.name neq fileFieldName and prop.name neq "objectid">
-					<cfset stLiteralData[prop.name] = prop.value />
-				<cfelseif prop.name eq "objectid">
-					<cfset id = prop.value />
-				</cfif>
-			</cfloop>
-			
-			<!--- TODO: build boost struct --->
-			
-			<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.addFile(
-				id = id,
-				file = "",
-				fmap = { "content" = fileFieldName },
-				saveMetadata = false,
-				literalData = {},
-				boost = { fileFieldName = 5 }
-			) />	
-				
-		<cfelse>
-			<!--- remove farcryField key from all structs in the doc array --->
-			<cfloop array="#arguments.doc#" index="prop">
-				<cfset structDelete(prop,"farcryField") />
-			</cfloop>
-			<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
-		</cfif>
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
 		
 	</cffunction>
 	
