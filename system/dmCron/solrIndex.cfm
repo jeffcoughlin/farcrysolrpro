@@ -26,7 +26,14 @@
 <!--- get all the content types that are being indexed --->
 <cfset qContentTypes = oContentType.getAllContentTypes() />
 
-<!--- TODO: delete any records that have a typename value that is not in the list of indexed typenames --->
+<!--- delete any records that have a typename value that is not in the list of indexed typenames --->
+<cfset lValidTypenames = valueList(qContentTypes.contentType) />
+<cfset deleteQueryString = "q={!lucene q.op=AND}" />
+<cfloop list="#lValidTypenames#" index="t">
+	<cfset deleteQueryString = deleteQueryString & " -typename:" & t />
+</cfloop>
+<cfset oContentType.deleteByQuery(q = deleteQueryString) />
+<cfset oContentType.commit() /><!--- this may not be necessary (load test, etc to determine) --->
 
 <cfset aStats = [] />
 

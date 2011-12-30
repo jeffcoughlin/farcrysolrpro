@@ -25,7 +25,7 @@
 		<cfargument name="stObject" type="struct" required="true" hint="The object" />
 		
 		<!--- on delete, remove all indexed records for this typename from solr --->	
-		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
+		<cfset deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
 		<cfset commit() />
 		
 		<!--- delete any indexed properties for this content type --->
@@ -368,6 +368,11 @@
 		
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
 		
+	</cffunction>
+	
+	<cffunction name="deleteByQuery" access="public" output="false" returntype="void">
+		<cfargument name="q" type="string" required="true" />
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteByQuery(q = arguments.q) />
 	</cffunction>
 	
 </cfcomponent>
