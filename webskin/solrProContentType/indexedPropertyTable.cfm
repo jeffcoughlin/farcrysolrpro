@@ -23,6 +23,7 @@
 		<tr class="ui-widget-header">
 			<th>&nbsp;</th>
 			<th>Field Name</th>
+			<th>FC Field Type</th>
 			<th>Solr Field Type(s)</th>
 			<!---<th>Field Boosting</th>--->
 		</tr>
@@ -43,6 +44,7 @@
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
 				<td><input type="checkbox" name="indexedProperties" id="fieldNames_#prop#" value="#prop#" <cfif structCount(stIndexedProperty)>checked="checked"</cfif> /></td>
 				<td id="customField_#prop#">#prop#</td>
+				<td id="fcFieldType_#prop#">#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</td>
 				<td>
 					<select id="fieldType_#prop#" class="fieldTypeDropdown">
 						<option value="">-- Select One --</option>
@@ -99,6 +101,7 @@
 	<thead>
 		<tr class="ui-widget-header">
 			<th>Field Name</th>
+			<th>FC Field Type</th>
 			<th>Solr Field Type</th>
 			<th>Field Boosting</th>
 		</tr>
@@ -125,6 +128,7 @@
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
 				<td>#prop#</td>
+				<td><cfif listFindNoCase("typename,rulecontent,rulecontent_phonetic", prop) is false>#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</cfif></td>
 				<td>
 					#fieldType#
 				</td>

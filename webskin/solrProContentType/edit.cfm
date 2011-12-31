@@ -269,7 +269,7 @@
 				background: none repeat scroll 0 0 ##F1F1F1;
 			}
 			##indexedProperties {
-				max-width: 800px;
+				max-width: 900px;
 				min-width: 500px;
 			}
 			##tblCustomProperties {
@@ -356,6 +356,7 @@
 						$j("##fieldType_" + thisFieldName).attr("disabled", true);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", true);
 						$j("##customField_" + thisFieldName).addClass("ui-state-disabled");
+						$j("##fcFieldType_" + thisFieldName).addClass("ui-state-disabled");
 						//$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
 						//$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
 					} else {
@@ -395,6 +396,7 @@
 						$j("##fieldType_" + thisFieldName).attr("disabled", false);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
 						$j("##customField_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
+						$j("##fcFieldType_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
 						//$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
 						//$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
 												
