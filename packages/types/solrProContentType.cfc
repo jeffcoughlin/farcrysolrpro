@@ -302,7 +302,7 @@
 		<cfset var ftType = "" />
 		<cfset var filePath = "" />
 		<cfset var xml = "" />
-		<cfset var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init() />
+		<cfset var tika = application.stPlugins["farcrysolrpro"].tika />
 		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
 		
 		<cfloop array="#doc#" index="prop">

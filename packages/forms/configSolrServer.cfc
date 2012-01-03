@@ -144,9 +144,10 @@
 		</cfscript>
 		
 		<cfset application.stPlugins["farcrysolrpro"] = {} />
-		<cfset application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
+		<cfset var javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
+		<cfset application.stPlugins["farcrysolrpro"].tika = javaloader.create("org.apache.tika.Tika").init() />
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
-			javaloaderInstance = application.stPlugins["farcrysolrpro"].javaloader,
+			javaloaderInstance = javaloader,
 			host = arguments.fields["host"],
 			port = arguments.fields["port"],
 			path = arguments.fields["path"],
