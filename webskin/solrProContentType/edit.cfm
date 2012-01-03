@@ -278,7 +278,7 @@
 			##tblCustomProperties tbody tr td:nth-child(1) {
 				padding-top: .8em;
 			}
-			##tblCustomProperties thead tr th:nth-child(3) {
+			##tblCustomProperties thead tr th:nth-child(4) {
 				width: 55%;
 				white-space: nowrap;
 			}
