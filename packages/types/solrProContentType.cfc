@@ -24,21 +24,25 @@
 		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
 		<cfargument name="stObject" type="struct" required="true" hint="The object" />
 		
-		<!--- on delete, remove all indexed records for this typename from solr --->	
-		<cfset deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
-		<cfset commit() />
-		
-		<!--- delete any indexed properties for this content type --->
-		<cfset var oProperty = application.fapi.getContentType("solrProIndexedProperty") />
-		<cfset var id = "" />
-		<cfloop array="#stObject.aIndexedProperties#" index="id">
-			<cftry>
-				<cfset oProperty.delete(id) />
-				<cfcatch>
-					<!--- do nothing --->
-				</cfcatch>
-			</cftry>
-		</cfloop>
+		<cfif structKeyExists(arguments.stObject, "contentType") and len(trim(arguments.stObject.contentType))>
+			
+			<!--- on delete, remove all indexed records for this typename from solr --->	
+			<cfset deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
+			<cfset commit() />
+			
+			<!--- delete any indexed properties for this content type --->
+			<cfset var oProperty = application.fapi.getContentType("solrProIndexedProperty") />
+			<cfset var id = "" />
+			<cfloop array="#stObject.aIndexedProperties#" index="id">
+				<cftry>
+					<cfset oProperty.delete(id) />
+					<cfcatch>
+						<!--- do nothing --->
+					</cfcatch>
+				</cftry>
+			</cfloop>
+			
+		</cfif>
 		
 		<cfset super.onDelete(argumentCollection = arguments) />
 		
@@ -357,6 +361,14 @@
 		
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
 		
+	</cffunction>
+	
+	<cffunction name="search" access="public" output="false" returntype="any">
+		<cfargument name="q" type="string" required="true" hint="Your query string" />
+		<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
+		<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
+		<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
+		<cfreturn application.stPlugins["farcrysolrpro"].cfsolrlib.search(argumentCollection = arguments) />
 	</cffunction>
 	
 	<cffunction name="deleteByQuery" access="public" output="false" returntype="void">

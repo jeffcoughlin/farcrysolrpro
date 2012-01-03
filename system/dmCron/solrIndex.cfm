@@ -2,6 +2,9 @@
 <!--- @@displayname: Solr Index --->
 <!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
 
+<!--- TODO: make batch size a config option --->
+<cfset batchSize = 100 />
+
 <!--- Start timer --->
 <cfset tickBegin = GetTickCount() />
 
@@ -9,9 +12,6 @@
 <cfflush />--->
 
 <cfset request.fc.bShowTray = false />
-
-<!--- TODO: remove this for production --->
-<cfset application.stplugins["farcrysolrpro"].cfsolrlib.resetIndex() />
 
 <!--- has optimization been disabled? --->
 <cfparam name="url.optimize" default="true" />
@@ -39,6 +39,8 @@
 
 <cfloop query="qContentTypes">
 	
+	<cfset typeTickBegin = getTickCount() />
+	
 	<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
 	
 	<cfset oType = application.fapi.getContentType(stContentType.contentType) />
@@ -50,13 +52,24 @@
 	<cfelse>
 		<!--- no contentToIndex method, just grab all the records --->
 		<cfquery name="qContentToIndex" datasource="#application.dsn#">
-		SELECT objectID
+		SELECT objectID, datetimelastupdated
 		FROM #oType.getTablename()#
 		<cfif structkeyexists(application.stcoapi[oType.getTablename()].stprops, "status")>
 		where status = 'approved'
 		</cfif>
 		</cfquery>
 	</cfif>
+	
+	<cfset lItemsInDb = valueList(qContentToIndex.objectid) />
+	
+	<cfquery name="qContentToIndex" dbtype="query" maxrows="#batchSize#">
+		select objectid, datetimelastupdated from qContentToIndex 
+		<cfif isDate(stContentType.builtToDate)>
+		where datetimelastupdated > #createOdbcDateTime(stContentType.builtToDate)#
+		</cfif>
+		order by datetimelastupdated
+	</cfquery>
+	
 	<cfset stStats = {} />
 	<cfset stStats["typeName"] = qContentTypes.contentType[qContentTypes.currentRow] />
 	<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
@@ -71,6 +84,13 @@
 	
 	<!--- get a list of FarCry properties for this type --->
 	<cfset lFarCryProps = oContentType.getPropertiesByType(typename = stContentType.contentType) /> 
+	
+	<!--- load all records for this type from solr for comparison later --->
+	<cfset existingRecords = oContentType.search(q = "typename:" & stContentType.contentType, rows = 999999) />
+	<cfset lExistingRecords = "" />
+	<cfloop array="#existingRecords.results#" index="r">
+		<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid[1]) />
+	</cfloop>
 	
 	<cfloop query="qContentToIndex">
 		
@@ -166,13 +186,32 @@
 		</cfif>
 		<cfset oContentType.add(argumentCollection = args) />
 		
-		<!--- If there were no errors, update indexRecordCount --->
-		<cfset stContentType.indexRecordCount = qContentToIndex.recordCount />
-		<cfset stResult_indexType = oContentType.setData(stProperties=stContentType) />
-
 	</cfloop>
 	
-	<!--- TODO: delete any records in the index that are no longer in the database (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
+	<!--- delete any records in the index that are no longer in the database. (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
+	<cfset lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
+	<cfif listLen(lItemsToDelete)>
+		<cfset deleteQueryString = "typename:#stContentType.contentType# AND (" />
+		<cfloop list="#lItemsToDelete#" index="i">
+			<cfset deleteQueryString = deleteQueryString & " objectid:" & i />
+		</cfloop>
+		<cfset deleteQueryString = deleteQueryString & ")" />
+		<cfset oContentType.deleteByQuery(q = deleteQueryString) />
+	</cfif>
+	
+	<cfset typeTickEnd = getTickCount() />
+	
+	<cfset stStats["processtime"] = typeTickEnd - typeTickBegin />
+	
+	<!--- If there were no errors, update indexRecordCount --->
+	<cfset stContentType.indexRecordCount = listLen(lExistingRecords) + qContentToIndex.recordCount - listLen(lItemsToDelete) />
+	<cfset stStats["totalRecordCount"] = stContentType.indexRecordCount />
+	
+	<!--- update the build to date for this content type --->
+	<cfset stContentType.builtToDate = qContentToIndex.datetimelastupdated[qContentToIndex.recordCount] />
+	<cfset stStats["builtToDate"] = stContentType.builtToDate />
+	<cfset oContentType.setData(stProperties = stContentType) />
+	
 </cfloop>
 
 <!--- commit --->
@@ -182,11 +221,6 @@
 <cfif url.optimize>
 	<cfset oContentType.optimize() />
 </cfif>
-
-<!--- TODO: batch the records and update the buildtodate to the last record processed --->
-<!--- update the build to date for this content type --->
-<cfset stContentType.buildtodate = now() />
-<cfset oContentType.setData(stProperties = stContentType) />
 
 <cffunction name="millisecondsToDate" access="public" output="false" returnType="date">
   <cfargument name="strMilliseconds" type="string" required="true" />
@@ -209,9 +243,26 @@
 <h4>Content Types Indexed</h4>
 	<ul>
 		<cfloop array="#aStats#" index="statResult">
-			<li><strong>Type:</strong> [#statResult.typeName#]&nbsp;&nbsp;&mdash;&nbsp;&nbsp;<strong>Record Count:</strong> [#statResult.indexRecordCount#]</li>
+			<li><strong>Type:</strong> [#statResult.typeName#]&nbsp;&nbsp;&mdash;&nbsp;&nbsp;<strong>Batch Record Count:</strong> [#statResult.indexRecordCount#] <strong>Total Index Count:</strong> #statResult.totalRecordCount# <strong>Build To Date:</strong> #dateFormat(statResult.builtToDate,"mm/dd/yyyy")# #timeFormat(statResult.builtToDate,"h:mm tt")# - #timeFormat(millisecondsToDate(statResult.processtime),"HH:mm:ss")#</li>
 		</cfloop>
 	</ul>
 </cfoutput>
+
+<cffunction name="listCompare" output="false" returnType="string">
+   <cfargument name="list1" type="string" required="true" />
+   <cfargument name="list2" type="string" required="true" />
+   <cfargument name="delim1" type="string" required="false" default="," />
+   <cfargument name="delim2" type="string" required="false" default="," />
+   <cfargument name="delim3" type="string" required="false" default="," />
+
+   <cfset var list1Array = ListToArray(arguments.List1,Delim1) />
+   <cfset var list2Array = ListToArray(arguments.List2,Delim2) />
+
+   <!--- Remove the subset List2 from List1 to get the diff --->
+   <cfset list1Array.removeAll(list2Array) />
+
+   <!--- Return in list format --->
+   <cfreturn ArrayToList(list1Array, Delim3) />
+</cffunction>
 
 <cfsetting enablecfoutputonly="false" />
