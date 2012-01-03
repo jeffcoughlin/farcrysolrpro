@@ -302,7 +302,7 @@
 		<cfset var ftType = "" />
 		<cfset var filePath = "" />
 		<cfset var xml = "" />
-		<!---<cfset var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init() />--->
+		<cfset var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init() />
 		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
 		
 		<cfloop array="#doc#" index="prop">
@@ -328,30 +328,19 @@
 					<cfset filePath = expandPath(filePath) />
 					
 					<cfif fileExists(filePath)>
-						
-						<!--- TODO: determine a proper solution for indexing file contents --->
+
 						<!--- TODO: make sure we have a supported file type before passing it to Tika --->
 						
-						<!--- send the file to Tika for extraction, use the result to set the "value" for this property --->
-						<!---<cfhttp method="POST" url="#solrUrl#" result="httpresult">
-							<cfhttpparam type="url" name="extractOnly" value="true" />
-							<cfhttpparam type="url" name="extractFormat" value="text" />
-							<cfhttpparam type="url" name="resource.name" value="#getFileFromPath(filePath)#" />
-							<cfhttpparam type="body" value="#fileReadBinary(filePath)#" />
-						</cfhttp>
-						<!--- ensure we got a positive (200) response --->
-						<cfif httpResult.statusCode eq "200 OK" and isXml(httpResult.fileContent)>
-							<!--- parse the XML --->
-							<cfset xml = xmlParse(httpResult.fileContent) />
-							<cfset prop.value = xml["response"]["str"].xmlText />
+						<!--- TODO: determine why Tika is throwing an error for .docx files --->
+						<cfif right(filePath,5) neq ".docx">
+							
+							<cfset prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath)) />
+						
 						<cfelse>
-							<cfset prop.value = "" />
-						</cfif>--->
-						<cfset prop.value = "" />
+							
+							<cflog application="true" file="farcrysolrpro" type="warning" text="Skipping DOCX file: #filePath#" />
 						
-						<!---<cfset prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath)) />--->
-						
-						<!---<cfexecute name="java" arguments="-jar #expandPath('/')#tika-app-1.0.jar --text #filePath#" variable="prop.value" timeout="9999" />--->
+						</cfif>
 						
 					<cfelse>
 						<cfset prop.value = "" />
