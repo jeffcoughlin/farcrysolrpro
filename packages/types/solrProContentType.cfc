@@ -331,8 +331,8 @@
 
 						<!--- TODO: make sure we have a supported file type before passing it to Tika --->
 						
-						<!--- TODO: determine why Tika is throwing an error for .docx files --->
-						<cfif right(filePath,5) neq ".docx">
+						<!--- TODO: determine why Tika is throwing an error for Open XML files --->
+						<cfif not listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))>
 							
 							<cfset prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath)) />
 						
