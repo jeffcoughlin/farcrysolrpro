@@ -9,6 +9,7 @@
 	<cfproperty ftSeq="170" ftFieldset="Solr Server" name="instanceDir" type="nstring" default="" ftDefault="expandPath('/farcry/projects/' & application.applicationName & '/solr')" ftDefaultType="evaluate" ftType="string" required="true" ftLabel="Solr Collection Instance Dir." ftHint="Choose a location with sufficient disk space for the collection." />
 	<cfproperty ftSeq="180" ftFieldset="Solr Server" name="solrXmlLocation" type="nstring" default="" ftDefault="expandPath('/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solr-server/multicore/solr.xml')" ftDefaultType="evaluate" required="true" ftLabel="Solr.xml File Location" ftHint="This must be in the Solr Home directory." />
 	<cfproperty ftSeq="190" ftFieldset="Solr Server" name="bConfigured" type="boolean" ftType="hidden" ftDefault="0" ftLabel="Configured?" default="0" required="true" ftHint="Flag to indicate that the user has configured the Solr server, this avoids creating folders and files using the default settings when FarCry is initialized." />
+	<cfproperty ftSeq="210" ftFieldset="Solr Server" name="batchSize" type="integer" default="1000" required="true" ftDefault="1000" ftType="integer" ftValidation="required" ftLabel="Index Batch Size" ftHint="The number of records that will be processed for each content type during the scheduled task." />
 	
 	<cffunction name="setupCollectionConfig" access="public" output="false" returntype="void" hint="Copies the collection configuration default templates to the collection conf directory.  Optionally, overwrites existing files.">
 		<cfargument name="bOverwrite" type="boolean" required="false" default="false" />
@@ -129,32 +130,40 @@
 		</cfif>
 		
 		<cfscript>
-			var paths = [];
+			
+			application.stPlugins["farcrysolrpro"] = {};
+			
+			// setup javaloader
 			var solrjLibPath = "/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solrj-lib/";
-			arrayAppend(paths,expandPath(solrjLibPath & "commons-io-1.4.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "commons-codec-1.5.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-api-1.6.1.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "slf4j-jdk14-1.6.1.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "commons-httpclient-3.1.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "geronimo-stax-api_1.0_spec-1.0.1.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "wstx-asl-3.2.7.jar"));
-			arrayAppend(paths,expandPath(solrjLibPath & "jcl-over-slf4j-1.6.1.jar"));
-			arrayAppend(paths,expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.0.jar"));
+			application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(
+				loadPaths = [
+					expandPath(solrjLibPath & "commons-io-1.4.jar"),
+					expandPath(solrjLibPath & "commons-codec-1.5.jar"),
+					expandPath(solrjLibPath & "slf4j-api-1.6.1.jar"),
+					expandPath(solrjLibPath & "slf4j-jdk14-1.6.1.jar"),
+					expandPath(solrjLibPath & "commons-httpclient-3.1.jar"),
+					expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"),
+					expandPath(solrjLibPath & "geronimo-stax-api_1.0_spec-1.0.1.jar"),
+					expandPath(solrjLibPath & "wstx-asl-3.2.7.jar"),
+					expandPath(solrjLibPath & "jcl-over-slf4j-1.6.1.jar"),
+					expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.0.jar")
+				],
+				loadColdFusionClassPath = true
+			);
+			
+    		// setup cfsolrlib
+    		application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
+				javaloaderInstance = application.stPlugins["farcrysolrpro"].javaloader,
+				host = arguments.fields["host"],
+				port = arguments.fields["port"],
+				path = arguments.fields["path"],
+				queueSize = arguments.fields["queueSize"],
+				threadCount = arguments.fields["threadCount"],
+				binaryEnabled = arguments.fields["binaryEnabled"]
+			);
+			
 		</cfscript>
 		
-		<cfset application.stPlugins["farcrysolrpro"] = {} />
-		<cfset var javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(paths) />
-		<cfset application.stPlugins["farcrysolrpro"].tika = javaloader.create("org.apache.tika.Tika").init() />
-		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
-			javaloaderInstance = javaloader,
-			host = arguments.fields["host"],
-			port = arguments.fields["port"],
-			path = arguments.fields["path"],
-			queueSize = arguments.fields["queueSize"],
-			threadCount = arguments.fields["threadCount"],
-			binaryEnabled = arguments.fields["binaryEnabled"]
-		) />
 	</cffunction> 
 	
 	<cffunction name="process" access="public" output="false" returntype="struct">

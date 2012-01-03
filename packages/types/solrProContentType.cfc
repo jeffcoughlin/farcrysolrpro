@@ -19,7 +19,17 @@
 	<cfproperty ftSeq="210" ftFieldset="Solr Content Type" ftLabel="Index on Save?" name="bIndexOnSave" ftType="boolean" type="boolean" ftHint="Should this content type be indexed whenever a record is saved? If not, the content type will only be indexed by a separate scheduled task." />
 	
 	<cfproperty ftSeq="310" ftFieldset="Solr Content Type Stats" ftLabel="Current Index Count" name="indexRecordCount" ftType="integer" type="integer" ftDefault="0" default="0" ftDisplayOnly="true" hint="Solr record count for this type. Updated when content item is indexed" />
-
+	
+	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
+		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+		
+		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" type="struct" default="#structNew()#" />
+		<cfset structDelete(application.stPlugins.farcrysolrpro.corePropertyBoosts,stProperties.objectid) />
+		
+		<cfreturn super.aftersave(argumentCollection = arguments) />
+		
+	</cffunction>
+	
 	<cffunction name="onDelete" returntype="void" access="public" output="false" hint="Is called after the object has been removed from the database">
 		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
 		<cfargument name="stObject" type="struct" required="true" hint="The object" />
@@ -27,8 +37,7 @@
 		<cfif structKeyExists(arguments.stObject, "contentType") and len(trim(arguments.stObject.contentType))>
 			
 			<!--- on delete, remove all indexed records for this typename from solr --->	
-			<cfset deleteByQuery(q = "typename:" & arguments.stObject.contentType) />
-			<cfset commit() />
+			<cfset deleteByTypename(typename = arguments.stObject.contentType, bCommit = true) />
 			
 			<!--- delete any indexed properties for this content type --->
 			<cfset var oProperty = application.fapi.getContentType("solrProIndexedProperty") />
@@ -46,6 +55,218 @@
 		
 		<cfset super.onDelete(argumentCollection = arguments) />
 		
+	</cffunction>
+	
+	<cffunction name="getCorePropertyBoosts" returntype="struct" access="public" output="false" hint="Returns a struct of core property boost values for a given content type">
+		<cfargument name="stContentType" required="true" type="struct" />
+		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" default="#structNew()#" />
+		<cfif structKeyExists(application.stPlugins.farcrysolrpro.corePropertyBoosts,arguments.stContentType.objectid)>
+			<cfreturn application.stPlugins.farcrysolrpro.corePropertyBoosts[stContentType.objectid] />
+		</cfif>
+		<cfset var aCorePropBoosts = listToArray(stContentType.lCorePropertyBoost) />
+		<cfset var stPropBoosts = {} />
+		<cfloop array="#aCorePropBoosts#" index="i">
+			<cfset stPropBoosts[listFirst(i,":")] = listLast(i,":") /> 
+		</cfloop>
+		<cfset application.stPlugins.farcrysolrpro.corePropertyBoosts[stContentType.objectid] = stPropBoosts />
+		<cfreturn stPropBoosts />
+	</cffunction>
+	
+	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
+		<cfargument name="objectid" required="true" type="uuid" hint="The objectID of the record to be indexed." />
+		<cfargument name="typename" required="false" type="string" default="#application.fapi.findType(arguments.objectid)#" hint="The FarCry typename of the record being indexed.  If not provided, it will be loaded from the FarCry database.  This should be provided for performance reasons." />
+		<cfargument name="stContentType" required="false" type="struct" default="#structNew()#" hint="The SolrProContentType object that defines how to index this record.  If not provided, it will be loaded based on the type of the record being indexed." />
+		<cfargument name="oIndexedProperty" required="false" type="any" default="#application.fapi.getContentType('solrProIndexedProperty')#" hint="An instance of the solrProIndexedProperty content type CFC.  If not provided, an instance will be created.  If you are looping and calling this method multiple times, it will be much more performant if you create an instance of this CFC once and provide it here." />
+		<cfargument name="oDocumentBoost" required="false" type="any" default="#application.fapi.getContentType('solrProDocumentBoost')#" hint="An instance of the solrProDocumentBoost content type CFC.  If not provided, an instance will be created.  If you are looping and calling this method multiple times, it will be much more performant if you create an instance of this CFC once and provide it here." />
+		<cfargument name="bCommit" required="false" type="boolean" default="true" hint="Should Solr's commit method be called after adding this record?  Do not specify true here if adding multiple records. Commit after all records have been added." />
+		
+		<!--- if the content type record was not provided, look it up --->
+		<cfif not structCount(arguments.stContentType)>
+			<cfset arguments.stContentType = getByContentType(arguments.typename) />
+			<!--- if we got an empty struct back then an invalid content type was specified (the type isn't set up for indexing) --->
+			<cfif not structCount(arguments.stContentType)>
+				<cfthrow type="InvalidContentType" message="You have attempted to index a record that is of a content type (#arguments.typename#) that is not being indexed by the FarCry Solr Pro plugin.  Please setup that content type in the administration area." />
+			</cfif>
+		</cfif>
+		
+		<!--- note: these results are cached so it is safe to loop and call this method --->
+		<cfset var stPropBoosts = getCorePropertyBoosts(stContentType = arguments.stContentType) />
+		<cfset var lFarCryProps = getPropertiesByType(typename = arguments.typename) />
+		<cfset var aCoreFields = getSolrFields(lOmitFields = "rulecontent") />
+		
+		<!--- load the record from the database --->
+		<cfset var stRecord = application.fapi.getContentObject(typename = arguments.typename, objectid = arguments.objectid) />
+		
+		<!--- create a solr object for this record --->
+		<cfset var doc = [] />
+		<cfset var field = "" />
+		<cfloop collection="#stRecord#" item="field">
+			
+			<!--- only add field if its a core property or an indexed field --->
+			<cfif hasIndexedProperty(arguments.stContentType.objectid, field) or arrayFindNoCase(aCoreFields, field)>
+				
+				<cfif arrayFindNoCase(aCoreFields, field)>
+					
+					<!--- core property --->
+						
+					<!--- if this is a legit FC property then set the farcryField, otherwise leave it blank --->
+					<cfif listFindNoCase(lFarCryProps, field)>
+						
+						<cfset arrayAppend(doc, {
+							name = lcase(field),
+							value = stRecord[field],
+							farcryField = field
+						}) />
+						
+					<cfelse>
+						
+						<cfset arrayAppend(doc, {
+							name = lcase(field),
+							value = stRecord[field],
+							farcryField = ""
+						}) />
+						
+					</cfif>
+					
+				<cfelse>
+					
+					<!--- custom property --->
+					
+					<!--- load the indexing metadata for this property --->
+					<cfset var stSolrPropData = arguments.oIndexedProperty.getByContentTypeAndFieldname(contentTypeId = arguments.stContentType.objectid, fieldName = field) />
+					<cfset var aFieldTypes = listToArray(stSolrPropData.lFieldTypes,",") />
+					<cfset var ft = "" />
+					<cfloop array="#aFieldTypes#" index="ft">
+						
+						<cfset var typeSetup = {
+							fieldType = listGetAt(ft,1,":"),
+							bStored = listGetAt(ft,2,":"),
+							boostValue = listGetAt(ft,3,":")
+						} />
+						
+						<cfset arrayAppend(doc, {
+							name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+							value = stRecord[field],
+							boost = typeSetup.boostValue,
+							farcryField = field
+						}) />
+						
+					</cfloop>
+					
+				</cfif>
+					
+			</cfif>
+			
+		</cfloop>
+		
+		<!--- grab any related rule records and index those as well (if we are indexing rules for this content type) --->
+		<cfif listLen(arguments.stContentType.lIndexedRules)>
+			<cfset var ruleContent = getRuleContent(objectid = arguments.objectid, lRuleTypes = arguments.stContentType.lIndexedRules) />
+			<cfset arrayAppend(doc, {
+			 	name = "rulecontent", 
+			 	value = ruleContent,
+			 	farcryField = ""
+			}) />
+			<cfset arrayAppend(doc, {
+			 	name = "rulecontent_phonetic", 
+			 	value = ruleContent,
+			 	farcryField = "" 
+			}) />
+		</cfif>
+		
+		<!--- add core boost values to document --->
+		<cfset var i = "" />
+		<cfloop array="#doc#" index="i">
+			<cfif structKeyExists(stPropBoosts, i.name) and not structKeyExists(i,"boost")>
+				<cfset i.boost = stPropBoosts[i.name] />
+			<cfelse>
+				<cfset i.boost = 5 />
+			</cfif>
+		</cfloop>
+		
+		<!--- check if this record has a document level boost --->
+		<cfset var docBoost = arguments.oDocumentBoost.getBoostValueForDocument(documentId = stRecord.objectid) />
+		
+		<!--- add it to solr --->
+		<cfset var args = { doc = doc, typename = stRecord.typename } />
+		<cfif isNumeric(docBoost)>
+			<cfset args.docBoost = docBoost />
+		</cfif>
+		<cfset add(argumentCollection = args) />
+		
+		<!--- optionally, commit --->
+		<cfif arguments.bCommit>
+			<cfset commit() />
+		</cfif>
+		
+	</cffunction>
+	
+	<cffunction name="getRecordsToIndex" returntype="struct" access="public" output="false" hint="Get the records to index for a given content type">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="batchSize" required="true" type="numeric" />
+		<cfargument name="builtToDate" required="false" type="any" />
+		
+		<cfset var oType = application.fapi.getContentType(arguments.typename) />
+		<cfset var stResult = {} />
+		
+		<cfif structKeyExists(oType, "contentToIndex")>
+			<!--- run the contentToIndex method for this content type --->
+			<cfset stResult.qContentToIndex = oType.contentToIndex() />
+		<cfelse>
+			<!--- no contentToIndex method, just grab all the records --->
+			<cfquery name="stResult.qContentToIndex" datasource="#application.dsn#">
+			SELECT objectID, datetimelastupdated
+			FROM #oType.getTablename()#
+			<cfif structkeyexists(application.stcoapi[oType.getTablename()].stprops, "status")>
+			where status = 'approved'
+			</cfif>
+			</cfquery>
+		</cfif>
+		
+		<cfset stResult.lItemsInDb = valueList(stResult.qContentToIndex.objectid) />
+		
+		<cfquery name="stResult.qContentToIndex" dbtype="query" maxrows="#batchSize#">
+			select objectid, datetimelastupdated from stResult.qContentToIndex 
+			<cfif structKeyExists(arguments,"builtToDate") and isDate(arguments.builtToDate)>
+			where datetimelastupdated > #createOdbcDateTime(arguments.builtToDate)#
+			</cfif>
+			order by datetimelastupdated
+		</cfquery>
+		
+		<cfreturn stResult />
+		
+	</cffunction>
+	
+	<cffunction name="deleteByTypename" returntype="void" access="public" output="false">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="lObjectIds" required="false" type="string" default="" hint="optional list of objectIds to delete from the solr index" />
+		<cfargument name="bCommit" required="false" type="boolean" default="true" />
+		<cfset var deleteQuery = "typename:" & arguments.typename />
+		<cfset var i = "" />
+		<cfif listLen(arguments.lObjectIds)>
+			<cfset deleteQuery = deleteQuery & " AND (" />
+			<cfloop list="#arguments.lObjectIds#" index="i">
+				<cfset deleteQuery = deleteQuery & " objectid:#i#" />
+			</cfloop>
+			<cfset deleteQuery = deleteQuery & " )" />
+		</cfif>
+		<cfset deleteByQuery(q = deleteQuery) />
+		<cfif arguments.bCommit>
+			<cfset commit() />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="getByContentType" access="public" output="false" returntype="struct">
+		<cfargument name="contentType" type="string" required="true" />
+		<cfset var q = "" />
+		<cfquery name="q" datasource="#application.dsn#">
+			select objectid from solrProContentType where contenttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentType#" /> 
+		</cfquery>
+		<cfif q.recordCount>
+			<cfreturn getData(q.objectid[1]) />
+		<cfelse>
+			<cfreturn {} />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="getRuleContent" access="public" output="false" returntype="array">
@@ -183,10 +404,15 @@
 	<cffunction name="getPropertiesByType" access="public" output="false" returntype="string">
 		<cfargument name="typename" required="true" type="string" />
 		
+		<cfif structKeyExists(application.stPlugins["farcrysolrpro"],"typeProperties-" & arguments.typename)>
+			<cfreturn application.stPlugins["farcrysolrpro"]["typeProperties-" & arguments.typename] />
+		</cfif>
+		
 		<cfset var properties = application.fapi.getContentTypeMetadata(typename = arguments.typename, md = "stProps", default = "") />
 		
 		<cfif isStruct(properties)>
-			<cfreturn listSort(structKeyList(properties),"textnocase") />
+			<cfset application.stPlugins["farcrysolrpro"]["typeProperties-" & arguments.typename] = listSort(structKeyList(properties),"textnocase") />
+			<cfreturn application.stPlugins["farcrysolrpro"]["typeProperties-" & arguments.typename]  />
 		</cfif>
 		
 	</cffunction>
@@ -251,6 +477,11 @@
 	
 	<cffunction name="getSolrFields" access="public" output="false" returntype="array" hint="Gets the fields defined in the schema.xml file">
 		<cfargument name="lOmitFields" type="string" required="false" default="" hint="A list of fields to omit" />
+		
+		<cfif structKeyExists(application.stPlugins["farcrysolrpro"],"schemaFields-#arguments.lOmitFields#")>
+			<cfreturn application.stPlugins["farcrysolrpro"]["schemaFields-" & arguments.lOmitFields] />
+		</cfif>
+		
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
 		<cfset var fields = xmlSearch(schemaXmlFile, "//schema/fields/field") />
@@ -261,6 +492,8 @@
 				<cfset arrayAppend(a, field.xmlAttributes["name"]) />
 			</cfif>
 		</cfloop>
+		
+		<cfset application.stPlugins["farcrysolrpro"]["schemaFields-" & arguments.lOmitFields] = a />
 		
 		<cfreturn a />
 		
@@ -288,6 +521,8 @@
 		<cfreturn q />
 	</cffunction>
 	
+	<!--- cfsolrlib abstractions --->
+	
 	<cffunction name="commit" access="public" output="false" returntype="void">
 		<cfset application.stplugins["farcrysolrpro"].cfsolrlib.commit() />
 	</cffunction>
@@ -306,7 +541,6 @@
 		<cfset var ftType = "" />
 		<cfset var filePath = "" />
 		<cfset var xml = "" />
-		<cfset var tika = application.stPlugins["farcrysolrpro"].tika />
 		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
 		
 		<cfloop array="#doc#" index="prop">
@@ -334,17 +568,29 @@
 					<cfif fileExists(filePath)>
 
 						<!--- TODO: make sure we have a supported file type before passing it to Tika --->
+						<!--- TODO: test performance with LOTS of Open XML format documents --->
 						
-						<!--- TODO: determine why Tika is throwing an error for Open XML files --->
-						<cfif not listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))>
+						<cfscript>
 							
-							<cfset prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath)) />
-						
-						<cfelse>
+							// grab a handle on javaloader
+							var javaloader = application.stPlugins["farcrysolrpro"].javaloader;
 							
-							<cflog application="true" file="farcrysolrpro" type="warning" text="Skipping DOCX file: #filePath#" />
-						
-						</cfif>
+							if (listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))) {
+								// swap out the class loader so that dom4j does not throw an error
+								var _thread = createObject("java", "java.lang.Thread");
+					       		var currentClassloader = _thread.currentThread().getContextClassLoader();
+								_thread.currentThread().setContextClassLoader(javaloader.getURLClassLoader());
+							}
+							
+							// grab an instance of tika and parse the file
+							var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
+							prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath));
+							
+							if (listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))) {
+								// set the classloader back	
+								_thread.currentThread().setContextClassLoader(currentClassloader);
+							}
+						</cfscript>
 						
 					<cfelse>
 						<cfset prop.value = "" />

@@ -112,10 +112,7 @@
 <cfset counter = 0 />
 
 <!--- parse the core property boosts --->
-<cfset stCorePropertyBoosts = {} />
-<cfloop array="#listToArray(stobj.lCorePropertyBoost)#" index="i">
-	<cfset stCorePropertyBoosts[listFirst(i,":")] = listLast(i,":") />
-</cfloop>
+<cfset stCorePropertyBoosts = getCorePropertyBoosts(stobj) />
 
 <cfloop array="#aCoreFields#" index="prop">
 	
