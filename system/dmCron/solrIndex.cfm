@@ -20,7 +20,7 @@
 <!--- set the batch size --->
 <cfparam name="url.batchSize" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" />
 <cfif not isNumeric(url.batchSize)>
-	<cfset url.batchSize = 1000 />
+	<cfset url.batchSize = application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000) />
 </cfif>
 
 <!--- set the list of content types to index --->
