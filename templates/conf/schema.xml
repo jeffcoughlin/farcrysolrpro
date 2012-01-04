@@ -165,7 +165,7 @@
 		<!-- base FarCry fields -->
 		
 		<field name="objectid" type="string" indexed="true" stored="true" required="true" />
-		<field name="label" type="string" indexed="true" stored="true" required="true" />
+		<field name="label" type="text" indexed="true" stored="true" required="true" />
 		<field name="datetimecreated" type="date" indexed="true" stored="true" required="false" />
 		<field name="datetimelastupdated" type="date" indexed="true" stored="true" required="false" />
 		<field name="createdby" type="string" indexed="true" stored="true" required="true" />
