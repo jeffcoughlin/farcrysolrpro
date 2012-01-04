@@ -35,6 +35,8 @@
 			</cfif>
 		</cfloop>
 		
+		<!--- TODO: ensure that 2 records for the same content type are not created (dupe check "contentType" field) --->
+		
 	</ft:processFormObjects>
 		
 </ft:processform>
@@ -100,7 +102,7 @@
 				<cfif left(f,len('coreFieldBoost_')) eq 'coreFieldBoost_' and isNumeric(form[f])>
 					<cfset stProperties.lCorePropertyBoost = listAppend(stProperties.lCorePropertyBoost, listLast(f,"_") & ":" & form[f]) />
 				</cfif>
-			</cfloop> 
+			</cfloop>
 			
 		</ft:processFormObjects>
 		
