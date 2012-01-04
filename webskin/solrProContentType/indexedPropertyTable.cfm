@@ -85,7 +85,7 @@
 
 <cfoutput>
 <table id="tblCoreProperties" class="ui-widget ui-widget-content fcproperties">
-	<caption>Core Properties</caption>
+	<caption>Default Properties</caption>
 	<thead>
 		<tr class="ui-widget-header">
 			<th>Field Name</th>
@@ -113,7 +113,7 @@
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
 				<td>#prop#</td>
-				<td><cfif listFindNoCase("typename,rulecontent,rulecontent_phonetic", prop) is false>#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</cfif></td>
+				<td><cfif listFindNoCase("objectid,label,datetimecreated,datetimelastupdated,createdby,lastupdatedby,ownedby", prop)>#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</cfif></td>
 				<td>
 					#fieldType#
 				</td>
