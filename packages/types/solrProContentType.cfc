@@ -692,6 +692,7 @@
 		<cfset var filePath = "" />
 		<cfset var xml = "" />
 		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
+		<cfset var aFileContents = [] />
 		
 		<cfloop array="#doc#" index="prop">
 			
@@ -734,7 +735,13 @@
 							
 							// grab an instance of tika and parse the file
 							var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
-							prop.value = tika.parseToString(createObject("java","java.io.File").init(filePath));
+							
+							// save the results to an array for later
+							arrayAppend(aFileContents, {
+								name = lcase(prop.farcryField & "_contents" & right(prop.name,len(prop.name)-len(prop.farcryField))),
+								value = tika.parseToString(createObject("java","java.io.File").init(filePath)),
+								boost = prop.boost
+							});
 							
 							if (listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))) {
 								// set the classloader back	
@@ -743,7 +750,7 @@
 						</cfscript>
 						
 					<cfelse>
-						<cfset prop.value = "" />
+						<cflog application="true" file="cfsolrpro" type="warning" text="Skipped parsing file #filePath# because it did not exist." />
 					</cfif>
 					
 				</cfif>
@@ -754,6 +761,11 @@
 			<cfset structDelete(prop,"farcryField") />
 			
 		</cfloop>
+		
+		<!--- append any file content values to the document --->
+		<cfif arrayLen(aFileContents)>
+			<cfset doc.addAll(aFileContents) />
+		</cfif>
 		
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
 		
