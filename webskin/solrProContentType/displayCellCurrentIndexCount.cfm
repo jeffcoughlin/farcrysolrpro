@@ -7,7 +7,7 @@
 <cftry>
 	<cfoutput>#getRecordCountForType(typename = stobj.contentType)#</cfoutput>
 	<cfcatch>
-		<cfoutput>Solr Unavailable</cfoutput>
+		<cfoutput>[Solr Unavailable]</cfoutput>
 	</cfcatch>
 </cftry>
 
