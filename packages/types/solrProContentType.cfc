@@ -57,6 +57,118 @@
 		
 	</cffunction>
 	
+	<cffunction name="indexRecords" returntype="struct" access="public" output="false" hint="Indexes records for all or selected content types.">
+		<cfargument name="bOptimize" type="boolean" required="false" default="true" />
+		<cfargument name="batchSize" type="numeric" required="false" default="#application.fapi.getConfig(key = 'solrserver', name = 'batchSize', default = 1000)#" />
+		<cfargument name="lContentTypeIds" type="string" required="false" default="" hint="A list of SolrProContentType ObjectIDs.  If empty string, all preconfigured content types will be indexed." />
+		
+		<!--- Start timer --->
+		<cfset var tickBegin = GetTickCount() />
+		
+		<!--- instantiate the content types we will need --->
+		<cfset var oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
+		<cfset var oDocumentBoost = application.fapi.getContentType("solrProDocumentBoost") />
+		
+		<!--- get all the content types that are being indexed --->
+		<cfset var qContentTypes = getAllContentTypes() />
+		
+		<!--- delete any records that have a typename value that is not in the list of indexed typenames --->
+		<cfset var lValidTypenames = valueList(qContentTypes.contentType) />
+		<cfset var deleteQueryString = "q={!lucene q.op=AND}" />
+		<cfloop list="#lValidTypenames#" index="t">
+			<cfset deleteQueryString = deleteQueryString & " -typename:" & t />
+		</cfloop>
+		<cfset deleteByQuery(q = deleteQueryString) />
+		<cfset commit() />
+		
+		<!--- only index the specified content types --->
+		<cfif listLen(arguments.lContentTypeIds)>
+			<cfquery name="qContentTypes" dbtype="query">
+				select objectid, contentType from qContentTypes where objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lContentTypeIds#" /> )
+			</cfquery>
+		</cfif>
+		
+		<cfset var aStats = [] />
+		<cfloop query="qContentTypes">
+			
+			<cfset var typeTickBegin = getTickCount() />
+			
+			<!--- load this content type's index settings --->
+			<cfset var stContentType = getData(objectid = qContentTypes.objectid[qContentTypes.currentRow]) />
+			
+			<!--- get the records to index --->
+			<cfset var stResult = getRecordsToIndex(typename = stContentType.contentType, batchSize = arguments.batchSize, builtToDate = stContentType.builtToDate) />
+			<cfset var qContentToIndex = stResult.qContentToIndex />
+			<cfset var lItemsInDb = stResult.lItemsInDb />
+			
+			<!--- load all records for this type from solr for comparison later --->
+			<cfset var existingRecords = search(q = "typename:" & stContentType.contentType, rows = 999999) />
+			<cfset var lExistingRecords = "" />
+			<cfloop array="#existingRecords.results#" index="r">
+				<cfif isArray(r.objectid)>
+					<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid[1]) />
+				<cfelse>	
+					<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid) />
+				</cfif>
+			</cfloop>
+			
+			<cfloop query="qContentToIndex">
+				
+				<!--- add each record to the index --->
+				<cfset addRecordToIndex(
+					objectid = qContentToIndex.objectid[qContentToIndex.currentRow],
+					typename = stContentType.contentType,
+					stContentType = stContentType,
+					oIndexedProperty = oIndexedProperty,
+					oDocumentBoost = oDocumentBoost,
+					bCommit = false
+				) />
+				
+			</cfloop>
+			
+			<!--- delete any records in the index that are no longer in the database. (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
+			<cfset var lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
+			<cfif listLen(lItemsToDelete)>
+				<cfset deleteByTypename(typename = stContentType.contentType, lObjectIds = lItemsToDelete, bCommit = false) />
+			</cfif>
+			
+			<!--- update metadata for this content type --->
+			<cfset stContentType.indexRecordCount = listLen(lExistingRecords) + qContentToIndex.recordCount - listLen(lItemsToDelete) />
+			<cfif qContentToIndex.recordCount gt 0>
+				<cfset stContentType.builtToDate = qContentToIndex.datetimelastupdated[qContentToIndex.recordCount] />
+			</cfif>
+			<cfset setData(stProperties = stContentType) />
+			
+			<cfset var typeTickEnd = getTickCount() />
+			
+			<!--- If there were no errors, update stats --->	
+			<cfset var stStats = {} />
+			<cfset stStats["typeName"] = qContentTypes.contentType[qContentTypes.currentRow] />
+			<cfset stStats["processtime"] = typeTickEnd - typeTickBegin />
+			<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
+			<cfset stStats["totalRecordCount"] = stContentType.indexRecordCount />
+			<cfset stStats["builtToDate"] = stContentType.builtToDate />
+			<cfset arrayAppend(aStats, stStats) />
+			
+		</cfloop>
+		
+		<!--- commit --->
+		<cfset commit() />
+		
+		<!--- optionally, optimize --->
+		<cfif arguments.bOptimize>
+			<cfset optimize() />
+		</cfif>
+		
+		<cfset var processTime = GetTickCount() - tickBegin />
+		
+		<cfreturn {
+			aStats = aStats,
+			processTime = processTime
+		} />
+		
+	</cffunction>
+	
 	<cffunction name="getCorePropertyBoosts" returntype="struct" access="public" output="false" hint="Returns a struct of core property boost values for a given content type">
 		<cfargument name="stContentType" required="true" type="struct" />
 		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" default="#structNew()#" />
@@ -228,7 +340,7 @@
 		<cfquery name="stResult.qContentToIndex" dbtype="query" maxrows="#batchSize#">
 			select objectid, datetimelastupdated from stResult.qContentToIndex 
 			<cfif structKeyExists(arguments,"builtToDate") and isDate(arguments.builtToDate)>
-			where datetimelastupdated > #createOdbcDateTime(arguments.builtToDate)#
+			where datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
 			</cfif>
 			order by datetimelastupdated
 		</cfquery>
@@ -523,6 +635,10 @@
 	
 	<!--- cfsolrlib abstractions --->
 	
+	<cffunction name="resetIndex" access="public" output="false" returntype="void">
+		<cfset application.stplugins["farcrysolrpro"].cfsolrlib.resetIndex() />
+	</cffunction>
+	
 	<cffunction name="commit" access="public" output="false" returntype="void">
 		<cfset application.stplugins["farcrysolrpro"].cfsolrlib.commit() />
 	</cffunction>
@@ -620,6 +736,36 @@
 	<cffunction name="deleteByQuery" access="public" output="false" returntype="void">
 		<cfargument name="q" type="string" required="true" />
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteByQuery(q = arguments.q) />
+	</cffunction>
+	
+	<!--- helper --->
+	<cffunction name="listCompare" output="false" returnType="string">
+	   <cfargument name="list1" type="string" required="true" />
+	   <cfargument name="list2" type="string" required="true" />
+	   <cfargument name="delim1" type="string" required="false" default="," />
+	   <cfargument name="delim2" type="string" required="false" default="," />
+	   <cfargument name="delim3" type="string" required="false" default="," />
+		<!---
+		 Compares one list against another to find the elements in the first list that don't exist in the second list.
+		 v2 mod by Scott Coldwell
+		 
+		 @param List1      Full list of delimited values. (Required)
+		 @param List2      Delimited list of values you want to compare to List1. (Required)
+		 @param Delim1      Delimiter used for List1.  Default is the comma. (Optional)
+		 @param Delim2      Delimiter used for List2.  Default is the comma. (Optional)
+		 @param Delim3      Delimiter to use for the list returned by the function.  Default is the comma. (Optional)
+		 @return Returns a delimited list of values. 
+		 @author Rob Brooks-Bilson (rbils@amkor.com) 
+		 @version 2, June 25, 2009 
+		--->
+	   <cfset var list1Array = ListToArray(arguments.List1,Delim1) />
+	   <cfset var list2Array = ListToArray(arguments.List2,Delim2) />
+	
+	   <!--- Remove the subset List2 from List1 to get the diff --->
+	   <cfset list1Array.removeAll(list2Array) />
+	
+	   <!--- Return in list format --->
+	   <cfreturn ArrayToList(list1Array, Delim3) />
 	</cffunction>
 	
 </cfcomponent>

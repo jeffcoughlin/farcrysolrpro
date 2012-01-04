@@ -9,4 +9,6 @@
 	
 </cfif>
 
+<cfset application.stPlugins.farcrysolrpro.oCustomFunctions = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.customFunctions") />
+
 <cfsetting enablecfoutputonly="false" />
