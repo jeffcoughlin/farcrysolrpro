@@ -32,6 +32,26 @@
 		
 	</cffunction>
 	
-	<!--- TODO: trigger index on save --->
+	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
+		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+		
+		<!--- index the record being boosted --->
+		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset oContentType.addRecordToIndex(objectid = stProperties.documentId) />
+		
+		<cfreturn super.afterSave(argumentCollection = arguments) />
+	</cffunction>
+	
+	<cffunction name="onDelete" returntype="void" access="public" output="false" hint="Is called after the object has been removed from the database">
+		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
+		<cfargument name="stObject" type="struct" required="true" hint="The object" />
+		
+		<!--- re-index the record since it is no longer being boosted --->
+		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset oContentType.addRecordToIndex(objectid = stObject.documentId) />
+		
+		<cfset super.onDelete(argumentCollection = arguments) />
+		
+	</cffunction>
 	
 </cfcomponent>
