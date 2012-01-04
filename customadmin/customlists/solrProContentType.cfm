@@ -14,7 +14,6 @@
 	<cfset stContentType = oContentType.getData(form.selectedObjectId) />
 	<cfset oContentType.deleteByTypename(typename = stContentType.contentType, bCommit = true) />
 	<cfset stContentType.builtToDate = "" />
-	<cfset stContentType.indexRecordCount = 0 />
 	<cfset oContentType.setData(stContentType) />
 	<skin:bubble title="Reset Collection" message="#stContentType.title# has been reset" />
 </ft:processForm>
@@ -32,7 +31,6 @@
 	<cfloop query="qContentTypes">
 		<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
 		<cfset stContentType.builtToDate = "" />
-		<cfset stContentType.indexRecordCount = 0 />
 		<cfset oContentType.setData(stContentType) />
 	</cfloop>
 	<skin:bubble title="Reset All" message="Solr has been reset." />
@@ -58,8 +56,9 @@
 
 <ft:objectadmin 
 	typename="solrProContentType"
-	columnList="title,contentType,indexRecordCount,datetimecreated" 
-	sortableColumns="title,contentType,indexRecordCount,datetimelastUpdated"
+	columnList="title,contentType,datetimecreated" 
+	sortableColumns="title,contentType,datetimelastUpdated"
+	lCustomColumns="Current Index Count:displayCellCurrentIndexCount"
 	lFilterFields="title,contentType"
 	sqlorderby="title"
 	aButtons="#aButtons#"

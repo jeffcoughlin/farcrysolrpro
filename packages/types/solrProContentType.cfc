@@ -18,8 +18,6 @@
 	
 	<cfproperty ftSeq="210" ftFieldset="Solr Content Type" ftLabel="Index on Save?" name="bIndexOnSave" ftType="boolean" type="boolean" ftHint="Should this content type be indexed whenever a record is saved? If not, the content type will only be indexed by a separate scheduled task." />
 	
-	<cfproperty ftSeq="310" ftFieldset="Solr Content Type Stats" ftLabel="Current Index Count" name="indexRecordCount" ftType="integer" type="integer" ftDefault="0" default="0" ftDisplayOnly="true" hint="Solr record count for this type. Updated when content item is indexed" />
-	
 	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
 		
@@ -133,11 +131,10 @@
 			</cfif>
 			
 			<!--- update metadata for this content type --->
-			<cfset stContentType.indexRecordCount = listLen(lExistingRecords) + qContentToIndex.recordCount - listLen(lItemsToDelete) />
 			<cfif qContentToIndex.recordCount gt 0>
 				<cfset stContentType.builtToDate = qContentToIndex.datetimelastupdated[qContentToIndex.recordCount] />
+				<cfset setData(stProperties = stContentType) />
 			</cfif>
-			<cfset setData(stProperties = stContentType) />
 			
 			<cfset var typeTickEnd = getTickCount() />
 			
@@ -146,7 +143,7 @@
 			<cfset stStats["typeName"] = qContentTypes.contentType[qContentTypes.currentRow] />
 			<cfset stStats["processtime"] = typeTickEnd - typeTickBegin />
 			<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
-			<cfset stStats["totalRecordCount"] = stContentType.indexRecordCount />
+			<cfset stStats["totalRecordCount"] = listLen(lExistingRecords) + qContentToIndex.recordCount - listLen(lItemsToDelete) />
 			<cfset stStats["builtToDate"] = stContentType.builtToDate />
 			<cfset arrayAppend(aStats, stStats) />
 			
@@ -182,6 +179,11 @@
 		</cfloop>
 		<cfset application.stPlugins.farcrysolrpro.corePropertyBoosts[stContentType.objectid] = stPropBoosts />
 		<cfreturn stPropBoosts />
+	</cffunction>
+	
+	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
+		<cfargument name="typename" required="true" type="string" />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename, params = { "fl" = "objectid" }).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
