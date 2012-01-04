@@ -6,7 +6,7 @@
 	URL variable options are
 	optimize: true/false (default: true)
 	batchSize: integer (default: [set in main config. default: 1000])
-	lContentTypeIds: a list of objectids for solrProContentType records to index
+	lContentTypeIds: a list of objectids for solrProContentType records to index (default: all types)
 --->
 
 <cfset request.fc.bShowTray = false />
