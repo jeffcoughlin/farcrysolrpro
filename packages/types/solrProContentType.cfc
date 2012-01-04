@@ -733,6 +733,15 @@
 		<cfreturn application.stPlugins["farcrysolrpro"].cfsolrlib.search(argumentCollection = arguments) />
 	</cffunction>
 	
+	<cffunction name="deleteByID" access="public" output="false" hint="Delete a document from the index by ID">
+		<cfargument name="id" type="string" required="true" hint="ID of object to delete.">
+		<cfargument name="bCommit" type="boolean" required="false" default="false" />
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteById(id = arguments.id) />
+		<cfif arguments.bCommit>
+			<cfset commit() />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="deleteByQuery" access="public" output="false" returntype="void">
 		<cfargument name="q" type="string" required="true" />
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteByQuery(q = arguments.q) />
