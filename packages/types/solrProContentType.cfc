@@ -611,6 +611,38 @@
 		
 	</cffunction>
 	
+	<cffunction name="getSchemaFieldMetadata" access="public" output="false" returntype="array" hint="Returns field metadata from the schema.xml file">
+		<cfargument name="lFieldNames" type="string" required="false" default="" hint="List of fields to return metadata.  If not specified, all fields will be returned." />
+		<cfargument name="lOmitFields" type="string" required="false" default="random" />
+		<cfargument name="bIncludeIgnored" type="boolean" required="false" default="false" /> 
+		<cfset var a = [] />
+		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
+		<cfset var fields = xmlSearch(schemaXmlFile, "//schema/fields/field") />
+		<cfset var field = "" />
+		<cfloop array="#fields#" index="field">
+			<cfif (listLen(arguments.lFieldNames) eq 0 or listFindNoCase(arguments.lFieldNames, field.xmlAttributes["name"])) and not listFindNoCase(arguments.lOmitFields, field.xmlAttributes["name"])>
+				<cfif field.xmlAttributes.type neq "ignored" or arguments.bIncludeIgnored eq true>
+					<cfset arrayAppend(a, field.xmlAttributes) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		<cfreturn a />
+	</cffunction>
+	
+	<cffunction name="getSchemaDynamicFieldMetadata" access="public" output="false" returntype="array" hint="Returns dynamic field metadata from the schema.xml file">
+		<cfargument name="bIncludeIgnored" type="boolean" required="false" default="false" /> 
+		<cfset var a = [] />
+		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
+		<cfset var fields = xmlSearch(schemaXmlFile, "//schema/fields/dynamicField | //schema/fields/dynamicfield") />
+		<cfset var field = "" />
+		<cfloop array="#fields#" index="field">
+			<cfif field.xmlAttributes.type neq "ignored" or arguments.bIncludeIgnored eq true>
+				<cfset arrayAppend(a, field.xmlAttributes) />
+			</cfif>
+		</cfloop>
+		<cfreturn a />
+	</cffunction>
+	
 	<cffunction name="getSolrFieldTypeForProperty" access="public" output="false" returntype="string" hint="Returns the field type specified for a given field as declared in the schema.xml file.">
 		<cfargument name="fieldName" type="string" required="true" />
 		

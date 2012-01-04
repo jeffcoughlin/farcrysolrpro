@@ -91,6 +91,7 @@
 			<th>Field Name</th>
 			<th>FC Field Type</th>
 			<th>Solr Field Type</th>
+			<th title="Is this field stored in the solr index?">Stored?</th>
 			<th>Field Boosting</th>
 		</tr>
 	</thead>
@@ -116,6 +117,9 @@
 				<td><cfif listFindNoCase("objectid,label,datetimecreated,datetimelastupdated,createdby,lastupdatedby,ownedby", prop)>#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</cfif></td>
 				<td>
 					#fieldType#
+				</td>
+				<td>
+					#yesNoFormat(getSchemaFieldMetadata(lFieldNames = prop)[1].stored)#
 				</td>
 				<td>
 					<div class="combobox">
