@@ -25,7 +25,6 @@
 			<th>Field Name</th>
 			<th>FC Field Type</th>
 			<th>Solr Field Type(s)</th>
-			<!---<th>Field Boosting</th>--->
 		</tr>
 	</thead>
 	<tbody>
@@ -43,7 +42,7 @@
 		<cfoutput>
 			<tr<cfif counter mod 2 eq 0> class="alt"</cfif>>
 				<td><input type="checkbox" name="indexedProperties" id="fieldNames_#prop#" value="#prop#" <cfif structCount(stIndexedProperty)>checked="checked"</cfif> /></td>
-				<td id="customField_#prop#">#prop#</td>
+				<td id="customField_#prop#"><label for="fieldNames_#prop#">#prop#</label></td>
 				<td id="fcFieldType_#prop#">#getFTTypeForProperty(typename=url.contentType,propertyName=prop)#</td>
 				<td>
 					<select id="fieldType_#prop#" class="fieldTypeDropdown">
@@ -65,12 +64,6 @@
 								</cfif>
 							</cfloop>
 						</optgroup>
-						
-						<!---
-						<cfloop array="#aFieldTypes#" index="fieldType">
-						<option value="#listFirst(fieldType,':')#">#listGetAt(fieldType,2,':')#</option>
-						</cfloop>
-						--->
 					</select>
 					
 					<button type="button" class="btnAddFieldType" rel="#prop#">Add</button>
@@ -80,11 +73,6 @@
 					
 					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" <cfif structKeyExists(stIndexedProperty, "lFieldTypes")>value="#stIndexedProperty.lFieldTypes#"</cfif> />
 				</td>
-				<!---<td>
-					<div class="combobox">
-						<input type="text" class="fieldBoost" name="fieldBoost_#prop#" id="fieldBoost_#prop#" value="<cfif structKeyExists(stIndexedProperty, 'fieldBoost')>#stIndexedProperty.fieldBoost#<cfelse>5</cfif>" />
-					</div>
-				</td>--->
 			</tr>
 		</cfoutput>
 	</cfif>
