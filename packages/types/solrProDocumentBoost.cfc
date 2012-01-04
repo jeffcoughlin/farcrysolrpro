@@ -27,8 +27,16 @@
 	<cffunction name="getBoostOptions" access="public" output="false" returntype="string">
 		<cfargument name="objectid" required="true" type="uuid" />
 		
-		<!--- TODO: check config for the list of boost options, also check the current record for the value, and if not in the list from config, add it as an option --->
-		<cfreturn "10:Low (10),20:Medium,30:High" />
+		<!--- check config for the list of boost options, also check the current record for the value, and if not in the list from config, add it as an option --->
+		<cfset var stDocBoost = getData(arguments.objectid) />
+		
+		<cfset var l = application.fapi.getConfig(key = 'solrserver', name = 'lDocumentBoostValues') /> 
+		
+		<cfif not listContainsNoCase(l, stDocBoost.boostValue)>
+			<cfset l = listAppend(l, stDocBoost.boostValue) />
+		</cfif>
+		
+		<cfreturn l />
 		
 	</cffunction>
 	

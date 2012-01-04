@@ -123,7 +123,7 @@
 				</td>
 				<td>
 					<div class="combobox">
-						<input type="text" class="fieldBoost" name="coreFieldBoost_#prop#" id="coreFieldBoost_#prop#" value="<cfif structKeyExists(stCorePropertyBoosts, prop)>#stCorePropertyBoosts[prop]#<cfelse>5</cfif>" />
+						<input type="text" class="fieldBoost" name="coreFieldBoost_#prop#" id="coreFieldBoost_#prop#" value="<cfif structKeyExists(stCorePropertyBoosts, prop)>#stCorePropertyBoosts[prop]#<cfelse>#application.fapi.getConfig(key = 'solrserver', name = 'defaultBoostValue', default = 5)#</cfif>" />
 					</div>
 				</td>
 			</tr>

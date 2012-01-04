@@ -522,7 +522,7 @@
 						}
 						// if not add with default "stored" value, and boost value
 						if (bAlreadyExists == false) {
-							aFieldTypes.push(thisFieldType.val() + ":0:5");
+							aFieldTypes.push(thisFieldType.val() + ":0:#application.fapi.getConfig(key = 'solrserver', name = 'defaultBoostValue', default = 5)#");
 						}
 						
 						lFieldTypes.val(aFieldTypes.join(","));
@@ -573,17 +573,34 @@
 				hidden.val(aFieldTypes.join(","));
 				
 			}
-			
+						
 			function activateBoostDropdowns() {
 				
-				$j('.combobox input').autocomplete({
-					source: [ "1", "2", "3", "5", "10", "15", "20", "50" ],
-					minLength: 0,
-					change: function (event) {
-						handleBoostChange(this);
-					},
-				}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
-					"vertical-align": "middle"
+				<cfset counter = 0 />
+				<cfset lFieldBoostValues = application.fapi.getConfig(key = 'solrserver', name = 'lFieldBoostValues') />
+				
+				$j('.combobox input').each(function(i){
+					
+					var options = [ <cfloop list="#lFieldBoostValues#" index="i"><cfset counter++ />"#i#"<cfif counter lt listLen(lFieldBoostValues)>,</cfif></cfloop> ];
+					
+					if (options.indexOf($(this).val()) == -1) {
+						options.push($(this).val());
+					}
+					
+					options.sort(function (a,b) {
+						return a - b;
+					});
+					
+					$j(this).autocomplete({
+						source: options,
+						minLength: 0,
+						change: function (event) {
+							handleBoostChange(this);
+						},
+					}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
+						"vertical-align": "middle"
+					});
+					
 				});
 				
 				// activate the label

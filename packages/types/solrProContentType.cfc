@@ -292,7 +292,7 @@
 			<cfif structKeyExists(stPropBoosts, i.name) and not structKeyExists(i,"boost")>
 				<cfset i.boost = stPropBoosts[i.name] />
 			<cfelse>
-				<cfset i.boost = 5 />
+				<cfset i.boost = application.fapi.getConfig(key = 'solrserver', name = 'defaultBoost', default = 5) />
 			</cfif>
 		</cfloop>
 		
