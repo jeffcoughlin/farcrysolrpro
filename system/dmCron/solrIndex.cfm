@@ -36,11 +36,9 @@
 <cfset variables.millisecondsToDate = application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate />
 <cfoutput>
 	<style>
-	body {
+	.statsTbl {
 		line-height: 1.6em;
 		font-size: 15px;
-	}
-	.statsTbl {
 		font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 		font-size: 1em;
 		margin: 20px;
