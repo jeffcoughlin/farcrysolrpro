@@ -73,6 +73,7 @@
 		<!--- delete any records that have a typename value that is not in the list of indexed typenames --->
 		<cfset var lValidTypenames = valueList(qContentTypes.contentType) />
 		<cfset var deleteQueryString = "q={!lucene q.op=AND}" />
+		<cfset var t = "" />
 		<cfloop list="#lValidTypenames#" index="t">
 			<cfset deleteQueryString = deleteQueryString & " -typename:" & t />
 		</cfloop>
@@ -102,6 +103,7 @@
 			<!--- load all records for this type from solr for comparison later --->
 			<cfset var existingRecords = search(q = "typename:" & stContentType.contentType, rows = 999999) />
 			<cfset var lExistingRecords = "" />
+			<cfset var r = "" />
 			<cfloop array="#existingRecords.results#" index="r">
 				<cfif isArray(r.objectid)>
 					<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid[1]) />
@@ -174,6 +176,7 @@
 		</cfif>
 		<cfset var aCorePropBoosts = listToArray(stContentType.lCorePropertyBoost) />
 		<cfset var stPropBoosts = {} />
+		<cfset var i = "" />
 		<cfloop array="#aCorePropBoosts#" index="i">
 			<cfset stPropBoosts[listFirst(i,":")] = listLast(i,":") /> 
 		</cfloop>
