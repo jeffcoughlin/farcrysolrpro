@@ -81,9 +81,10 @@
 	</cffunction>
 	
 	<cffunction name="setupSolrDefaults" access="public" output="false" returntype="void" hint="Resets the Solr.xml file, instance directory and collection configuration">
+		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
 		
-		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
-		<cfset var solrXmlLocation = application.fapi.getConfig(key = "solrserver", name = "solrXmlLocation") />
+		<cfset var instanceDir = arguments.config.instanceDir />
+		<cfset var solrXmlLocation = arguments.config.solrXmlLocation />
 		<cfset var solrXml = "" />
 		
 		<!--- ensure solr.xml exists --->
@@ -132,7 +133,7 @@
 		<cfargument name="fields" type="struct" required="false" default="#structNew()#" />
 		
 		<cfif structCount(arguments.fields) eq 0>
-			<cfset arguments.fields = application.config['solrserver'] />
+			<cfset arguments.fields = application.fapi.getContentType("farConfig").getConfig(key = 'solrserver') />
 		</cfif>
 		
 		<cfscript>
@@ -182,7 +183,7 @@
 			<cfset setupSolrLibrary(fields = arguments.fields) />
 			
 			<!--- ensure solr is properly set up --->
-			<cfset setupSolrDefaults() />
+			<cfset setupSolrDefaults(config = arguments.fields) />
 			
 		</cfif>
 		
