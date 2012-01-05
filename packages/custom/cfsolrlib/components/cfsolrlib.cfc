@@ -58,6 +58,8 @@
 	<cfset var thisParam = "" />
 	<cfset var response = "" />
 	<cfset var ret = structNew() />
+	<cfset var thisKey = "" />
+	<cfset var tempArray = [] />
 	
 	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
 		<cfif isArray(ARGUMENTS.params[thisKey])>

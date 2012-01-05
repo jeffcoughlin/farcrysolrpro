@@ -22,7 +22,7 @@
 		
 		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
 		<cfset var aTemplateFolders = ["conf","data"] />
-		
+		<cfset var templateFolder = "" />
 		
 		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/conf") />
 		<cfset var qTemplateFiles = "" />
@@ -209,7 +209,8 @@
 	  <cfset var isCDATAEnd = "" />
 	  <cfset var isEndTag = "" />
 	  <cfset var isSelfClose = "" />
-	  <cfset xml = trim(REReplace(xml, "(^|>)\s*(<|$)", "\1#chr(10)#\2", "all")) />
+	  <cfset var xml = trim(REReplace(xml, "(^|>)\s*(<|$)", "\1#chr(10)#\2", "all")) />
+	  <cfset var i = "" />
 	  <cfset lines = listToArray(xml, chr(10)) />
 	  <cfset depth = 0 />
 	  <cfloop from="1" to="#arrayLen(lines)#" index="i">
