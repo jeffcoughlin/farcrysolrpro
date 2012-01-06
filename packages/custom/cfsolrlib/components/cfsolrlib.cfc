@@ -59,12 +59,11 @@
 	<cfset var response = "" />
 	<cfset var ret = structNew() />
 	<cfset var thisKey = "" />
-	<cfset var tempArray = [] />
 	
 	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
 		<cfif isArray(ARGUMENTS.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,javaCast("string[]",ARGUMENTS.params[thisKey])) />
-		<cfelseif isBoolean(ARGUMENTS.params[thisKey]) and not isNumeric(arguments.params[thisKey])>
+		<cfelseif isBoolean(ARGUMENTS.params[thisKey]) AND NOT isNumeric(ARGUMENTS.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,ARGUMENTS.params[thisKey]) />
 		<cfelse>
 			<cfset tempArray = arrayNew(1) />
@@ -75,7 +74,6 @@
 	
 	<!--- we do this instead of making the user call java functions, to work around a CF bug --->
 	<cfset response = THIS.solrQueryServer.query(thisQuery) />
-	<cfset ret.results = response.getResults() / >
 	<cfset ret.results = response.getResults() / >
 	<cfset ret.totalResults = response.getResults().getNumFound() / >
 	<cfif NOT isNull(response.getSpellCheckResponse())>
@@ -159,7 +157,6 @@
 	<cfargument name="literalData" required="false" type="struct" hint="A struct of data to add as literal fields. The struct key will be used as the field name, and the value as the field's value. NOTE: You cannot have a literal field with the same name as a metadata field.  Solr will throw an error if you attempt to override metadata with a literal field" />
 	<cfargument name="boost" required="false" type="struct" hint="A struct of boost values.  The struct key will be the field name to boost, and its value is the numeric boost value" />
 	<cfargument name="idFieldName" required="false" type="string" default="id" hint="The name of the unique id field in the Solr schema" />
-	
 	<cfset var docRequest = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.request.ContentStreamUpdateRequest").init("/update/extract") />
 	<cfset var thisKey = "" />
 	<cfset docRequest.addFile(createObject("java","java.io.File").init(ARGUMENTS.file)) />
@@ -188,8 +185,9 @@
 
 <cffunction name="deleteByID" access="public" output="false" hint="Delete a document from the index by ID">
 	<cfargument name="id" type="string" required="true" hint="ID of object to delete.">
+	<cfargument name="idFieldName" type="string" required="false" default="id" hint="The solr unique id field name" />
 	
-	<cfset THIS.solrUpdateServer.deleteByID(ARGUMENTS.id) />
+	<cfset THIS.solrUpdateServer.deleteByQuery(ARGUMENTS.idFieldName & ":" & ARGUMENTS.id) />
 </cffunction>
 
 <cffunction name="deleteByQuery" access="public" output="false" hint="Delete a document from the index by Query">
