@@ -164,14 +164,14 @@
 		
 		<!-- base FarCry fields -->
 		
-		<field name="objectid" type="string" indexed="true" stored="true" required="true" />
-		<field name="label" type="text" indexed="true" stored="true" required="true" />
-		<field name="datetimecreated" type="date" indexed="true" stored="true" required="false" />
-		<field name="datetimelastupdated" type="date" indexed="true" stored="true" required="false" />
-		<field name="createdby" type="string" indexed="true" stored="true" required="true" />
-		<field name="lastupdatedby" type="string" indexed="true" stored="true" required="true" />
-		<field name="ownedby" type="string" indexed="true" stored="true" required="true" />
-		<field name="typename" type="string" indexed="true" stored="true" required="true" />
+		<field name="objectid" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+		<field name="label" type="text" indexed="true" stored="true" required="true" multiValued="false" />
+		<field name="datetimecreated" type="date" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="datetimelastupdated" type="date" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="createdby" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+		<field name="lastupdatedby" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+		<field name="ownedby" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+		<field name="typename" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 		
 		<!-- we do not need to track these -->
 		<field name="locked" type="ignored" indexed="false" stored="false" required="false" />
@@ -184,7 +184,7 @@
 		<field name="rulecontent_phonetic" type="phonetic" indexed="true" stored="false" required="false" multiValued="true" />
 		
 		<!-- a field to use for random sorting -->
-		<field name="random" type="random" />
+		<field name="random" type="random" multiValued="false" />
 		
 		<!-- dynamic fields -->
 
@@ -209,36 +209,36 @@
 		
 		<dynamicField name="ignored_*" type="ignored" indexed="false" stored="false"/>
 		
-		<dynamicField name="*_int_stored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="true"/>
-		<dynamicField name="*_int_notstored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="false"/>
+		<dynamicField name="*_int_stored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_int_notstored" type="int" fcDisplayName="Integer" fcId="int" fcDataTypes="integer,numeric,boolean" indexed="true" stored="false" multiValued="false"/>
 		
-		<dynamicField name="*_string_stored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true"/>
-		<dynamicField name="*_string_notstored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false" />
+		<dynamicField name="*_string_stored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_string_notstored" type="string" fcDisplayName="String" fcId="string" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false" multiValued="false" />
 		
 		<dynamicField name="*_array_stored" type="string" fcDisplayName="Array" fcId="array" fcDataTypes="array" indexed="true" stored="true" multiValued="true" />
 		<dynamicField name="*_array_notstored" type="string" fcDisplayName="Array" fcId="array" fcDataTypes="array" indexed="true" stored="false" multiValued="true" />
 		
-		<dynamicField name="*_long_stored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="true"/>
-		<dynamicField name="*_long_notstored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="false"/>
+		<dynamicField name="*_long_stored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_long_notstored"  type="long" fcDisplayName="Long Integer" fcId="long" fcDataTypes="integer,numeric" indexed="true" stored="false" multiValued="false"/>
 		
 		<!-- using the text fields, and will ship with a stopwords.txt file that assumes english.  users are free to add their own field types and use a language specific stopwords file -->
-		<dynamicField name="*_text_stored"  type="text" fcDisplayName="Text" fcId="text" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true"/>
-		<dynamicField name="*_text_notstored"  type="text" fcDisplayName="Text" fcId="text" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false"/>
+		<dynamicField name="*_text_stored"  type="text" fcDisplayName="Text" fcId="text" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_text_notstored"  type="text" fcDisplayName="Text" fcId="text" fcDataTypes="string,nstring,longchar,variablename,email,color,uuid" indexed="true" stored="false" multiValued="false"/>
 		
-		<dynamicField name="*_boolean_stored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="true"/>
-		<dynamicField name="*_boolean_notstored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="false" />
+		<dynamicField name="*_boolean_stored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_boolean_notstored"  type="boolean" fcDisplayName="Boolean" fcId="boolean" fcDataTypes="boolean" indexed="true" stored="false" multiValued="false" />
 		
-		<dynamicField name="*_float_stored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="true"/>
-		<dynamicField name="*_float_notstored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="false"/>
+		<dynamicField name="*_float_stored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_float_notstored"  type="float" fcDisplayName="Float" fcId="float" fcDataTypes="numeric" indexed="true" stored="false" multiValued="false"/>
 		
-		<dynamicField name="*_double_stored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="true"/>
-		<dynamicField name="*_double_notstored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="false"/>
+		<dynamicField name="*_double_stored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_double_notstored"  type="double" fcDisplayName="Double" fcId="double" fcDataTypes="numeric" indexed="true" stored="false" multiValued="false"/>
 		
-		<dynamicField name="*_date_stored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="true"/>
-		<dynamicField name="*_date_notstored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="false"/>
+		<dynamicField name="*_date_stored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_date_notstored" type="date" fcDisplayName="Date" fcId="date" fcDataTypes="date" indexed="true" stored="false" multiValued="false"/>
 		
-		<dynamicField name="*_location_stored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="true"/>
-		<dynamicField name="*_location_notstored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="false"/>
+		<dynamicField name="*_location_stored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="true" multiValued="false"/>
+		<dynamicField name="*_location_notstored" type="location" fcDisplayName="Latitude,Longitude" fcDataTypes="" fcId="location" indexed="true" stored="false" multiValued="false"/>
 		
 		<dynamicField name="*_phonetic_stored" type="phonetic" fcDisplayName="Phonetic" fcId="phonetic" fcDataTypes="string,nstring,longchar,variablename,email,color" indexed="true" stored="true" multiValued="true" />
 		<dynamicField name="*_phonetic_notstored" type="phonetic" fcDisplayName="Phonetic" fcId="phonetic" fcDataTypes="string,nstring,longchar,variablename,email,color" indexed="true" stored="false" multiValued="true" />

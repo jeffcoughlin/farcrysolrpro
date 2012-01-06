@@ -24,6 +24,9 @@
 		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" type="struct" default="#structNew()#" />
 		<cfset structDelete(application.stPlugins.farcrysolrpro.corePropertyBoosts,stProperties.objectid) />
 		
+		<!--- cache the field list for this type --->
+		<cfset setFieldListCacheForType(stProperties.contentType) />
+		
 		<cfreturn super.aftersave(argumentCollection = arguments) />
 		
 	</cffunction>
@@ -166,6 +169,72 @@
 			processTime = processTime
 		} />
 		
+	</cffunction>
+	
+	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
+		<cfargument name="typename" type="string" required="true" />
+		<cfset cacheRemove("farcrysolrpro-fieldlist-" & arguments.typename) />
+		<cfset cachePut("farcrysolrpro-fieldlist-" & arguments.typename,getFieldListForType(arguments.typename)) />
+	</cffunction>
+	
+	<cffunction name="getFieldListCacheForType" returntype="string" access="public" output="false">
+		<cfargument name="typename" type="string" required="true" />
+		<cfset var cachedValue = cacheGet("farcrysolrpro-fieldlist-" & arguments.typename) />
+		<cfif not isNull(cachedValue)>
+			<cfreturn cachedValue />
+		<cfelse>
+			<cfset setFieldListCacheForType(arguments.typename) />
+			<cfreturn getFieldListCacheForType(arguments.typename) />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="getFieldListForTypes" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a all specified indexed content types.  Used for the qf (query fields) Solr parameter">
+		<cfargument name="lContentTypes" type="string" default="" />
+		
+		<cfset var q = getAllContentTypes(lContentTypes) />
+		<cfset var qf = "" />
+		
+		<!--- for each indexed content type, get the field list --->
+		<cfloop query="q">
+			<cfset qf = qf & " " & getFieldListCacheForType(q.contentType) />
+		</cfloop> 
+		
+		<!--- dedupe list --->
+		<cfset var st = {} />
+		<cfset var i = "" />
+		<cfloop list="#qf#" index="i" delimiters=" ">
+			<cfset st[i] = "" />
+		</cfloop>
+		<cfset qf = structKeyList(st," ") />
+		
+		<cfreturn trim(qf) />
+		
+	</cffunction>
+	
+	<cffunction name="getFieldListForType" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a given content type.  Used for the qf (query fields) Solr parameter">
+		<cfargument name="typename" required="true" />
+		<cfset var st = getByContentType(arguments.typename) />
+		<cfset var oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
+		<cfset var qf = [] />
+		<cfset var prop = "" />
+		<cfset var propId = "" />
+		<cfset var ft = "" />
+		<cfset var fieldType = [] />
+		
+		<cfloop array="#st.aIndexedProperties#" index="propId">
+			<cfset prop = oIndexedProperty.getData(propId) />
+			<cfloop list="#prop.lFieldTypes#" index="ft">
+				<!--- for each field type for this farcry field, build the solr dynamic field name --->
+				<cfset fieldType = listToArray(ft,":") />
+				<cfif fieldType[2] eq 0>
+					<cfset fieldType[2] = "notstored" />
+				<cfelse>
+					<cfset fieldType[2] = "stored" />
+				</cfif>
+				<cfset arrayAppend(qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
+			</cfloop>
+		</cfloop>
+		<cfreturn arrayToList(qf, " ") />
 	</cffunction>
 	
 	<cffunction name="getCorePropertyBoosts" returntype="struct" access="public" output="false" hint="Returns a struct of core property boost values for a given content type">
@@ -663,9 +732,13 @@
 	</cffunction>
 	
 	<cffunction name="getAllContentTypes" access="public" output="false" returntype="query">
+		<cfargument name="lObjectIds" type="string" required="false" default="" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
-			select objectid, contentType, title from solrProContentType;
+			select objectid, contentType, title from solrProContentType
+			<cfif listLen(arguments.lObjectIds)>
+			where objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lObjectIds#" />)
+			</cfif>;
 		</cfquery>
 		<cfreturn q />
 	</cffunction>
