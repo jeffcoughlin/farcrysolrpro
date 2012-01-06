@@ -123,12 +123,25 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
-
+	
+	<fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" stored="true" multiValued="true">
+		<analyzer>
+			<tokenizer class="solr.StandardTokenizerFactory"/>
+			<filter class="solr.ISOLatin1AccentFilterFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+			<filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="1" splitOnCaseChange="1"/>
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+		</analyzer>
+	</fieldType>
+	
     <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
-      </analyzer>
+			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+			<filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="1" splitOnCaseChange="1"/>
+			<filter class="solr.DoubleMetaphoneFilterFactory" inject="false" maxCodeLength="8"/>
+		</analyzer>
     </fieldtype>
 
     <!-- since fields of this type are by default not stored or indexed,
@@ -185,6 +198,9 @@
 		
 		<!-- a field to use for random sorting -->
 		<field name="random" type="random" multiValued="false" />
+		
+		<!-- field to store spellchecker data -->
+		<field name="spell" type="textSpell" indexed="true" stored="true" required="false" multiValued="true" />
 		
 		<!-- dynamic fields -->
 
@@ -244,7 +260,14 @@
 		<dynamicField name="*_phonetic_notstored" type="phonetic" fcDisplayName="Phonetic" fcId="phonetic" fcDataTypes="string,nstring,longchar,variablename,email,color" indexed="true" stored="false" multiValued="true" />
 		
 	</fields>
-
+	
+	<copyField source="*_text_stored" dest="spell" />
+	<copyField source="*_text_notstored" dest="spell" />
+	<copyField source="*_string_notstored" dest="spell" />
+	<copyField source="*_string_stored" dest="spell" />
+	<copyField source="label" dest="spell" />
+	<copyField source="rulecontent" dest="spell" />
+	
 	<uniqueKey>objectid</uniqueKey>
 	
 	<!-- field for the QueryParser to use when an explicit fieldname is absent -->

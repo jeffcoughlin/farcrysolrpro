@@ -63,20 +63,17 @@
 	
 	<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchForm" />
 	
-	<cfdump var="#stSearchResult#" />
-	
-
 	<cfif stSearchResult.bSearchPerformed>
 <!---
 		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchCount" stParam="#stSearchResult#" />--->
 		
-		<!---<cfif len(stSearchResult.searchCriteria)>
-			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchSuggestions" stParam="#stSearchResult#" />
-		</cfif>--->
+		<cfif structKeyExists(stSearchResult,"spellcheck")>
+			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchSuggestions" spellcheck="#stSearchResult.spellcheck#" />
+		</cfif>
 		
-		<!---<cfif stSearchResult.qResults.recordCount GT 0>
+		<cfif arraylen(stSearchResult.results) GT 0>
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchResults" stParam="#stSearchResult#" />
-		</cfif>--->
+		</cfif>
 	<!---<cfelse>
 		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchNoCriteria" stParam="#stSearchResult#" />--->
 	</cfif>

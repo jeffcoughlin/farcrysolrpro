@@ -64,7 +64,7 @@
 	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
 		<cfif isArray(ARGUMENTS.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,javaCast("string[]",ARGUMENTS.params[thisKey])) />
-		<cfelseif isBoolean(ARGUMENTS.params[thisKey])>
+		<cfelseif isBoolean(ARGUMENTS.params[thisKey]) and not isNumeric(arguments.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,ARGUMENTS.params[thisKey]) />
 		<cfelse>
 			<cfset tempArray = arrayNew(1) />
@@ -76,7 +76,23 @@
 	<!--- we do this instead of making the user call java functions, to work around a CF bug --->
 	<cfset response = THIS.solrQueryServer.query(thisQuery) />
 	<cfset ret.results = response.getResults() / >
-	<cfset ret.spellCheck = response.getSpellCheckResponse() />
+	<cfset ret.results = response.getResults() / >
+	<cfset ret.totalResults = response.getResults().getNumFound() / >
+	<cfif NOT isNull(response.getSpellCheckResponse())>
+		<cfset suggestions = response.getSpellCheckResponse().getSuggestions() />
+		<cfset ret.spellCheck = arrayNew(1) />
+		<cfloop array="#suggestions#" index="iSuggestion">
+			<cfset thisSuggestion = structNew() />
+			<cfset thisSuggestion.token = iSuggestion.getToken() />
+			<cfset thisSuggestion.startOffset = iSuggestion.getStartOffset() />
+			<cfset thisSuggestion.endOffset = iSuggestion.getEndOffset() />
+			<cfset thisSuggestion.suggestions = arrayNew(1) />
+			<cfloop array="#iSuggestion.getSuggestions()#" index="iSuggestion">
+				<cfset arrayAppend(thisSuggestion.suggestions,iSuggestion) />
+			</cfloop>
+			<cfset arrayAppend(ret.spellCheck,thisSuggestion) />
+		</cfloop>
+	</cfif>
 	
 	<cfreturn duplicate(ret) /> <!--- duplicate clears out the case-sensitive structure --->
 </cffunction>

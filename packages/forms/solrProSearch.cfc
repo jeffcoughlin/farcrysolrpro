@@ -80,13 +80,23 @@
 				<cfset params["qf"] = oContentType.getFieldListForTypes(stSearchForm.lContentTypes) />
 			</cfif>
 			
+			<!--- return the score --->
+			<cfset params["fl"] = "*,score" />
+			
+			<!--- spellcheck --->
+			<cfset params["spellcheck"] = true />
+			<cfset params["spellcheck.count"] = 1 />
+			<cfset params["spellcheck.build"] = false />
+			<cfset params["spellcheck.onlyMorePopular"] = true />
+			<cfset params["spellcheck.collate"] = true />
+			
 			<!--- apply the sort --->
 			<cfif stSearchForm.orderby eq "date">
 				<cfset params["sort"] = "datetimelastupdated desc" />
 			</cfif>
 			
 			<cfset var oSearchService = application.fapi.getContentType("solrProContentType") />
-			<cfset stResult = oSearchService.search(q = trim(q), start = 0, rows = 100, params = params) />
+			<cfset stResult = oSearchService.search(q = trim(q), start = 0, rows = 10, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
 			<!--- TODO: log the search and result stats --->
