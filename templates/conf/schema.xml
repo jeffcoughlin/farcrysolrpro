@@ -136,18 +136,12 @@
 		</fieldType>
 	-->
 		<fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
-			<analyzer type="index">
+			<analyzer>
 				<tokenizer class="solr.StandardTokenizerFactory"/>
 				<filter class="solr.LowerCaseFilterFactory"/>
 				<filter class="solr.StandardFilterFactory"/>
 				<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
 			</analyzer>
-			<!--<analyzer type="query">
-				<tokenizer class="solr.StandardTokenizerFactory"/>
-				<filter class="solr.LowerCaseFilterFactory"/>
-				<filter class="solr.StandardFilterFactory"/>
-				<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-			</analyzer>-->
 		</fieldType>
 		<fieldType name="textSpellPhrase" class="solr.TextField" positionIncrementGap="100">
 			<analyzer>
@@ -292,6 +286,7 @@
 	<copyField source="*_string_stored" dest="spell" />
 	<copyField source="label" dest="spell" />
 	<copyField source="rulecontent" dest="spell" />
+	<copyField source="spell" dest="spellPhrase" />
 	
 	<uniqueKey>objectid</uniqueKey>
 	
