@@ -31,11 +31,12 @@
 
 <!--- number of records to display per page --->
 <cfset rows = 10 />
+
 <!--- number of page links to display --->
 <cfset pageLinks = 5 />
+
 <!--- suggestion threshold --->
-<!---<cfset suggestionThreshold = rows />--->
-<cfset suggestionThreshold = 999999 />
+<cfset suggestionThreshold = rows />
 
 <!--- this will handle a traditional form post or url variable submission --->
 <cfif len(trim(form.q))>
@@ -47,51 +48,55 @@
 	<cfset stProperties.lContentTypes = form.lContentTypes />
 	<cfset stproperties.bSearchPerformed = 1 />
 	<cfset stResult = setData(stProperties = stProperties) />
+	<!--- update the stobj to reflect the most recent info --->
+	<cfset stobj = getData(stProperties.objectid) />
 </cfif>
 
 <!--- this will handle a formtools form submission --->
 <ft:processForm action="Search">
 	<ft:processFormObjects objectid="#stobj.objectid#" typename="#stobj.typename#" bSessionOnly="true">
-		<!--- TODO: determine page, start, rows values --->
 	 <cfset stproperties.bSearchPerformed = 1 />
 	</ft:processFormObjects>
+	<!--- update the stobj to reflect the most recent info --->
+	<cfset stobj = getData(stobj.objectid) />
 </ft:processForm>
-
-<cfset actionURL = application.fapi.getLink(
-	objectid=stobj.objectid,
-	view="displaySearch",
-	includeDomain=true
-) />
 
 <cfoutput>
 	<div id="searchPage"></cfoutput>
 
-<!--- Render the search form and results #application.url.webroot#/index.cfm?objectid=#stobj.objectid#&view=displaySearch --->
-<ft:form name="#stobj.typename#SearchForm" method="post"><!--- action="#actionURL#" --->
+<!--- Render the search form and results --->
+<ft:form name="#stobj.typename#SearchForm" method="post" action="#application.fapi.getLink(objectid=request.navid)#">
 
 	<!--- Get the search Results --->
 	<cfset oSearchService = application.fapi.getContentType("solrProSearch") />
 	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows) />
 
-	<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchForm" />
+	<skin:view stObject="#stobj#" webskin="displaySearchForm" />
 	
 	<cfif stSearchResult.bSearchPerformed>
 
-<!--- TODO: Display total results
-Total results: #stSearchResult.totalResults#
---->
-
-<!---
-		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchCount" stParam="#stSearchResult#" />--->
+		<skin:view 
+			stobject="#stobj#" 
+			webskin="displaySearchCount" 
+			searchCriteria="#stobj.q#" 
+			totalResults="#stSearchResult.totalResults#" />
 		
-		<cfif structKeyExists(stSearchResult,"spellcheck")>
-			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchSuggestions" threshold="#suggestionThreshold#" totalResults="#stSearchResult.totalResults#" spellcheck="#stSearchResult.spellcheck#" />
+		<cfif structKeyExists(stSearchResult,"spellcheck") and arrayLen(stSearchResult.spellcheck)>
+			<skin:view  
+				stObject="#stobj#" 
+				webskin="displaySearchSuggestions" 
+				threshold="#suggestionThreshold#" 
+				totalResults="#stSearchResult.totalResults#" 
+				spellcheck="#stSearchResult.spellcheck#"
+				q="#stObj.q#"
+				operator="#stobj.operator#"
+				lContentTypes="#stobj.lContentTypes#"
+				orderBy="#stobj.orderby#" />
 		</cfif>
 		
 		<cfif arraylen(stSearchResult.results) GT 0>
 			<skin:view 
-				typename="#stobj.typename#" 
-				objectid="#stobj.objectid#" 
+				stObject="#stobj#" 
 				webskin="displaySearchResults" 
 				results="#stSearchResult.results#" 
 				totalResults="#stSearchResult.totalResults#" 
@@ -99,8 +104,7 @@ Total results: #stSearchResult.totalResults#
 				currentPage="#form.page#" 
 				rows="#rows#" />
 		</cfif>
-	<!---<cfelse>
-		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchNoCriteria" stParam="#stSearchResult#" />--->
+
 	</cfif>
 	
 </ft:form>

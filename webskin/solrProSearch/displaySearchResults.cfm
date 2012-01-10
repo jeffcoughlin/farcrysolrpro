@@ -15,13 +15,6 @@
 	<cfset arrayAppend(aObjectIds, i.objectid) />
 </cfloop>
 
-<!---
-	currentPage
-	recordsPerPage
-	actionURL
-	submissionType
---->
-
 <skin:pagination paginationId="" array="#aObjectIds#" totalRecords="#stParam.totalResults#" submissionType="form" currentPage="#stParam.currentPage#" recordsPerPage="#stParam.rows#" pageLinks="#stParam.pageLinks#">
 
 	<skin:view webskin="displaySearchResult" typename="#stParam.results[stObject.currentRow].typename#" stObject="#stParam.results[stObject.currentRow]#" />

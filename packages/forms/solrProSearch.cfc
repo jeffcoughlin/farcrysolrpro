@@ -46,6 +46,7 @@
 			<cfif arguments.bSpellcheck is true>
 				<cfset params["spellcheck"] = true />
 				<cfset params["spellcheck.count"] = 1 />
+				<cfset params["spellcheck.q"] = stSearchForm.q />
 				<cfif listLen(stSearchForm.q, " ") gt 1>
 					<cfset stParams["spellcheck.dictionary"] = "phrase" />
 				<cfelse>
@@ -114,6 +115,60 @@
 		</cfif>
 		
 		<cfreturn stResult />
+		
+	</cffunction>
+	
+	<cffunction name="getSuggestion" access="public" output="false" returntype="string" hint="Returns suggestion text based on results from solr">
+		
+		<cfargument name="spellcheck" type="array" required="true" />
+		
+		<cfargument name="q" type="string" required="true" />
+		<cfargument name="operator" type="string" required="false" default="any" />
+		<cfargument name="lContentTypes" type="string" required="false" default="" />
+		<cfargument name="orderby" type="string" required="false" default="rank" />
+		
+		<cfargument name="startWrap" type="string" required="false" default="<strong>" />
+		<cfargument name="endWrap" type="string" required="false" default="</strong>" />
+		<cfargument name="linkUrl" type="string" required="false" default="#application.fapi.getLink(objectid = request.navid)#" />
+		
+		<!--- if we have no spell check info, just return empty string --->
+		<cfif not arrayLen(arguments.spellcheck)>
+			<cfreturn "" />
+		</cfif>
+		
+		<!--- build the suggestion --->
+		<cfset var suggestion = arguments.q />
+		<cfset var s = "" />
+		<cfloop array="#arguments.spellcheck#" index="s">
+			<!--- create one w/ the wrap --->
+			<cfset suggestion = trim(reReplaceNoCase(suggestion,"^#s.token# | #s.token# | #s.token#$"," " & arguments.startWrap & s.suggestions[1] & arguments.endWrap & " ","ALL")) />
+			<!--- and one w/o --->
+			<cfset arguments.q = trim(reReplaceNoCase(arguments.q,"^#s.token# | #s.token# | #s.token#$"," " & s.suggestions[1] & " ","ALL")) />
+		</cfloop>
+		
+		<!--- build the url for the link --->
+		<cfset var addValues = {
+			"q" = arguments.q,
+			"operator" = arguments.operator,
+			"orderby" = arguments.orderby
+		} />
+		<cfif len(trim(arguments.lContentTypes))>
+			<cfset addValues["lContentTypes"] = arguments.lContentTypes />
+		</cfif>
+		<cfset arguments.linkUrl = application.fapi.fixUrl(
+			url = arguments.linkUrl, 
+			addValues = addValues
+		) />
+		
+		<!--- build the HTML and return it --->
+		<cfset var str = "" />
+		<cfsavecontent variable="str">
+			<cfoutput>
+				Did you mean <a href="#arguments.linkUrl#">#suggestion#</a>?
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn trim(str) />
 		
 	</cffunction>
 	

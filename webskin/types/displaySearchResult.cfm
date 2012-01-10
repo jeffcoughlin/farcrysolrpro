@@ -35,8 +35,8 @@
 </cfif>
 
 <!--- Get result image teaser --->
-<cfif structKeyExists(stObj, "teaserimage_string_stored") and stObj.teaserimage_string_stored neq "">
-	<cfset variables.teaserImage = stObj.teaserimage_string_stored />
+<cfif structKeyExists(stObj, "imgteaser_string_stored") and stObj.imgteaser_string_stored neq "">
+	<cfset variables.teaserImage = stObj.imgteaser_string_stored />
 <cfelse>
 	<cfset variables.teaserImage = "" />
 </cfif>
@@ -80,7 +80,7 @@
         </cfif>
         <cfoutput>
         <div class="searchResultContent">
-          <p>#oCustomFunctions.XHTMLParagraphFormat(variables.teaser)#<cfif right(variables.teaser,3) EQ "..."> <a href="#itemUri#" title="#variables.resultTitle#">more</a></cfif></p>
+          <p>#variables.teaser#<cfif right(variables.teaser,3) EQ "..."> <a href="#itemUri#" title="#variables.resultTitle#">more</a></cfif></p>
         </div>
         <div class="searchResultMeta">
           <!---<cfif myNavId neq ""><div class="searchResultBreadCrumbs"><myskin:breadcrumb startLevel="#request.stSettings.startLevel#" objectid="#myNavId#" ulClass="breadcrumbs" here="#variables.resultTitle#" separator=" / " bShowHome="0" bShowTextOnly="true" /></div></cfif>--->
