@@ -780,17 +780,9 @@
 				<cfif listFindNoCase("image,file", ftType)>
 					
 					<cfif ftType eq "image">
-						<cfset filePath = application.fapi.getFileWebroot() & prop.value />
-						<!--- TODO: I'm not sure this part is needed afterall.  My getImageWebroot returned [empty string] which causes errors in the 2nd part of the left() function below.
-						<!--- due to a bug in farcry, check to see if the image path in the database had the image webroot, if not add that --->
-						<cfif application.fapi.getImageWebroot() eq left(prop.value,len(application.fapi.getImageWebroot()))>
-							<cfset filePath = prop.value />
-						<cfelse>
-							<cfset filePath = application.fapi.getImageWebroot() & prop.value />
-						</cfif>
+						<cfset filePath = application.fapi.getImageWebroot() & prop.value />
 					<cfelse>
 						<cfset filePath = application.fapi.getFileWebroot() & prop.value />
-					--->
 					</cfif>
 					
 					<cfset filePath = expandPath(filePath) />
