@@ -5,10 +5,6 @@
 <cfparam name="stParam.threshold" default="10" />
 <cfparam name="stParam.totalResults" default="0" />
 <cfparam name="stParam.spellcheck" default="" />
-<cfparam name="stParam.q" default="" />
-<cfparam name="stParam.operator" default="any" />
-<cfparam name="stParam.lContentTypes" default="" />
-<cfparam name="stParam.orderby" default="rank" />
 
 <cfif structKeyExists(stParam,"spellcheck") and stParam.totalResults lte stParam.threshold>
 	
@@ -17,10 +13,10 @@
 			<p>#getSuggestion(
 					linkURL = application.fapi.getLink(objectid = request.navid), 
 					spellcheck = stParam.spellcheck, 
-					q = stParam.q,
-					operator = stParam.operator,
-					lContentTypes = stParam.lContentTypes,
-					orderby = stParam.orderby,
+					q = stobj.q,
+					operator = stobj.operator,
+					lContentTypes = stobj.lContentTypes,
+					orderby = stobj.orderby,
 					startWrap = '<strong>', 
 					endWrap = '</strong>'
 				)#</p>

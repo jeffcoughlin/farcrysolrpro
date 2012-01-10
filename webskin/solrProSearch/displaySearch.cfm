@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<!---<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />--->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Load Search CSS --->
@@ -52,33 +52,22 @@
 	<cfset stobj = getData(stProperties.objectid) />
 </cfif>
 
-<!--- this will handle a formtools form submission --->
-<ft:processForm action="Search">
-	<ft:processFormObjects objectid="#stobj.objectid#" typename="#stobj.typename#" bSessionOnly="true">
-	 <cfset stproperties.bSearchPerformed = 1 />
-	</ft:processFormObjects>
-	<!--- update the stobj to reflect the most recent info --->
-	<cfset stobj = getData(stobj.objectid) />
-</ft:processForm>
-
 <cfoutput>
 	<div id="searchPage"></cfoutput>
 
 <!--- Render the search form and results --->
-<ft:form name="#stobj.typename#SearchForm" method="post" action="#application.fapi.getLink(objectid=request.navid)#">
 
+	<skin:view stObject="#stobj#" webskin="displaySearchForm" />
+		
 	<!--- Get the search Results --->
 	<cfset oSearchService = application.fapi.getContentType("solrProSearch") />
 	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows) />
 
-	<skin:view stObject="#stobj#" webskin="displaySearchForm" />
-	
 	<cfif stSearchResult.bSearchPerformed>
 
 		<skin:view 
 			stobject="#stobj#" 
 			webskin="displaySearchCount" 
-			searchCriteria="#stobj.q#" 
 			totalResults="#stSearchResult.totalResults#" />
 		
 		<cfif structKeyExists(stSearchResult,"spellcheck") and arrayLen(stSearchResult.spellcheck)>
@@ -87,11 +76,7 @@
 				webskin="displaySearchSuggestions" 
 				threshold="#suggestionThreshold#" 
 				totalResults="#stSearchResult.totalResults#" 
-				spellcheck="#stSearchResult.spellcheck#"
-				q="#stObj.q#"
-				operator="#stobj.operator#"
-				lContentTypes="#stobj.lContentTypes#"
-				orderBy="#stobj.orderby#" />
+				spellcheck="#stSearchResult.spellcheck#" />
 		</cfif>
 		
 		<cfif arraylen(stSearchResult.results) GT 0>
@@ -107,8 +92,6 @@
 
 	</cfif>
 	
-</ft:form>
-
 <cfoutput>
 	</div></cfoutput>
 

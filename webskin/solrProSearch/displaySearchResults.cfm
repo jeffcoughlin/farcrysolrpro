@@ -15,9 +15,23 @@
 	<cfset arrayAppend(aObjectIds, i.objectid) />
 </cfloop>
 
-<skin:pagination paginationId="" array="#aObjectIds#" totalRecords="#stParam.totalResults#" submissionType="form" currentPage="#stParam.currentPage#" recordsPerPage="#stParam.rows#" pageLinks="#stParam.pageLinks#">
+<cfset addValues = { 'q' = stobj.q, 'operator' = stobj.operator, 'orderby' = stobj.orderby } />
+<cfif len(trim(stobj.lContentTypes))>
+	<cfset addvalues["lContentTypes"] = stobj.lContentTypes />
+</cfif>
+<cfset actionUrl = application.fapi.getLink(objectid = request.navid, stParameters = addValues) />
 
-	<skin:view webskin="displaySearchResult" typename="#stParam.results[stObject.currentRow].typename#" stObject="#stParam.results[stObject.currentRow]#" />
+<skin:pagination 
+	paginationId="" 
+	array="#aObjectIds#" 
+	totalRecords="#stParam.totalResults#" 
+	actionUrl="#actionUrl#" 
+	submissionType="url" 
+	currentPage="#stParam.currentPage#" 
+	recordsPerPage="#stParam.rows#" 
+	pageLinks="#stParam.pageLinks#">
+
+	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" />
 
 </skin:pagination>
 			
