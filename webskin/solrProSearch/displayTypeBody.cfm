@@ -1,9 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
+<!--- @@displayname: Search Result --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
 
-<!--- @@displayname: Search Results Page --->
-<!--- @@author: Geoff Bowers (modius@daemon.com.au) --->
-
-<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfif isDefined("request.stObj.title")>
@@ -13,6 +11,5 @@
 </cfif>
 
 <skin:view typename="#stobj.name#" key="SearchForm" webskin="displaySearch" />
-
 
 <cfsetting enablecfoutputonly="false" />
