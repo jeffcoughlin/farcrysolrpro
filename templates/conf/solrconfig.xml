@@ -1129,7 +1129,7 @@
 			<str name="accuracy">0.7</str><!-- Require terms to occur in 70% of the documents in order to be included in the dictionary -->
 			<str name="spellcheckIndexDir">spellchecker</str>
 			<str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
-			<str name="buildOnCommit">true</str>
+			<str name="buildOnOptimize">true</str>
 		</lst>
 		<lst name="spellchecker">
 			<str name="name">phrase</str>
@@ -1137,7 +1137,7 @@
 			<str name="accuracy">0.7</str>
 			<str name="spellcheckIndexDir">spellcheckerPhrase</str>
 			<str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
-			<str name="buildOnCommit">true</str>
+			<str name="buildOnOptimize">true</str>
 		</lst>
 
     <!-- a spellchecker that uses a different distance measure -->
