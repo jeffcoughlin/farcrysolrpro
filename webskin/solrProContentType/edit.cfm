@@ -50,8 +50,10 @@
 			<!--- TODO: make sure teaser and title fields are being STORED in Solr! --->
 			<cfparam name="form.resultTitleField" type="string" default="label" />
 			<cfparam name="form.resultSummaryField" type="string" default="" />
+			<cfparam name="form.resultImageField" type="string" default="" />
 			<cfset stProperties["resultTitleField"] = form.resultTitleField />
 			<cfset stProperties["resultSummaryField"] = form.resultSummaryField  />
+			<cfset stProperties["resultImageField"] = form.resultImageField  />
 			
 			<!--- clear the array of indexed properties --->
 			<cfparam name="stProperties.aIndexedProperties" type="array" default="#arrayNew(1)#" />
@@ -122,6 +124,15 @@
 		<ft:object stObject="#stobj#" lFields="title,contentType" r_stPrefix="generalPrefix" />
 	</ft:fieldset>
 	
+	<ft:fieldset legend="Indexed Properties" helpSection="The properties for this content type that will be indexed.">
+		
+		<!--- TODO: add a note telling users that all Text (General) fields will be copied to a phonetic field to allow phonetic searching. 
+		No need to add a separate phonetic field as well for those fields --->
+		
+		<cfoutput><div id="indexedProperties"></div></cfoutput>
+		
+	</ft:fieldset>
+	
 	<ft:fieldset legend="Search Result Defaults">
 		
 		<ft:field label="Result Title" hint="The field that will be used for the search result title.">
@@ -136,18 +147,11 @@
 			</cfoutput>
 		</ft:field>
 		
-	</ft:fieldset>
-	
-	<ft:fieldset legend="Advanced Options">
-		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave" />
-	</ft:fieldset>
-	
-	<ft:fieldset legend="Indexed Properties" helpSection="The properties for this content type that will be indexed.">
-		
-		<!--- TODO: add a note telling users that all Text (General) fields will be copied to a phonetic field to allow phonetic searching. 
-		No need to add a separate phonetic field as well for those fields --->
-		
-		<cfoutput><div id="indexedProperties"></div></cfoutput>
+		<ft:field label="Result Image" hint="The field that will be used for the search result teaser image.">
+			<cfoutput>
+				<select name="resultImageField" id="resultImageField"></select>
+			</cfoutput>
+		</ft:field>
 		
 	</ft:fieldset>
 	
@@ -170,6 +174,10 @@
 			
 		</ft:field>
 		
+	</ft:fieldset>
+	
+	<ft:fieldset legend="Advanced Options">
+		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave" />
 	</ft:fieldset>
 	
 	<ft:farcryButtonPanel>
@@ -701,9 +709,11 @@
 				
 				var title = $j("##resultTitleField");
 				var summary = $j("##resultSummaryField");
+				var image = $j("##resultImageField");
 				
 				title.empty();
 				summary.empty();
+				image.empty();
 				
 				$j.ajax({
 					url: "#application.fapi.getwebroot()#/farcrysolrpro/facade/remote.cfc?method=getTextPropertiesByType&returnformat=json&typename=" + contentType,
@@ -715,17 +725,23 @@
 						
 						var currentTitle = "#lcase(stobj.resultTitleField)#";
 						var currentSummary = "#lcase(stobj.resultSummaryField)#";
+						var currentImage = "#lcase(stobj.resultImageField)#";
+						
+						image.append('<option value="">-- No Teaser Image --</option>');
 						
 						for (var x = 0; x < data.length; x++) {
 							
 							var titleHtml = "";
 							var summaryHtml = "";
+							var imageHtml = "";
 	
 							var titleHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
 							var summaryHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
+							var imageHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
 							
 							title.append(titleHtml);
 							summary.append(summaryHtml);
+							image.append(imageHtml);
 							
 						}
 						
@@ -746,6 +762,10 @@
 						} else {
 							// if we have a "teaser" field, default to that
 							summary.find("option[value='teaser']").attr("selected", true);
+						}
+						// mark selected teaser image
+						if (currentImage.length > 0) {
+							image.find("option[value='" + currentImage + "']").attr("selected", "selected");
 						}
 						 
 					},

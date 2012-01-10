@@ -4,9 +4,14 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<!--- load the solr content type configuration information --->
+<cfparam name="stParam.oContentType" default="#application.fapi.getContentType('solrProContentType')#" />
+<cfset stContentType = stParam.oContentType.getByContentType(contentType = stobj.typename) />
+
 <cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
 
-<!---<cfdump var="#stobj#" />--->
+<!---<cfdump var="#stContentType#" />
+<cfdump var="#stobj#" abort="true" />--->
 
 <!--- TODO: Get default CSS file provided by plugin --->
 

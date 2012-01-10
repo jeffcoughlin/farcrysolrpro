@@ -135,7 +135,7 @@
 			</analyzer>
 		</fieldType>
 	-->
-		<fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
+		<fieldType name="textspell" class="solr.TextField" positionIncrementGap="100">
 			<analyzer>
 				<tokenizer class="solr.StandardTokenizerFactory"/>
 				<filter class="solr.LowerCaseFilterFactory"/>
@@ -143,7 +143,7 @@
 				<filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
 			</analyzer>
 		</fieldType>
-		<fieldType name="textSpellPhrase" class="solr.TextField" positionIncrementGap="100">
+		<fieldType name="textspellphrase" class="solr.TextField" positionIncrementGap="100">
 			<analyzer>
 				<tokenizer class="solr.KeywordTokenizerFactory"/>
 				<filter class="solr.LowerCaseFilterFactory"/>
@@ -218,8 +218,8 @@
 		<field name="random" type="random" multiValued="false" />
 		
 		<!-- field to store spellchecker data -->
-		<field name="spell" type="textSpell" indexed="true" stored="false" required="false" multiValued="true" />
-		<field name="spellPhrase" type="textSpellPhrase" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="spell" type="textspell" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="spellphrase" type="textspellphrase" indexed="true" stored="false" required="false" multiValued="true" />
 		
 		<!-- dynamic fields -->
 
@@ -286,7 +286,7 @@
 	<copyField source="*_string_stored" dest="spell" />
 	<copyField source="label" dest="spell" />
 	<copyField source="rulecontent" dest="spell" />
-	<copyField source="spell" dest="spellPhrase" />
+	<copyField source="spell" dest="spellphrase" />
 	
 	<uniqueKey>objectid</uniqueKey>
 	

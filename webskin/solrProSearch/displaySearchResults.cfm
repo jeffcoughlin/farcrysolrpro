@@ -21,6 +21,8 @@
 </cfif>
 <cfset actionUrl = application.fapi.getLink(objectid = request.navid, stParameters = addValues) />
 
+<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+
 <skin:pagination 
 	paginationId="" 
 	array="#aObjectIds#" 
@@ -31,7 +33,7 @@
 	recordsPerPage="#stParam.rows#" 
 	pageLinks="#stParam.pageLinks#">
 
-	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" />
+	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" />
 
 </skin:pagination>
 			
