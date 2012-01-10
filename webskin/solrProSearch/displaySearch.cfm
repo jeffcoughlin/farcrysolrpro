@@ -1,6 +1,5 @@
 <cfsetting enablecfoutputonly="true" />
 
-<!---<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />--->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Load Search CSS --->
@@ -55,8 +54,7 @@
 <cfoutput>
 	<div id="searchPage"></cfoutput>
 
-<!--- Render the search form and results --->
-
+	<!--- Render the search form --->
 	<skin:view stObject="#stobj#" webskin="displaySearchForm" />
 		
 	<!--- Get the search Results --->
@@ -64,7 +62,9 @@
 	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows) />
 
 	<cfif stSearchResult.bSearchPerformed>
-
+		
+		<!--- display results --->
+		
 		<skin:view 
 			stobject="#stobj#" 
 			webskin="displaySearchCount" 
