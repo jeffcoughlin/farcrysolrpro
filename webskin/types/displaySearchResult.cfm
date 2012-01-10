@@ -8,9 +8,14 @@
 
 <!---<cfdump var="#stobj#" />--->
 
-<!--- TODO: trim all stObj fields --->
+<!--- TODO: Get default CSS file provided by plugin --->
 
-<!--- TODO: Get title and teaser fields --->
+<!--- Trim all stObj fields --->
+<cfloop collection="#request.stObj#" item="i">
+	<cfset request.stObj[i] = trim(request.stObj[i]) />
+</cfloop>
+
+<!--- TODO: Get title, teaser, and teaser image fields from configured settings --->
 <!--- For the moment, assume we have teaser_text_stored, and title_text_stored --->
 
 <!--- Get result title --->

@@ -3,6 +3,9 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<!--- Load Search CSS --->
+<skin:loadCss id="siteSearch-css" media="all" baseHref="#application.fapi.getWebroot()#/farcrysolrpro/css" lFiles="search.css" />
+
 <!--- default local vars --->
 <cfparam name="stQueryStatus" default="#structNew()#" type="struct" />
 
@@ -54,16 +57,24 @@
 	includeDomain=true
 ) />
 
+<cfoutput>
+	<div id="searchPage"></cfoutput>
+
 <!--- Render the search form and results #application.url.webroot#/index.cfm?objectid=#stobj.objectid#&view=displaySearch --->
 <ft:form name="#stobj.typename#SearchForm"><!--- action="#actionURL#" --->
 
 	<!--- Get the search Results --->
 	<cfset oSearchService = application.fapi.getContentType("solrProSearch") />
 	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename) />
-	
+
 	<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchForm" />
 	
 	<cfif stSearchResult.bSearchPerformed>
+
+<!--- TODO: Display total results
+Total results: #stSearchResult.totalResults#
+--->
+
 <!---
 		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySearchCount" stParam="#stSearchResult#" />--->
 		
@@ -80,5 +91,7 @@
 	
 </ft:form>
 
+<cfoutput>
+	</div></cfoutput>
 
 <cfsetting enablecfoutputonly="false">
