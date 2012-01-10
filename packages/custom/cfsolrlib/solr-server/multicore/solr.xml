@@ -11,5 +11,6 @@
     If 'null' (or absent), cores will not be manageable via request handler
   -->
     <cores adminPath="/admin/cores">
+      <core name='mhs_midhosp' instanceDir='/Users/jeffcoughlin/Sites/clients/mhs/org.middlesexhospital/projects/mhs_midhosp/solr'/>
     </cores>
   </solr>

@@ -40,7 +40,7 @@
 		<!---
 		@author David Hammond (dave@modernsignal.com) 
 		@version 0, July 12, 2009 
-		--->
+		---> 
 		<cfset var chars = "" />
 		<cfset var replaced = "" />
 		<cfset var i = "" />
