@@ -4,9 +4,6 @@
 	<cfproperty ftSeq="130" ftFieldset="General" name="lContentTypes" type="string" default="" hint="The content types to be searched" ftLabel="Content Types" ftType="list" ftListData="getContentTypeList" />
 	<cfproperty ftSeq="140" ftFieldset="General" name="orderBy" type="string" default="rank" hint="The sort order of the results" ftLabel="Sort Order" ftType="list" ftList="rank:Relevance,date:Date" />
 	
-	<!---<cfproperty name="page" type="integer" default="1" hint="The page of results to return.  Use either page or start to determine which records to display." />
-	<cfproperty name="start" type="integer" default="0" hint="The start row of results.  Use either page or start to determine which records to display." />
-	<cfproperty name="rows" type="integer" default="10" hint="The number of items to display per page" />--->
 	<cfproperty name="bSearchPerformed" type="boolean" default="false" hint="Will be true if any search has been performed" />
 	
 	<cffunction name="getContentTypeList" access="public" output="false" returntype="string" hint="Returns a list used to populate the lCollections field dropdown selection">
@@ -27,7 +24,10 @@
 		<cfargument name="objectid" required="true" hint="The objectid of the farsolrSearch object containing the details of the search" />
 		<cfargument name="typename" required="false" default="solrProSearch" hint="The solr search form type used to control the search." />
 		<cfargument name="bSpellcheck" required="false" default="true" hint="enable/disable spellchecker" />
+		<cfargument name="rows" required="false" default="10" />
+		<cfargument name="page" required="false" default="1" />
 		
+		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
 		<cfset var stResult = { bSearchPerformed = 0 } />
 		<cfset var oSearchForm = application.fapi.getContentType(arguments.typename) />
 		<cfset var stSearchForm = oSearchForm.getData(objectid = arguments.objectid) />
@@ -62,7 +62,7 @@
 			<cfset var q = reReplaceNoCase(stSearchForm.q,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL") />
 			
 			<!--- remove operators from string (AND, OR, NOT) --->
-			<cfset var q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
+			<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
 			
 			<cfif stSearchForm.operator eq "all">
 				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
@@ -106,7 +106,7 @@
 			</cfif>
 			
 			<cfset var oSearchService = application.fapi.getContentType("solrProContentType") />
-			<cfset stResult = oSearchService.search(q = trim(q), start = 0, rows = 10, params = params) />
+			<cfset stResult = oSearchService.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
 			<!--- TODO: log the search and result stats --->
