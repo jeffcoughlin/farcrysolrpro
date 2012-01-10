@@ -94,7 +94,7 @@
 			<!--- get the field list for the content type(s) we are searching --->
 			<cfif listLen(stSearchForm.lContentTypes) eq 1>
 				<cfset params["qf"] = oContentType.getFieldListCacheForType(stSearchForm.lContentTypes) />
-			<cfelse>
+			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
 				<cfset params["qf"] = oContentType.getFieldListForTypes(stSearchForm.lContentTypes) />
 			</cfif>
 			
