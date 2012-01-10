@@ -96,6 +96,8 @@
 				<cfset params["qf"] = oContentType.getFieldListCacheForType(stSearchForm.lContentTypes) />
 			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
 				<cfset params["qf"] = oContentType.getFieldListForTypes(stSearchForm.lContentTypes) />
+			<cfelse>
+				<cfset params["qf"] = oContentType.getFieldListForTypes() />
 			</cfif>
 			
 			<!--- return the score --->
