@@ -25,7 +25,8 @@
 	
 	<cffunction name="getSearchResults" access="public" output="false" returntype="struct" hint="Returns a structure containing extensive information of the search results">
 		<cfargument name="objectid" required="true" hint="The objectid of the farsolrSearch object containing the details of the search" />
-		<cfargument name="typename" required="false" default="solrProSearch" hint="The solr search form type used to control the search.">
+		<cfargument name="typename" required="false" default="solrProSearch" hint="The solr search form type used to control the search." />
+		<cfargument name="bSpellcheck" required="false" default="true" hint="enable/disable spellchecker" />
 		
 		<cfset var stResult = { bSearchPerformed = 0 } />
 		<cfset var oSearchForm = application.fapi.getContentType(arguments.typename) />
@@ -41,6 +42,22 @@
 			
 			<!--- convert search criteria into a proper solr query string (using chosen operator (any,all,phrase) and target collection, if specified) --->
 			
+			<!--- spellcheck --->
+			<cfif arguments.bSpellcheck is true>
+				<cfset params["spellcheck"] = true />
+				<cfset params["spellcheck.count"] = 1 />
+				<cfif listLen(stSearchForm.q, " ") gt 1>
+					<cfset stParams["spellcheck.dictionary"] = "phrase" />
+				<cfelse>
+					<cfset stParams["spellcheck.dictionary"] = "default" />
+				</cfif>
+				<cfset params["spellcheck.build"] = false />
+				<cfset params["spellcheck.onlyMorePopular"] = true />
+				<cfset params["spellcheck.collate"] = true />
+			<cfelse>
+				<cfset params["spellcheck"] = false />
+			</cfif>
+
 			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
 			<cfset var q = reReplaceNoCase(stSearchForm.q,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL") />
 			
@@ -82,14 +99,7 @@
 			
 			<!--- return the score --->
 			<cfset params["fl"] = "*,score" />
-			
-			<!--- spellcheck --->
-			<cfset params["spellcheck"] = true />
-			<cfset params["spellcheck.count"] = 1 />
-			<cfset params["spellcheck.build"] = false />
-			<cfset params["spellcheck.onlyMorePopular"] = true />
-			<cfset params["spellcheck.collate"] = true />
-			
+						
 			<!--- apply the sort --->
 			<cfif stSearchForm.orderby eq "date">
 				<cfset params["sort"] = "datetimelastupdated desc" />
