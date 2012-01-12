@@ -47,7 +47,7 @@
 		
 		<ft:processFormObjects typename="solrProContentType">
 			
-			<!--- TODO: make sure teaser and title fields are being STORED in Solr! --->
+			<!--- TODO: make sure teaser, title & image fields are being STORED in Solr! --->
 			<cfparam name="form.resultTitleField" type="string" default="label" />
 			<cfparam name="form.resultSummaryField" type="string" default="" />
 			<cfparam name="form.resultImageField" type="string" default="" />
@@ -125,29 +125,26 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Indexed Properties" helpSection="The properties for this content type that will be indexed.">
-		
-		<!--- TODO: add a note telling users that all Text (General) fields will be copied to a phonetic field to allow phonetic searching. 
-		No need to add a separate phonetic field as well for those fields --->
-		
+
 		<cfoutput><div id="indexedProperties"></div></cfoutput>
 		
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Search Result Defaults">
 		
-		<ft:field label="Result Title" hint="The field that will be used for the search result title.">
+		<ft:field label="Result Title <em>*</em>" hint="The field that will be used for the search result title.  It is suggested to use a ""string"" field. You must store this value in Solr's index.">
 			<cfoutput>
 				<select name="resultTitleField" id="resultTitleField"></select>
 			</cfoutput>
 		</ft:field>
 		
-		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.  It is suggested to use a teaser field here.">
+		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.  It is suggested to use a teaser field here, using the ""text"" field type.  You must store this value in Solr's index.">
 			<cfoutput>
 				<select name="resultSummaryField" id="resultSummaryField"></select>
 			</cfoutput>
 		</ft:field>
 		
-		<ft:field label="Result Image" hint="The field that will be used for the search result teaser image.">
+		<ft:field label="Result Image" hint="The field that will be used for the search result teaser image.  If you have an image you would like to display in the search results choose the Solr field that will contain the image's path.  It is recommended you use a ""string"" field type.  You must store this value in Solr's index.">
 			<cfoutput>
 				<select name="resultImageField" id="resultImageField"></select>
 			</cfoutput>
@@ -155,11 +152,11 @@
 		
 	</ft:fieldset>
 	
-	<ft:fieldset legend="Related Rules" helpSection="TODO: MORE TO COME">
+	<ft:fieldset legend="Related Rules" helpSection="The FarCry Solr Pro plugin can index the contents of rules that have text data.">
 		
 		<ft:object stObject="#stobj#" lFields="bIndexRuleData" r_stPrefix="rulePrefix" />
 		
-		<ft:field label="Indexed Rules" bMultiField="true">
+		<ft:field label="Indexed Rules" bMultiField="true" hint="Choose the rules you would like to index for this content type.  The rule fields that will be indexed are listed below each rule name.  Only text fields can be indexed.">
 			
 			<cfset aRules = application.fapi.getContentType("solrProContentType").getRules() />
 			
@@ -331,26 +328,160 @@
 				});
 				
 				if ($j('###generalPrefix#contentType').val().length > 0) {
-					
-					// load the data for the resultTitleField and resultSummaryField dropdowns
-					loadContentTypeFields($j('###generalPrefix#contentType').val());
-					
 					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
-					
 				}
 				
 				$j('###generalPrefix#contentType').change(function(event){
-					
-					// load the data for the resultTitleField and resultSummaryField dropdowns
-					loadContentTypeFields($j('###generalPrefix#contentType').val());
-					
 					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
-					
 				});
 				
 			});
+			
+			function createOptionTag(value, label, selected) {
+				var html = '<option value="' + value + '"';
+				if (selected) {
+					html = html + ' selected="selected"';
+				}
+				html = html + ">" + label + "</option>";
+				return html;
+			}
+			
+			function addOptionsToDropdown(dropdown, options) {
+				dropdown.empty();
+				for (var i = 0; i < options.length; i++) {
+					dropdown.append(options[i]);
+				}
+			}
+			
+			function loadResultFieldDropdowns() {
+				buildResultTitleDropdownOptions();
+				buildResultSummaryDropdownOptions();
+				buildResultImageDropdownOptions();
+			}
+			
+			function buildResultTitleDropdownOptions() {
+				
+				var selectedValue = '#stobj.resultTitleField#';
+				if (selectedValue == '') {
+					selectedValue = 'label';
+				}
+				var dropdown = $j("##resultTitleField");
+				var options = buildResultFieldOptions(selectedValue);
+				
+				addOptionsToDropdown(dropdown, options);
+				
+				// set the selected one
+				if (selectedValue.length > 0) {
+					// if we have that option in the drop down, select it
+					dropdown.find('option[value="' + selectedValue + '"]').attr("selected",true);
+				} else {
+					// if there is a title field, select it
+					dropdown.find('option[value*="title_"]').attr('selected',true);
+				}
+				
+			}
+			
+			function buildResultSummaryDropdownOptions() {
+				
+				var selectedValue = '#stobj.resultSummaryField#';
+				var dropdown = $j("##resultSummaryField");
+				var options = buildResultFieldOptions(selectedValue);
+				
+				// add the "none" option
+				options.push(createOptionTag("","-- Use Solr Summary --",false));
+				options.sort();
+				
+				addOptionsToDropdown(dropdown, options);
+
+			}
+			
+			function buildResultImageDropdownOptions() {
+				
+				var selectedValue = '#stobj.resultImageField#';
+				var dropdown = $j("##resultImageField");
+				var options = buildResultFieldOptions(selectedValue);
+				
+				// add the "none" option
+				options.push(createOptionTag("","-- No Teaser Image --",false));
+				options.sort();
+				
+				addOptionsToDropdown(dropdown, options);
+				
+			}
+			
+			function buildResultFieldOptions(selectedValue) {
+				
+				// builds an array of HTML option tags for the result fields
+				
+				var fields = loadResultFieldsForDropdowns();
+				var options = [];
+				
+				for (var i = 0; i < fields.length; i++) {
+					options.push(createOptionTag(fields[i].fieldName, fields[i].label, (selectedValue == fields[i].fieldName)));
+				}
+				
+				return options;
+				
+			}
+			
+			function loadResultFieldsForDropdowns() {
+				
+				// loads candidates for the result title, summary and image fields
+				
+				// get all of the created fields from the custom properties table and all core properties
+				var fields = [];
+				
+				// get custom properties
+				$j('input.lFieldTypes').each(function(i){
+					
+					// we are only interested in the ones that have defined field types
+					if ($j(this).val().length > 0) {
+					
+						// grab the base field name
+						var baseFieldName = $j(this).attr('rel').toLowerCase();
+						
+						// for each defined field type, build the full field name and add it to the array
+						
+						// step 1: the value of the text box is a comma delimited list of defined field types
+						var types = $j(this).val().split(",");
+						
+						// step 2: each of the field type definitions is a colon delimited list of values in type:storedFlag:boostValue format
+						for (var i = 0; i < types.length; i++) {
+							types[i] = types[i].split(":");
+						}
+						
+						// step 3: build full field name and add it to the array
+						for (var y = 0; y < types.length; y++) {
+							// only include stored fields
+							if (types[y][1] == 1) {
+								var type = types[y][0];
+								var fullFieldName = baseFieldName + "_" + type + "_stored";
+								fields.push({fieldName: fullFieldName, label: baseFieldName + " (" + type + ")"});
+							}
+						}
+						
+					}
+						
+				});
+				
+				// get core properties
+				$j("##tblCoreProperties tbody tr").each(function(i){
+					// include only stored fields
+					var stored = $j.trim($j(this).find("td:nth-child(4)").text().toLowerCase());
+					if (stored == "yes") {
+						// column 1 is field name
+						fields.push({ fieldName: $j(this).find("td:first-child").text(), label: $j(this).find("td:first-child").text()});
+					}
+				});
+				
+				// sort 'em alphabetically
+				fields.sort();
+				
+				return fields;
+				
+			}
 			
 			function updateFieldTypeSelectionDisplay() {
 				// for each property
@@ -367,8 +498,6 @@
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", true);
 						$j("##customField_" + thisFieldName).addClass("ui-state-disabled");
 						$j("##fcFieldType_" + thisFieldName).addClass("ui-state-disabled");
-						//$j("##fieldBoost_" + thisFieldName).addClass("ui-state-disabled").attr("disabled", true);
-						//$j("##fieldBoost_" + thisFieldName).next("button").addClass("ui-state-disabled").attr("disabled", true);
 					} else {
 						// grab the lFieldTypes value and add the items to the display div
 						if (lFieldTypes.val().length > 0) {
@@ -406,10 +535,7 @@
 						$j("##fieldType_" + thisFieldName).attr("disabled", false);
 						$j("button[rel='" + thisFieldName + "'].btnAddFieldType").attr("disabled", false);
 						$j("##customField_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
-						$j("##fcFieldType_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
-						//$j("##fieldBoost_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);
-						//$j("##fieldBoost_" + thisFieldName).next("button").removeClass("ui-state-disabled").attr("disabled", false);
-												
+						$j("##fcFieldType_" + thisFieldName).removeClass("ui-state-disabled").attr("disabled", false);			
 					}
 					
 				});
@@ -466,6 +592,8 @@
 					
 					$j("##fieldType_" + fieldName + " option[value='" + fieldTypeToRemove + "']").removeAttr("disabled");
 					
+					loadResultFieldDropdowns();
+					
 				});
 			}
 			
@@ -493,6 +621,8 @@
 							
 					}
 					
+					loadResultFieldDropdowns();
+					
 				});
 			}
 			
@@ -501,11 +631,11 @@
 				// activate the checkboxes
 				$j('input[name="indexedProperties"]').change(function(event){
 					updateFieldTypeSelectionDisplay();
+					loadResultFieldDropdowns();
 				});
 				
 				// activate the "add" buttons
 				$j("button.btnAddFieldType").click(function(event){
-					
 					
 					var thisFieldName = $j(this).attr("rel");
 					var thisFieldType = $j("##fieldType_" + thisFieldName);
@@ -543,6 +673,8 @@
 						
 					}
 					
+					loadResultFieldDropdowns();
+					
 				});
 				
 				$j("button.btnAddFieldType").button({
@@ -555,10 +687,6 @@
 					"height": "1.4em",
 					"vertical-align": "middle"
 				});
-				
-				// setup the boost "dropdown"
-				//activateBoostDropdowns();
-				
 			}
 			
 			function handleBoostChange(target) {
@@ -593,8 +721,8 @@
 					
 					var options = [ <cfloop list="#lFieldBoostValues#" index="i"><cfset counter++ />"#i#"<cfif counter lt listLen(lFieldBoostValues)>,</cfif></cfloop> ];
 					
-					if (options.indexOf($(this).val()) == -1) {
-						options.push($(this).val());
+					if (options.indexOf($j(this).val()) == -1) {
+						options.push($j(this).val());
 					}
 					
 					options.sort(function (a,b) {
@@ -691,6 +819,8 @@
 						
 						updateFieldTypeSelectionDisplay();
 						
+						loadResultFieldDropdowns();
+						
 					},
 					error: function(req, status, err) {
 						
@@ -701,84 +831,6 @@
 					}
 				});
 				
-			}
-			
-			function loadContentTypeFields(contentType) {
-		
-				$j('###generalPrefix#contentType').closest(".ctrlHolder").removeClass("error").find("p.errorField").remove();
-				
-				var title = $j("##resultTitleField");
-				var summary = $j("##resultSummaryField");
-				var image = $j("##resultImageField");
-				
-				title.empty();
-				summary.empty();
-				image.empty();
-				
-				$j.ajax({
-					url: "#application.fapi.getwebroot()#/farcrysolrpro/facade/remote.cfc?method=getTextPropertiesByType&returnformat=json&typename=" + contentType,
-					type: "GET",
-					datatype: "json",
-					success: function(data,status,req){
-						
-						summary.append('<option value="">-- None --</option>');
-						
-						var currentTitle = "#lcase(stobj.resultTitleField)#";
-						var currentSummary = "#lcase(stobj.resultSummaryField)#";
-						var currentImage = "#lcase(stobj.resultImageField)#";
-						
-						image.append('<option value="">-- No Teaser Image --</option>');
-						
-						for (var x = 0; x < data.length; x++) {
-							
-							var titleHtml = "";
-							var summaryHtml = "";
-							var imageHtml = "";
-	
-							var titleHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
-							var summaryHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
-							var imageHtml = '<option value="' + data[x].toLowerCase() + '">' + data[x] + '</option>';
-							
-							title.append(titleHtml);
-							summary.append(summaryHtml);
-							image.append(imageHtml);
-							
-						}
-						
-						// mark the selected value based on stobj
-						if (currentTitle.length > 0) {
-							title.find("option[value='" + currentTitle + "']").attr("selected", "selected");
-						} else {
-							// first look for title
-							title.find("option[value='title']").attr("selected", true);
-							
-							// fall back to label
-							if (title.find("option[value='title']").length == 0) {
-								title.find("option[value='label']").attr("selected", true);
-							}
-						}
-						if (currentSummary.length > 0) {
-							summary.find("option[value='" + currentSummary + "']").attr("selected", "selected");
-						} else {
-							// if we have a "teaser" field, default to that
-							summary.find("option[value='teaser']").attr("selected", true);
-						}
-						// mark selected teaser image
-						if (currentImage.length > 0) {
-							image.find("option[value='" + currentImage + "']").attr("selected", "selected");
-						}
-						 
-					},
-					error: function(req,status,err){
-						
-						var contentType = $j('###generalPrefix#contentType');
-						var message = '<p class="errorField">There was an error loading the fields for that content type.  Make sure you have created an web server mapping for /farcrysolrpro. See documentation for more information.</p>';
-						
-						contentType.closest(".ctrlHolder").addClass("error").prepend(message);
-						
-					},
-					cache: false
-				});
 			}
 			
 		</script>

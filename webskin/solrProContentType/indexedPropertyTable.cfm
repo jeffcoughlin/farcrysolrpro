@@ -71,7 +71,7 @@
 					<!--- this will hold the field types created for this field --->
 					<div id="displayFieldTypes_#prop#"></div>
 					
-					<input type="hidden" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" <cfif structKeyExists(stIndexedProperty, "lFieldTypes")>value="#stIndexedProperty.lFieldTypes#"</cfif> />
+					<input type="hidden" class="lFieldTypes" rel="#prop#" name="lFieldTypes_#prop#" id="lFieldTypes_#prop#" <cfif structKeyExists(stIndexedProperty, "lFieldTypes")>value="#stIndexedProperty.lFieldTypes#"</cfif> />
 				</td>
 			</tr>
 		</cfoutput>
