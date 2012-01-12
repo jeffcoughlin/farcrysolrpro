@@ -8,6 +8,7 @@
 <cfparam name="stParam.rows" default="10" />
 <cfparam name="stParam.pageLinks" default="5" />
 <cfparam name="stParam.results" default="#arrayNew(1)#" />
+<cfparam name="stParam.highlighting" default="#structNew()#" />
 <cfparam name="stParam.totalResults" default="0" />
 
 <cfset aObjectIds = [] />
@@ -32,8 +33,14 @@
 	currentPage="#stParam.currentPage#" 
 	recordsPerPage="#stParam.rows#" 
 	pageLinks="#stParam.pageLinks#">
-
-	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" />
+	
+	<cfif structKeyExists(stParam.highlighting, stParam.results[stObject.currentRow].objectid)>
+		<cfset highlighting = stParam.highlighting[stParam.results[stObject.currentRow].objectid] />
+	<cfelse>
+		<cfset highlighting = {} />
+	</cfif>
+	
+	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" highlighting="#highlighting#" />
 
 </skin:pagination>
 			

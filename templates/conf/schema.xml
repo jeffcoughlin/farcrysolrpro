@@ -123,6 +123,7 @@
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
+	
 	<!--
 		<fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" stored="true" multiValued="true">
 			<analyzer>
@@ -220,6 +221,8 @@
 		<!-- field to store spellchecker data -->
 		<field name="spell" type="textspell" indexed="true" stored="false" required="false" multiValued="true" />
 		<field name="spellphrase" type="textspellphrase" indexed="true" stored="false" required="false" multiValued="true" />
+		
+		<field name="highlight" type="text" indexed="false" stored="true" required="false" multiValued="true" />
 		
 		<!-- dynamic fields -->
 

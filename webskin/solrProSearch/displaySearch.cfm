@@ -80,10 +80,12 @@
 		</cfif>
 		
 		<cfif arraylen(stSearchResult.results) GT 0>
+			<cfparam name="stSearchResult.highlighting" default="#structnew()#" />
 			<skin:view 
 				stObject="#stobj#" 
 				webskin="displaySearchResults" 
-				results="#stSearchResult.results#" 
+				results="#stSearchResult.results#"
+				highlighting="#stSearchResult.highlighting#" 
 				totalResults="#stSearchResult.totalResults#" 
 				pageLinks="#pageLinks#" 
 				currentPage="#form.page#" 

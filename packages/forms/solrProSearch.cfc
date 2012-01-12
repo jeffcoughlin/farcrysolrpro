@@ -26,6 +26,11 @@
 		<cfargument name="bSpellcheck" required="false" default="true" hint="enable/disable spellchecker" />
 		<cfargument name="rows" required="false" default="10" />
 		<cfargument name="page" required="false" default="1" />
+		<cfargument name="bHighlight" required="false" type="boolean" default="true" hint="enable/disable highlighting" />
+		<cfargument name="hlFragSize" required="false" type="numeric" default="200" hint="The length in characters of each highlight snippet" />
+		<cfargument name="hlSnippets" required="false" type="numeric" default="3" hint="The number of highlighting snippets to return" />
+		<cfargument name="hlPre" required="false" type="string" default="<strong>" hint="HTML to use to wrap instances of search terms" />
+		<cfargument name="hlPost" required="false" type="string" default="</strong>" hint="HTML to use to wrap instances of search terms" />
 		
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
 		<cfset var stResult = { bSearchPerformed = 0 } />
@@ -106,6 +111,16 @@
 			<!--- apply the sort --->
 			<cfif stSearchForm.orderby eq "date">
 				<cfset params["sort"] = "datetimelastupdated desc" />
+			</cfif>
+			
+			<!--- get highlighting --->
+			<cfif arguments.bHighlight>
+				<cfset params["hl"] = true />
+				<cfset params["hl.fragsize"] = arguments.hlFragSize />
+				<cfset params["hl.snippets"] = arguments.hlSnippets />
+				<cfset params["hl.fl"] = "highlight" />
+				<cfset params["hl.simple.pre"] = arguments.hlPre />
+				<cfset params["hl.simple.post"] = arguments.hlPost />
 			</cfif>
 			
 			<cfset var oSearchService = application.fapi.getContentType("solrProContentType") />

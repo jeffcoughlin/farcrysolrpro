@@ -5,6 +5,7 @@
 	
 	<cfproperty ftSeq="130" ftFieldset="Solr Content Type" ftLabel="Result Title" name="resultTitleField" ftType="list" type="nstring" required="true" default="label" ftDefault="label" ftValidation="required" ftHint="The field that will be used for the search result title." />
 	<cfproperty ftSeq="140" ftFieldset="Solr Content Type" ftLabel="Result Summary" name="resultSummaryField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result summary." />
+	<cfproperty ftSeq="142" ftFieldset="Solr Content Type" ftLabel="Summary Fields" name="lSummaryFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to build the summary" />
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Result Image" name="resultImageField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result teaser image." />
 	
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
@@ -360,6 +361,19 @@
 			 	farcryField = "" 
 			}) />
 		</cfif>
+		
+		<!--- if we are building a summary field, grab that data as well --->
+		<cfset var lSummaryFields = arguments.stContentType.lSummaryFields />
+		<cfset var f = "" />
+		<cfloop list="#lSummaryFields#" index="f">
+			<cfif structKeyExists(stRecord, f)>
+				<cfset arrayAppend(doc, {
+					name = "highlight",
+					value = application.stPlugins.farcrysolrpro.oCustomFunctions.tagStripper(stRecord[f]),
+					farcryField = ""
+				}) />
+			</cfif>
+		</cfloop>
 		
 		<!--- add core boost values to document --->
 		<cfset var i = "" />

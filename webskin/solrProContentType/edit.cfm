@@ -47,13 +47,15 @@
 		
 		<ft:processFormObjects typename="solrProContentType">
 			
-			<!--- TODO: make sure teaser, title & image fields are being STORED in Solr! --->
 			<cfparam name="form.resultTitleField" type="string" default="label" />
 			<cfparam name="form.resultSummaryField" type="string" default="" />
 			<cfparam name="form.resultImageField" type="string" default="" />
 			<cfset stProperties["resultTitleField"] = form.resultTitleField />
 			<cfset stProperties["resultSummaryField"] = form.resultSummaryField  />
 			<cfset stProperties["resultImageField"] = form.resultImageField  />
+			
+			<cfparam name="form.lSummaryFields" type="string" default="" />
+			<cfset stProperties["lSummaryFields"] = form.lSummaryFields />
 			
 			<!--- clear the array of indexed properties --->
 			<cfparam name="stProperties.aIndexedProperties" type="array" default="#arrayNew(1)#" />
@@ -141,6 +143,7 @@
 		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.  It is suggested to use a teaser field here, using the ""text"" field type.  You must store this value in Solr's index.">
 			<cfoutput>
 				<select name="resultSummaryField" id="resultSummaryField"></select>
+				<div id="lSummaryFields"></div>
 			</cfoutput>
 		</ft:field>
 		
@@ -330,11 +333,15 @@
 				if ($j('###generalPrefix#contentType').val().length > 0) {
 					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
+					// load the FarCry fields for the lSummaryFields list box
+					loadContentTypeFields($j('###generalPrefix#contentType').val());
 				}
 				
 				$j('###generalPrefix#contentType').change(function(event){
 					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
+					// load the FarCry fields for the lSummaryFields list box
+					loadContentTypeFields($j('###generalPrefix#contentType').val());
 				});
 				
 			});
@@ -832,7 +839,48 @@
 				});
 				
 			}
-			
+			function loadContentTypeFields(contentType) {
+		
+				$j('###generalPrefix#contentType').closest(".ctrlHolder").removeClass("error").find("p.errorField").remove();
+				
+				var lSummaryFields = $j("##lSummaryFields");
+				
+				lSummaryFields.empty();
+				
+				$j.ajax({
+					url: "#application.fapi.getwebroot()#/farcrysolrpro/facade/remote.cfc?method=getTextPropertiesByType&returnformat=json&typename=" + contentType,
+					type: "GET",
+					datatype: "json",
+					success: function(data,status,req){
+						
+						var currentValueArray = ("#lcase(stobj.lSummaryFields)#").split(",");
+						
+						for (var x = 0; x < data.length; x++) {
+							
+							var html = '<label><input type="checkbox" name="lSummaryFields" value="' + data[x].toLowerCase() + '"';
+							
+							if (currentValueArray.indexOf(data[x].toLowerCase()) > -1) {
+								html = html + ' checked="checked"';
+							}
+							
+							html = html + ' />' + data[x] + '</label>';
+							
+							lSummaryFields.append(html);
+						}
+						
+					},
+					error: function(req,status,err){
+						
+						var contentType = $j('###generalPrefix#contentType');
+						var message = '<p class="errorField">There was an error loading the fields for that content type.  Make sure you have created an web server mapping for /farcrysolrpro. See documentation for more information.</p>';
+						
+						contentType.closest(".ctrlHolder").addClass("error").prepend(message);
+						
+					},
+					cache: false
+				});
+			}
+
 		</script>
 		</cfoutput>
 	</skin:htmlhead>

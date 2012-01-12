@@ -8,10 +8,9 @@
 <cfparam name="stParam.oContentType" default="#application.fapi.getContentType('solrProContentType')#" />
 <cfset stContentType = stParam.oContentType.getByContentType(contentType = stobj.typename) />
 
-<cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
+<cfparam name="stParam.highlighting" default="#structNew()#" />
 
-<!---<cfdump var="#stContentType#" />
-<cfdump var="#stobj#" abort="true" />--->
+<cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
 
 <!--- TODO: Get default CSS file provided by plugin --->
 
@@ -20,28 +19,46 @@
 	<cfset request.stObj[i] = trim(request.stObj[i]) />
 </cfloop>
 
-<!--- TODO: Get title, teaser, and teaser image fields from configured settings --->
-<!--- For the moment, assume we have teaser_text_stored, and title_text_stored --->
-
 <!--- Get result title --->
-<cfif structKeyExists(stObj, "title")>
-	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj.title) />
+<cfif structKeyExists(stObj, stContentType.resultTitleField) and len(stObj[stContentType.resultTitleField])>
+	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />
 <cfelse>
 	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj.label) />
 </cfif>
 
 <!--- Get result teaser --->
-<cfif structKeyExists(stObj, "teaser_text_stored") and stObj.teaser_text_stored neq "">
-	<cfset variables.teaser = oCustomFunctions.tagStripped(stObj.teaser_text_stored) />
-<cfelseif 	structKeyExists(stObj, "body_text_stored") and stObj.body_text_stored neq "">
-	<cfset variables.teaser = oCustomFunctions.tagStripped(stObj.body_text_stored) />
+<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField) and stObj[stContentType.resultSummaryField] neq "">
+	<cfset variables.teaser = oCustomFunctions.tagStripped(stObj[stContentType.resultSummaryField]) />		
+	<!--- abbreviate teaser --->
+	<cfset teaser = oCustomFunctions.abbreviate(teaser, 450) />
 <cfelse>
+	<!--- use Solr generated summary --->
 	<cfset variables.teaser = "" />
+	<cfif structKeyExists(stParam.highlighting, "highlight") and isArray(stParam.highlighting["highlight"])>
+		<cfloop array="#stParam.highlighting['highlight']#" index="hl">
+			
+			<!--- remove leading non-alphanumeric --->
+			<cfset hl = trim(reReplaceNoCase(hl,"^[^a-z0-9]","")) />
+			
+			<!--- concatenate the highlighted text strings --->
+			<cfset variables.teaser = variables.teaser & "..." & hl />
+			
+		</cfloop>
+		<cfset variables.teaser = trim(variables.teaser) & "..." />
+	</cfif>
 </cfif>
 
 <!--- Get result image teaser --->
-<cfif structKeyExists(stObj, "imgteaser_string_stored") and stObj.imgteaser_string_stored neq "">
-	<cfset variables.teaserImage = stObj.imgteaser_string_stored />
+<cfif structKeyExists(stObj, stContentType.resultImageField) and len(stObj[stContentType.resultImageField])>
+	<!--- if the teaser image value is a UUID, then check if it points to a dmImage object.  if it does, use the ThumbnailImage as the teaser image --->
+	<cfif isValid("uuid",stObj[stContentType.resultImageField])>
+		<cfif application.fapi.findType(stObj[stContentType.resultImageField]) eq "dmImage">
+			<cfset stImage = application.fapi.getContentObject(objectid = stObj[stContentType.resultImageField], typename = "dmImage") />
+			<cfset variables.teaserImage = stImage["ThumbnailImage"] />
+		</cfif>
+	<cfelse>
+		<cfset variables.teaserImage = stObj[stContentType.resultImageField] />
+	</cfif>
 <cfelse>
 	<cfset variables.teaserImage = "" />
 </cfif>
@@ -57,23 +74,18 @@
 	<cfset variables.resultDate = stObj.dateTimeLastUpdated />
 </cfif>
 
-<!--- abbreviate teaser --->
-<cfset teaser = oCustomFunctions.abbreviate(teaser, 450) />
+<!--- Get result link --->
+<skin:buildlink objectid="#stObj.objectID#" r_url="itemUri" />
 
 <!--- Get Abbreviated Link --->
-<!---
 <cfsavecontent variable="abbrLink">
-  <cfoutput>http://middlesexhospital.org</cfoutput><skin:buildLink objectid="#stObj.objectId#" urlOnly="true" />
+  <cfoutput>http://#cgi.server_name##itemUri#</cfoutput>
 </cfsavecontent>
 <cfif len(abbrLink) gt 83>
   <cfsavecontent variable="abbrLink">
-    <cfoutput>http://middlesexhospital...#right(abbrLink, 60)#</cfoutput>
+    <cfoutput>http://#listFirst(cgi.server_name,'.')#<cfif listLen(cgi.server_name,'.') gte 2>.#listGetAt(cgi.server_name,2,'.')#</cfif>...#right(abbrLink, 60)#</cfoutput>
   </cfsavecontent>
 </cfif>
---->
-
-<!--- Get result link --->
-<skin:buildlink objectid="#stObj.objectID#" r_url="itemUri" />
 
     <cfoutput>
       <div class="searchResult">
@@ -88,10 +100,9 @@
           <p>#variables.teaser#<cfif right(variables.teaser,3) EQ "..."> <a href="#itemUri#" title="#variables.resultTitle#">more</a></cfif></p>
         </div>
         <div class="searchResultMeta">
-          <!---<cfif myNavId neq ""><div class="searchResultBreadCrumbs"><myskin:breadcrumb startLevel="#request.stSettings.startLevel#" objectid="#myNavId#" ulClass="breadcrumbs" here="#variables.resultTitle#" separator=" / " bShowHome="0" bShowTextOnly="true" /></div></cfif>--->
-          <!--- <div class="searchResultLocation"><skin:buildLink objectid="#stObj.objectId#" linkText="#abbrLink#" /></div> --->
+          <div class="searchResultLocation"><skin:buildLink objectid="#stObj.objectId#" linkText="#abbrLink#" /></div>
           <div class="searchResultFileType">#application.stCoapi[stobj.typename].displayName#</div>
-          <div class="searchResultDate divider">#dateFormat(variables.resultDate, "mmm d, yyyy")#<!---  #timeFormat(variables.resultDate, "h:mm tt")# EST ---></div>
+          <div class="searchResultDate divider">#dateFormat(variables.resultDate, "mmm d, yyyy")#<!--- #timeFormat(variables.resultDate, "h:mm tt")# ---></div>
         </div>
       </div>
     </cfoutput>

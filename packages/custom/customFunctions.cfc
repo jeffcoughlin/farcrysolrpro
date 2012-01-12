@@ -77,7 +77,7 @@
 	
 	</cffunction>
 --->
-	<cffunction name="tagStripped" access="public" output="false" returntype="string" hint="Strip HTML tags with options to preserve certain tags">
+	<cffunction name="tagStripper" access="public" output="false" returntype="string" hint="Strip HTML tags with options to preserve certain tags">
 		<cfargument name="str" type="string" required="true" hint="String to manipulate" />
 		<cfargument name="action" type="string" required="false" default="strip" hint="Options are 'strip' or 'preserve'. Default is strip." />
 		<cfargument name="tagList" type="string" required="false" default="" hint="String to manipulate" />
