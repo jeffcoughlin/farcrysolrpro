@@ -60,6 +60,36 @@
 		
 	</cffunction>
 	
+	<cffunction name="ftValidateContentType" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="objectid" required="true" type="string" hint="The objectid of the object that this field is part of.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>		
+		<cfset var oField = createObject("component", "farcry.core.packages.formtools.field") />
+		<cfset var qDupeCheck = "" />		
+		
+		<!--- assume it passes --->
+		<cfset stResult = oField.passed(value=arguments.stFieldPost.Value) />
+			
+		<cfif NOT len(stFieldPost.Value)>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="This is a required field.") />
+		</cfif>
+		
+		<!--- check for duplicates --->
+		<cfquery name="qDupeCheck" datasource="#application.dsn#">
+			select objectid from solrProContentType where contentType = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.stFieldPost.value)#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
+		</cfquery>
+		
+		<cfif qDupeCheck.recordCount gt 0>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="There is already a configuration created for this content type.") />
+		</cfif>
+
+		<cfreturn stResult />
+		
+	</cffunction>
+	
 	<cffunction name="indexRecords" returntype="struct" access="public" output="false" hint="Indexes records for all or selected content types.">
 		<cfargument name="bOptimize" type="boolean" required="false" default="true" />
 		<cfargument name="batchSize" type="numeric" required="false" default="#application.fapi.getConfig(key = 'solrserver', name = 'batchSize', default = 1000)#" />
@@ -834,9 +864,7 @@
 								_thread.currentThread().setContextClassLoader(currentClassloader);
 							}
 						</cfscript>
-						
-					<cfelse>
-						<cflog application="true" file="cfsolrpro" type="warning" text="Skipped parsing file #filePath# because it did not exist." />
+
 					</cfif>
 					
 				</cfif>

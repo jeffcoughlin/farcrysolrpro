@@ -20,6 +20,22 @@
 	<!--- do some validation first --->
 	<ft:processFormObjects typename="solrProContentType" bSessionOnly="true" r_stObject="stObj">
 		
+		<!--- ensure this is not a duplicate content type --->
+		<cfset stValidationResult = ftValidateContentType(
+			objectid = stProperties.objectid, 
+			typename = "solrProContentType", 
+			stFieldPost = { value = stProperties.contentType }, 
+			stMetadata = {}
+		) />
+		<cfif stValidationResult.bSuccess eq false>
+			<ft:advice 
+				objectid="#stProperties.objectid#" 
+				field="contentType" 
+				message="#stValidationResult.stError.message#" 
+				value="#stValidationResult.value#" />
+			<cfset bContinueSave = false />
+		</cfif>
+		
 		<!--- assure all core field boost values are numeric --->
 		<cfparam name="form.indexedProperties" type="string" default="" />
 		<cfloop collection="#form#" item="f">
@@ -170,7 +186,7 @@
 	<ft:fieldset>
 		<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
 	</ft:fieldset>
-	
+
 	<ft:fieldset legend="General">
 		<ft:object stObject="#stobj#" lFields="title,contentType" r_stPrefix="generalPrefix" />
 	</ft:fieldset>
@@ -941,8 +957,6 @@
 				
 			}
 			function loadContentTypeFields(contentType) {
-		
-				$j('###generalPrefix#contentType').closest(".ctrlHolder").removeClass("error").find("p.errorField").remove();
 				
 				var lSummaryFields = $j("##lSummaryFields");
 				
