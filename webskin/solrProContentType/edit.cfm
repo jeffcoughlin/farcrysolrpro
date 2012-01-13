@@ -20,20 +20,63 @@
 	<!--- do some validation first --->
 	<ft:processFormObjects typename="solrProContentType" bSessionOnly="true" r_stObject="stObj">
 		
-		<!--- assure all fieldBoost values are numeric --->
+		<!--- assure all core field boost values are numeric --->
 		<cfparam name="form.indexedProperties" type="string" default="" />
 		<cfloop collection="#form#" item="f">
-			<cfif left(f, len('fieldBoost_')) eq 'fieldBoost_' or left(f, len('coreFieldBoost_')) eq 'coreFieldBoost_'>
-				<cfif not isNumeric(form[f]) and listFindNoCase(form.indexedProperties, listlast(f,"_"))>
+			<cfif left(f, len('coreFieldBoost_')) eq 'coreFieldBoost_'>
+				<cfif not isNumeric(form[f])>
 					<ft:advice 
 						objectid="#stProperties.objectid#" 
-						field="#f#" 
-						message="Field boost values must be numeric." 
+						field="aIndexedProperties" 
+						message="Field boost values must be numeric. Boost value for #right(f,len(f)-len('coreFieldBoost_'))# is ""#form[f]#""" 
 						value="#form[f]#" />
 					<cfset bContinueSave = false />
 				</cfif>
 			</cfif>
 		</cfloop>
+		
+		<!--- validate custom field boost values --->
+		<cfloop collection="#form#" item="f">
+			<cfif left(f, len('lFieldTypes_')) eq 'lFieldTypes_'>
+				<cfset aFieldTypes = listToArray(form[f]) />
+				<cfloop array="#aFieldTypes#" index="ft">
+					<cfif listlen(ft,":") neq 3>
+						<ft:advice 
+							objectid="#stProperties.objectid#" 
+							field="aIndexedProperties" 
+							message="There is an error in your field type definition for #right(f,len(f)-len('lFieldTypes_'))#" 
+							value="#form[f]#" />
+						<cfset bContinueSave = false />
+					<cfelse>
+						<cfif not isNumeric(listGetAt(ft,3,":"))>
+							<ft:advice 
+								objectid="#stProperties.objectid#" 
+								field="aIndexedProperties" 
+								message="Field boost values must be numeric.  Boost value for #right(f,len(f)-len('lFieldTypes_'))# is ""#listGetAt(ft,3,":")#""" 
+								value="#form[f]#" />
+							<cfset bContinueSave = false />
+						</cfif>
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<!--- validate the result summary fields --->
+		<cfparam name="form.resultSummaryField" type="string" default="" />
+		<cfset stProperties["resultSummaryField"] = form.resultSummaryField  />
+		<cfif len(trim(stProperties["resultSummaryField"])) eq 0>
+			<!--- if no specific result summary field, require at least one field to build the highlight field in solr --->
+			<cfparam name="form.lSummaryFields" type="string" default="" />
+			<cfset stProperties["lSummaryFields"] = form.lSummaryFields />
+			<cfif listLen(stProperties["lSummaryFields"]) eq 0>
+				<ft:advice 
+					objectid="#stProperties.objectid#" 
+					field="lSummaryFields" 
+					message="Since you have not chosen a field to serve as the search result summary, you must choose at least one field to use to have Solr generate a summary" 
+					value="#form.lSummaryFields#" />
+				<cfset bContinueSave = false />
+			</cfif>
+		</cfif>
 		
 		<!--- TODO: ensure that 2 records for the same content type are not created (dupe check "contentType" field) --->
 		
@@ -53,9 +96,15 @@
 			<cfset stProperties["resultTitleField"] = form.resultTitleField />
 			<cfset stProperties["resultSummaryField"] = form.resultSummaryField  />
 			<cfset stProperties["resultImageField"] = form.resultImageField  />
-			
-			<cfparam name="form.lSummaryFields" type="string" default="" />
-			<cfset stProperties["lSummaryFields"] = form.lSummaryFields />
+
+			<cfif len(trim(stProperties["resultSummaryField"]))>
+				<!--- if we have a specific summary field, then set the lSummaryFields value as an empty string.  This will prevent population of the "highlight" field.  Since its not being used, we can save disk space. --->
+				<cfset stProperties["lSummaryFields"] = "" />
+			<cfelse>
+				<!--- if no specific summary field was chosen, then we use the checkboxes to indicate how to build the "highlight" field which will be used to generate a teaser for the search results --->
+				<cfparam name="form.lSummaryFields" type="string" default="" />
+				<cfset stProperties["lSummaryFields"] = form.lSummaryFields />
+			</cfif>
 			
 			<!--- clear the array of indexed properties --->
 			<cfparam name="stProperties.aIndexedProperties" type="array" default="#arrayNew(1)#" />
@@ -127,9 +176,15 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Indexed Properties" helpSection="The properties for this content type that will be indexed.">
-
-		<cfoutput><div id="indexedProperties"></div></cfoutput>
-		
+		<cfparam name="request.stFarcryFormValidation" default="#structNew()#" />
+		<cfif structKeyExists(request.stFarcryFormValidation,stobj.objectid) and structKeyExists(request.stFarcryFormValidation[stobj.objectid],"aIndexedProperties")>
+			<ft:field label="" class="error">
+				<cfoutput>
+				<p class="errorField" htmlfor="aIndexedProperties" for="aIndexedProperties">#request.stFarcryFormValidation[stobj.objectid]['aIndexedProperties'].stError.message#</p>
+				</cfoutput>
+			</ft:field>
+		</cfif>
+		<cfoutput><div id="indexedProperties"></div></cfoutput>		
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Search Result Defaults">
@@ -139,9 +194,18 @@
 				<select name="resultTitleField" id="resultTitleField"></select>
 			</cfoutput>
 		</ft:field>
-		
-		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field.">
+
+		<cfparam name="request.stFarcryFormValidation" default="#structNew()#" />
+		<cfif structKeyExists(request.stFarcryFormValidation,stobj.objectid) and structKeyExists(request.stFarcryFormValidation[stobj.objectid],"lSummaryFields")>
+			<cfset className = "error" />
+		<cfelse>
+			<cfset className = "" />
+		</cfif>
+		<ft:field label="Result Summary" bMultiField="true" class="#className#" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field.">
 			<cfoutput>
+				<cfif structKeyExists(request.stFarcryFormValidation,stobj.objectid) and structKeyExists(request.stFarcryFormValidation[stobj.objectid],"lSummaryFields")>
+				<p class="errorField" htmlfor="lSummaryFields" for="lSummaryFields">#request.stFarcryFormValidation[stobj.objectid]['lSummaryFields'].stError.message#</p>
+				</cfif>
 				<select name="resultSummaryField" id="resultSummaryField"></select>
 				<div id="lSummaryFields"></div>
 			</cfoutput>
@@ -309,7 +373,7 @@
 			}
 			##lSummaryFields label {
 				float: left;
-				width: 200px;
+				width: 185px;
 				margin: 2px 0;
 			}
 			##lSummaryFields label input {
@@ -365,6 +429,20 @@
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
 					// load the FarCry fields for the lSummaryFields list box
 					loadContentTypeFields($j('###generalPrefix#contentType').val());
+				});
+				
+				<!--- hide the "summary fields" checkboxes if we have a specific summary field --->
+				<cfif len(trim(stobj.resultSummaryField))>
+					$j("##lSummaryFields").hide();
+				</cfif>
+				
+				$j('##resultSummaryField').change(function(event){
+					// hide/show summary field checkboxes
+					if ($j.trim($j(this).val()) == '') {
+						$j('##lSummaryFields').slideDown("slow");						
+					} else {
+						$j('##lSummaryFields').slideUp("slow");						
+					}
 				});
 				
 			});
