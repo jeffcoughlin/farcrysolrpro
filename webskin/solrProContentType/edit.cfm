@@ -140,7 +140,7 @@
 			</cfoutput>
 		</ft:field>
 		
-		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.  It is suggested to use a teaser field here, using the ""text"" field type.  You must store this value in Solr's index.">
+		<ft:field label="Result Summary" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field.">
 			<cfoutput>
 				<select name="resultSummaryField" id="resultSummaryField"></select>
 				<div id="lSummaryFields"></div>
@@ -192,6 +192,13 @@
 				<li class="ui-icon ui-icon-circle-check">
 					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
 					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
+				</li>
+				<li>
+					<h4>Search Result Defaults</h4>
+					<h5>Search Summary</h5>
+					<p>Using Solr's generated summary takes advantage of Solr's highlighting engine.  It's not the fact that it just highlights search terms (thats simple enough to do in CF).  What makes it unique is that the summary will be snippets of text where your search term(s) were found (similar to Google).</p>
+					<p>Using a custom field selection is suggested for times when you want, say, a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
+					<p>Performance tip: If using option 2, it is suggested to "Store" the field in Solr.  This way Solr can just output the result rather than requiring FarCry to do a record lookup.</p>
 				</li>
 				<li style="float: none;">
 					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
@@ -297,6 +304,8 @@
 			}
 			##lSummaryFields {
 				margin: 10px 0;
+				min-height: 100px;
+				height: auto;
 			}
 			##lSummaryFields label {
 				float: left;
@@ -411,7 +420,7 @@
 				var options = buildResultFieldOptions(selectedValue);
 				
 				// add the "none" option
-				options.push(createOptionTag("","-- Use Solr Summary --",false));
+				options.push(createOptionTag("","-- Use Solr Generated Summary --",false));
 				options.sort();
 				
 				addOptionsToDropdown(dropdown, options);
