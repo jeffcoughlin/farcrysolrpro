@@ -20,6 +20,10 @@
 				<menuitem sequence="40" mergeType="merge" id="farcrysolrprofiltersmenuitem04" label="Synonyms" link="/admin/customadmin.cfm?module=customlists/solrSynonyms.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
+			<menu mergeType="merge" sequence="40" id="farcrysolrprotestmenu" label="Test Setup" labelType="value">
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrprotestmenuitem01" label="Search" link="/admin/customadmin.cfm?module=customlists/solrTestSearch.cfm&amp;plugin=farcrysolrpro" />
+			</menu>
+			
 		</subsection>
 	</section>
 </webtop>
