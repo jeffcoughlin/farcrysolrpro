@@ -32,6 +32,7 @@
 		<cfargument name="hlPre" required="false" type="string" default="<strong>" hint="HTML to use to wrap instances of search terms" />
 		<cfargument name="hlPost" required="false" type="string" default="</strong>" hint="HTML to use to wrap instances of search terms" />
 		
+		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
 		<cfset var stResult = { bSearchPerformed = 0 } />
 		<cfset var oSearchForm = application.fapi.getContentType(arguments.typename) />
@@ -40,10 +41,6 @@
 		<cfset var params = {} />
 		
 		<cfif stSearchForm.bSearchPerformed eq 1>
-			
-			<!--- TODO: validate the form submission data --->
-			
-			<!--- TODO: calculate the start row and num rows --->
 			
 			<!--- convert search criteria into a proper solr query string (using chosen operator (any,all,phrase) and target collection, if specified) --->
 			

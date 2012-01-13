@@ -12,8 +12,6 @@
 
 <cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
 
-<!--- TODO: Get default CSS file provided by plugin --->
-
 <!--- Trim all stObj fields --->
 <cfloop collection="#request.stObj#" item="i">
 	<cfset request.stObj[i] = trim(request.stObj[i]) />
@@ -62,10 +60,6 @@
 <cfelse>
 	<cfset variables.teaserImage = "" />
 </cfif>
-
-<!--- Highlight search string where found --->
-<!---<cfset oSearchService = createobject("component", "farcry.plugins.farcrysolr.packages.custom.solrService").init() />
-<cfset variables.teaser = oSearchService.highlightSummary(searchCriteria="#stParam.searchCriteria#", summary="#teaser#") />--->
 
 <!--- Get result date --->
 <cfif structKeyExists(stObj, "publishDate")>

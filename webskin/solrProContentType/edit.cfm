@@ -94,8 +94,6 @@
 			</cfif>
 		</cfif>
 		
-		<!--- TODO: ensure that 2 records for the same content type are not created (dupe check "contentType" field) --->
-		
 	</ft:processFormObjects>
 		
 </ft:processform>
