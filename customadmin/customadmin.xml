@@ -3,11 +3,21 @@
 	<section mergeType="merge" id="admin">
 		<subsection mergeType="merge" id="farcrysolrprosubSection" label="Solr Pro" labelType="value">
 
-			<menu mergeType="merge" sequence="10" id="farcrysolrpromenu" label="Setup" labelType="value">
+			<menu mergeType="merge" sequence="10" id="farcrysolrprosetupmenu" label="Setup" labelType="value">
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrpromenuitem01" label="Content Types" link="/admin/customadmin.cfm?module=customlists/solrProContentType.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="20" mergeType="merge" id="farcrysolrpromenuitem02" label="Elevation" link="/admin/customadmin.cfm?module=customlists/solrProElevation.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="30" mergeType="merge" id="farcrysolrpromenuitem03" label="Document Boosting" link="/admin/customadmin.cfm?module=customlists/solrProDocumentBoost.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="30" mergeType="merge" id="farcrysolrpromenuitem04" label="Solr Admin" link="/admin/customadmin.cfm?module=customlists/solrAdmin.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrpromenuitem02" label="Solr Admin" link="/admin/customadmin.cfm?module=customlists/solrAdmin.cfm&amp;plugin=farcrysolrpro" />
+			</menu>
+			
+			<menu mergeType="merge" sequence="20" id="farcrysolrproinfluencesearchmenu" label="Influence Search" labelType="value">
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrproinfluencemenuitem01" label="Elevation" link="/admin/customadmin.cfm?module=customlists/solrProElevation.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrproinfluencemenuitem02" label="Document Boosting" link="/admin/customadmin.cfm?module=customlists/solrProDocumentBoost.cfm&amp;plugin=farcrysolrpro" />
+			</menu>
+			
+			<menu mergeType="merge" sequence="30" id="farcrysolrprofiltersmenu" label="Filters" labelType="value">
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrprofiltersmenuitem01" label="Stop Words" link="/admin/customadmin.cfm?module=customlists/solrStopwords.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprofiltersmenuitem02" label="Protected Words" link="/admin/customadmin.cfm?module=customlists/solrProtwords.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="30" mergeType="merge" id="farcrysolrprofiltersmenuitem03" label="Spellings" link="/admin/customadmin.cfm?module=customlists/solrSpellings.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="40" mergeType="merge" id="farcrysolrprofiltersmenuitem04" label="Synonyms" link="/admin/customadmin.cfm?module=customlists/solrSynonyms.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
 		</subsection>
