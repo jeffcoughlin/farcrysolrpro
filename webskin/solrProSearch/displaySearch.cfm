@@ -74,9 +74,7 @@
 			<skin:view  
 				stObject="#stobj#" 
 				webskin="displaySearchSuggestions" 
-				threshold="#suggestionThreshold#" 
-				totalResults="#stSearchResult.totalResults#" 
-				spellcheck="#stSearchResult.spellcheck#" />
+				suggestion="#stSearchResult.suggestion#" />
 		</cfif>
 		
 		<cfif arraylen(stSearchResult.results) GT 0>

@@ -24,6 +24,11 @@
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprotestmenuitem01" label="Search" link="/admin/customadmin.cfm?module=customlists/solrTestSearch.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
+			<menu mergeType="merge" sequence="50" id="farcrysolrprostatsmenu" label="Statistics" labelType="value">
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrprostatsmenuitem01" label="Search Log" link="/admin/customadmin.cfm?module=customlists/solrSearchLog.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprostatsmenuitem02" label="Searches Without Results" link="/admin/customadmin.cfm?module=customlists/solrSearchesWithoutResults.cfm&amp;plugin=farcrysolrpro" />
+			</menu>
+			
 		</subsection>
 	</section>
 </webtop>

@@ -10,6 +10,7 @@
 	<cfproperty ftSeq="180" ftFieldset="Server Settings" name="solrXmlLocation" type="nstring" default="" ftDefault="expandPath('/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solr-server/multicore/solr.xml')" ftDefaultType="evaluate" required="true" ftLabel="Solr.xml File Location" ftHint="This must be in the Solr Home directory." />
 	
 	<cfproperty ftSeq="210" ftFieldset="Performace Settings" name="batchSize" type="integer" default="1000" required="true" ftDefault="1000" ftType="integer" ftValidation="required" ftLabel="Index Batch Size" ftHint="The number of records that will be processed for each content type during the scheduled task. Default: 1000" />
+	<cfproperty ftSeq="220" ftFieldset="Performace Settings" name="bLogSearches" type="boolean" default="1" required="true" ftDefault="1" ftType="boolean" ftLabel="Log Searches?" ftHint="Should searches be logged? Default: true" />
 	
 	<cfproperty ftSeq="310" ftFieldset="Boost Settings" name="lFieldBoostValues" ftLabel="Field Boost Values" type="longchar" ftType="longchar" default="1,2,3,5,10,15,20,50" ftDefault="1,2,3,5,10,15,20,50" required="true" ftHint="A comma separated list of numeric values to use for field boost dropdowns. Default: 1,2,3,5,10,15,20,50" />
 	<cfproperty ftSeq="320" ftFieldset="Boost Settings" name="defaultBoostValue" type="numeric" ftType="numeric" default="5" ftDefault="5" ftLabel="Default Boost Value" required="true" ftHint="The default field boost value. Default: 5" />

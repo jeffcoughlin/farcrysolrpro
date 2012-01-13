@@ -31,6 +31,7 @@
 		<cfargument name="hlSnippets" required="false" type="numeric" default="3" hint="The number of highlighting snippets to return" />
 		<cfargument name="hlPre" required="false" type="string" default="<strong>" hint="HTML to use to wrap instances of search terms" />
 		<cfargument name="hlPost" required="false" type="string" default="</strong>" hint="HTML to use to wrap instances of search terms" />
+		<cfargument name="bLogSearch" required="false" type="boolean" default="#application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true)#" hint="Log the search criteria and number of results?" />
 		
 		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
@@ -124,8 +125,36 @@
 			<cfset stResult = oSearchService.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
-			<!--- TODO: log the search and result stats --->
-				
+			<cfif arguments.bSpellcheck>
+				<cfset stResult.suggestion = getSuggestion(
+					linkURL = application.fapi.getLink(objectid = request.navid), 
+					spellcheck = stResult.spellcheck, 
+					q = stSearchForm.q,
+					operator = stSearchForm.operator,
+					lContentTypes = stSearchForm.lContentTypes,
+					orderby = stSearchForm.orderby,
+					startWrap = '<strong>', 
+					endWrap = '</strong>'
+				) />
+			<cfelse>
+				<cfset stResult.suggestion = "" />
+			</cfif>
+			
+			<!--- ensure log is enabled, only log search for page 1 --->
+			<cfif arguments.bLogSearch and arguments.page eq 1>
+				<!--- log the search and result stats --->
+				<cfset oLog = application.fapi.getContentType("solrProSearchLog") />
+				<cfset stLog = {
+					numResults = stResult.totalResults,
+					q = stSearchForm.q,
+					lContentTypes = stSearchForm.lContentTypes,
+					operator = stSearchForm.operator,
+					orderBy = stSearchForm.orderBy,
+					suggestion = stResult.suggestion
+				} />
+				<cfset oLog.createData(stLog) />
+			</cfif>
+			
 		</cfif>
 		
 		<cfreturn stResult />
@@ -155,9 +184,9 @@
 		<cfset var s = "" />
 		<cfloop array="#arguments.spellcheck#" index="s">
 			<!--- create one w/ the wrap --->
-			<cfset suggestion = trim(reReplaceNoCase(suggestion,"^#s.token# | #s.token# | #s.token#$"," " & arguments.startWrap & s.suggestions[1] & arguments.endWrap & " ","ALL")) />
+			<cfset suggestion = trim(reReplaceNoCase(suggestion,"^#s.token# | #s.token# | #s.token#$|^#s.token#$"," " & arguments.startWrap & s.suggestions[1] & arguments.endWrap & " ","ALL")) />
 			<!--- and one w/o --->
-			<cfset arguments.q = trim(reReplaceNoCase(arguments.q,"^#s.token# | #s.token# | #s.token#$"," " & s.suggestions[1] & " ","ALL")) />
+			<cfset arguments.q = trim(reReplaceNoCase(arguments.q,"^#s.token# | #s.token# | #s.token#$|^#s.token#$"," " & s.suggestions[1] & " ","ALL")) />
 		</cfloop>
 		
 		<!--- build the url for the link --->
