@@ -40,7 +40,7 @@
 		<cfset highlighting = {} />
 	</cfif>
 	
-	<skin:view webskin="displaySearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" highlighting="#highlighting#" />
+	<skin:view webskin="displaySolrSearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" highlighting="#highlighting#" />
 
 </skin:pagination>
 			
