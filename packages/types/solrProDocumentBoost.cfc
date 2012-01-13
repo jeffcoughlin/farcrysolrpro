@@ -3,6 +3,36 @@
 	<cfproperty ftSeq="110" ftFieldset="Document Boosting" ftLabel="Document" ftType="uuid" type="uuid" name="documentId" ftJoinMethod="getContentTypes" ftAllowCreate="false" ftAllowEdit="false" ftHint="Choose a document from your indexed content types." />
 	<cfproperty ftSeq="120" ftFieldset="Document Boosting" ftLabel="Boost Value" ftType="list" type="string" name="boostValue" ftListData="getBoostOptions" ftListDataTypename="solrProDocumentBoost" ftHint="Choose a boost value.<br />  These are configurable in the Solr configuration." hint="Stored as string because the FarCry compare fails when there are decimals." />
 	
+	<cffunction name="ftValidateDocumentId" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="objectid" required="true" type="string" hint="The objectid of the object that this field is part of.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>		
+		<cfset var oField = createObject("component", "farcry.core.packages.formtools.field") />
+		<cfset var qDupeCheck = "" />		
+		
+		<!--- assume it passes --->
+		<cfset stResult = oField.passed(value=arguments.stFieldPost.Value) />
+			
+		<cfif NOT len(stFieldPost.Value)>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="This is a required field.") />
+		</cfif>
+		
+		<!--- check for duplicates --->
+		<cfquery name="qDupeCheck" datasource="#application.dsn#">
+			select objectid from solrProDocumentBoost where documentId = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.stFieldPost.value)#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
+		</cfquery>
+		
+		<cfif qDupeCheck.recordCount gt 0>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="That document has already been boosted.  You cannot create duplicate boosts for the same document.") />
+		</cfif>
+
+		<cfreturn stResult />
+		
+	</cffunction>
+	
 	<cffunction name="getBoostValueForDocument" access="public" output="false" returntype="string">
 		<cfargument name="documentId" required="true" type="uuid" />
 		
