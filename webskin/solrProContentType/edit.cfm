@@ -167,7 +167,7 @@
 				<cfoutput>
 				<div class="rule">
 					<input type="checkbox" name="lIndexedRules" id="lIndexedRules_#rule.typename#" value="#rule.typename#" <cfif listFindNoCase(stobj.lIndexedRules, rule.typename)>checked="checked"</cfif> />
-					<label for="lIndexedRules_#rule.typename#">#rule.displayname#<br /><span class="indexableFields">(#rule.indexableFields#)</span></label>
+					<label for="lIndexedRules_#rule.typename#">#rule.displayname#<br /><div class="indexableFields"><span>(#replace(rule.indexableFields, ",", ", ", "all")#)</span></div></label>
 				</div>
 				</cfoutput>
 			</cfloop>
@@ -291,6 +291,20 @@
 			##tblCustomProperties thead tr th:nth-child(4) {
 				width: 55%;
 				white-space: nowrap;
+			}
+			div.rule div.indexableFields {
+				padding-left: 1.2em;
+			}
+			##lSummaryFields {
+				margin: 10px 0;
+			}
+			##lSummaryFields label {
+				float: left;
+				width: 200px;
+				margin: 2px 0;
+			}
+			##lSummaryFields label input {
+				margin-right: 5px;
 			}
 			##helpInfo {
 				padding: 0.4em;
