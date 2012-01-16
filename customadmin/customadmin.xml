@@ -24,11 +24,15 @@
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprotestmenuitem01" label="Search" link="/admin/customadmin.cfm?module=customlists/solrTestSearch.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
-			<menu mergeType="merge" sequence="50" id="farcrysolrprostatsmenu" label="Statistics" labelType="value">
+			<menu mergeType="merge" sequence="50" id="farcrysolrprostatsmenu" label="Reports &amp; Stats" labelType="value">
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprostatsmenuitem01" label="Search Log" link="/admin/customadmin.cfm?module=customlists/solrSearchLog.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="20" mergeType="merge" id="farcrysolrprostatsmenuitem02" label="Searches Without Results" link="/admin/customadmin.cfm?module=customlists/solrSearchesWithoutResults.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprostatsmenuitem02" label="Searches without Results" link="/admin/customadmin.cfm?module=customlists/solrSearchesWithoutResults.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
+			<menu mergeType="merge" sequence="60" id="farcrysolrprodocsmenu" label="Documentation" labelType="value">
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrprodocsmenuitem01" label="Menu Legend" link="/admin/customadmin.cfm?module=documentation/solrMenuLegend.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprodocsmenuitem02" label="How To" link="/admin/customadmin.cfm?module=documentation/solrHowTo.cfm&amp;plugin=farcrysolrpro" />
+			</menu>
 		</subsection>
 	</section>
 </webtop>
