@@ -182,7 +182,10 @@
 <ft:form>
 
 	<ft:fieldset>
-		<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
+		<cfoutput>
+			<h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1>
+			<h2>Note: A full re-index of the content type is strongly suggested when changing content on this page.</h2>
+		</cfoutput>
 	</ft:fieldset>
 
 	<ft:fieldset legend="General">
@@ -215,7 +218,7 @@
 		<cfelse>
 			<cfset className = "" />
 		</cfif>
-		<ft:field label="Result Summary" bMultiField="true" class="#className#" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field.">
+		<ft:field label="Result Summary" bMultiField="true" class="#className#" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field. You must store this value in Solr's index.">
 			<cfoutput>
 				<cfif structKeyExists(request.stFarcryFormValidation,stobj.objectid) and structKeyExists(request.stFarcryFormValidation[stobj.objectid],"lSummaryFields")>
 				<p class="errorField" htmlfor="lSummaryFields" for="lSummaryFields">#request.stFarcryFormValidation[stobj.objectid]['lSummaryFields'].stError.message#</p>
@@ -266,38 +269,119 @@
 	<cfoutput>
 		<div id="helpInfo" class="ui-widget-content ui-corner-all">
 			<h3 class="ui-widget-header ui-corner-all">Information &amp; Tips</h3>
-			<ul id="helpInfoUl">
-				<li class="ui-icon ui-icon-circle-check">
-					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-				</li>
-				<li>
-					<h4>Search Result Defaults</h4>
-					<h5>Search Summary</h5>
-					<p>Using Solr's generated summary takes advantage of Solr's highlighting engine.  It's not the fact that it just highlights search terms (thats simple enough to do in CF).  What makes it unique is that the summary will be snippets of text where your search term(s) were found (similar to Google).</p>
-					<p>Using a custom field selection is suggested for times when you want, say, a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
-					<p>Performance tip: If using option 2, it is suggested to "Store" the field in Solr.  This way Solr can just output the result rather than requiring FarCry to do a record lookup.</p>
-				</li>
-				<li style="float: none;">
-					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-					<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-				</li>
-			</ul>
-			<!---
-			<h4 class="ui-icon ui-icon-circle-check" style="float:left; margin: .2em 7px 50px 0;">
-				<!---<span class="ui-icon ui-icon-circle-check" style="float:left; margin: .2em 7px 50px 0;"></span>--->
-				Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.
-			</h4>
-			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-			<p>Etiam libero neque, luctus a, eleifend nec, semper at, lorem. Sed pede. Nulla lorem metus, adipiscing ut, luctus sed, hendrerit vitae, mi.</p>
-			--->
+			<div>
+				<h4>Indexed Properties</h3>
+				<p>Any fields that you would like Solr to index are chosen here.</p>
+				<h5>Custom Properties</h5>
+				<p>These represent the fields for your FarCry types that are not FarCry default types.  ie. These wouldn't be fields like <var>objectid</var> and <var>label</var> (ref. Default Properties), but rather the other fields in your object like <var>title</var>.</p>
+				<p>Your options here are the following:</p>
+				<h6>Indexing a Field</h6>
+				<ul>
+					<li>You need only to check the box on the left of a field and Solr will start indexing that field's in the future based on the Solr field types you associate it with.</li>
+				</ul>
+				<h6>Select Solr field types to index</h6>
+				<ul>
+					<li>When you first choose this dropdown, we will offer what we feel are the suggested Solr Field Types.  By default, these are typenames that we have created in your project's schema.xml.  If you are familiar with Solr, you can modify these yourself (just remember that Solr has to be restarted when editing the schema.xml and content types have to be re-indexed).  There are a couple requirements we added which are commented at the bottom of the file, but we tried to give you as much freedom as possible if you ever felt the need to make modifications to your schema.xml.</li>
+					<li>Since most things you'll want to index are text-based fields, we suggest using the <var>Text</var> option.  And in many cases also adding the <var>Phonetic</var> option as well (so users can match searches that are phonetically similar).  Be warned: The <var>string</var> type doesn't go through any filters and is case-sensitive.  We find it useful for storing things like image and file paths (uses a smaller footprint in the Solr database).</li>
+					<li class="nolistyle"><h6>Storing a Field</h6>
+						<ul>
+							<li>You do not need to store a field in order for it to be searchable (indexed).  However, there are times where you want a field to be stored by Solr so that you don't have to do a database lookup to find the same data (Solr will already have it for you in its results).  Common examples are <em>Title</em>, <em>teaser</em>, etc.</li>
+						</ul>
+					</li>
+					<li class="nolistyle"><h6>Boost by Field</h6>
+						<ul>
+							<li>This feature allows you to give or remove weight to fields when searching.</li>
+							<li>Example:  In a simple HTML object, we suggest giving the <em>title</em> field a heavy boost value of something like 50 and maybe 10 to the <em>body</em>.  Why?  Because when a user searches for a specific term (say "<em>Community Charity Campaign</em>"), they may be referring to a very specific event.  Those words in the search term may be common words found all over the place in the <em>body</em> of many pages on the site.  However, those same words may only appear in 2 or 3 <em>titles</em> for very specific events.  Thus the scoring engine in Solr (Lucene) will give more weight to any <em>title</em> fields where the search term was found.  Otherwise every time one of those words is found in the <em>body</em>, it is added to the score for the search (as well as boosted).  If the <em>title</em> field wasn't given more weight for those terms, then the scoring would be skewed and the user would likely not find the results they were originally looking for.</li>
+							<li>Boosting can be a very powerful feature if used correctly.  You know your content better than anyone.  However, if you're not sure what you want to change them to, then don't feel required to change them.  If the fields are all the same boost value then the default values won't affect the overall score because they are weighted against each other during the search.  Meaning: If they all have the same weight, then there will be no extra leverage to any given field (compared to others) when searching.</li>
+							<li>Out-of-the-box the defaults for each field will be 5 (unless changed in the Solr configuration).  Why default boost 5?  We did this so that if you have any speicifc fields to index that should have lower weight (compared to other fields), then you could set that here.</li>
+							<li>The default setting for all fields can be changed in the Solr Config.</li>
+						</ul>
+					</li>
+				</ul>
+
+				<h5>Default Properties</h5>
+				<p>Default properties are fields that are always indexed (and many stored) for all types.  Some of them are from FarCry core, while others are additional fields used to help with extra data.  For most people, these fields and their settings can be left alone including their boost settings, however their boost values can be adjusted here if desired.</p>
+				<p>The reason that the first seven items are stored in Solr is to enhance performance on seaches.  When a user searches your site, Solr is already returning back data.  Much of the teaser data needed to be displayed to the user can be returned from Solr and there is no need to do an extra query lookup per item on the search result page.  This is another reason that we suggest storing a search result <em>title</em> and <em>teaser</em> (and any other fields you want displayed on the search results page - like a <em>teaser image</em>).</p>
+				<h6>Stored and indexed FarCry core fieldnames:</h6>
+				<ul>
+					<li>objectid &mdash; Used as the unique ID field for Solr records and matches the associated FarCry objectid.</li>
+					<li>label &mdash; Matches the associated FarCry data</li>
+					<li>datetimecreated &mdash; Matches the associated FarCry data</li>
+					<li>datetimelastupdated &mdash; Matches the associated FarCry data</li>
+					<li>createdby &mdash; Matches the associated FarCry data</li>
+					<li>lastupdatedby &mdash; Matches the associated FarCry data</li>
+					<li>ownedby &mdash; Matches the associated FarCry data</li>
+				</ul>
+				<h6>Solr will ignore the following FarCry fields because we felt that they were not relevant to searches (you can change these in your schema.xml if desired):</h6>
+				<ul>
+					<li>locked &mdash; ignored</li>
+					<li>lockedby &mdash; ignored</li>
+					<li>versionid &mdash; ignored</li>
+					<li>status &mdash; ignored</li>
+				</ul>
+				<h6>The following default fields are indexed by Solr for various reasons (explained):</h6>
+				<ul>
+					<li>typename &mdash; Matches the FarCry typename.  Used by Solr for query lookups when matching objectid and typename.</li>
+					<li>rulecontent &mdash; When you elect to store any related rule content, its associated data is indexed in both the rulecontent field and it's associated phonetic field.</li>
+					<li>rulecontent_phonetic &mdash; Used for phonetic searches on related rule content.</li>
+					<li>spell &mdash; Used by Solr for spell correction on single-word searches.</li>
+					<li>spellphrase &mdash; Used by Solr for spell correction on multi-word (phrase) searches.</li>
+					<li>highlight &mdash; Data indexed by the highlighting engine in Solr (often referred to as summary data)</li>
+				</ul>
+				
+				<h4>Search Result Defaults</h4>
+				<h5>Result Title</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+
+				<h5>Result Summary</h5>
+				<h6>Option 1: Solr Generated Summary</h6>
+				<p>Using Solr's generated summary takes advantage of Solr's highlighting engine.  It's not the fact that it just highlights search terms (thats simple enough to do in CF).  What makes it unique is that the summary will be snippets of text where your search term(s) were found (similar to Google).</p>
+				<h6>Option 2: Custom/Manual Field Selection</h6>
+				<p>Using a custom field selection is suggested for times when you want, say, use a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
+
+				<h5>Result Image</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+
+				<h4>Related Rules</h4>
+				<h5>Indexing Rule Data</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+
+				<h4>Related Rules</h4>
+				<h5>Enabling in Site Search</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+				<h5>Built to Date</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+				<h5>Index on Save</h5>
+				<!--- TODO: Finish these docs --->
+				<p><em>More info soon...</em></p>
+				<!---<span class="ui-icon ui-icon-circle-check"></span>--->			
+			</div>
 		</div>
 	</cfoutput>
 	
 	<skin:htmlhead id="solrProContentType-edit">
 		<cfoutput>
 		<style type="text/css" media="all">
+			strong {
+				font-weight: bold;
+			}
+			em {
+				font-style: italic;
+			}
+			h4 {
+				font-size: 125%;
+			}
+			h5 {
+				font-size: 110%;
+			}
+			h6 {
+				font-size: 95%;
+			}
 			.combobox a {
 				text-decoration: none;
 				vertical-align: middle;
@@ -360,7 +444,8 @@
 				text-align: left;
 				vertical-align: top;
 			}
-			table.fcproperties tr.alt {
+			table.fcproperties tr:nth-child(even),
+			table.fcproperties tr.alt  {
 				background: none repeat scroll 0 0 ##F1F1F1;
 			}
 			##indexedProperties {
@@ -382,7 +467,7 @@
 			}
 			##lSummaryFields {
 				margin: 10px 0;
-				min-height: 100px;
+				min-height: 100%;
 				height: auto;
 			}
 			##lSummaryFields label {
@@ -393,24 +478,45 @@
 			##lSummaryFields label input {
 				margin-right: 5px;
 			}
+			code,
+			.code,
+			var {
+				color: ##555;
+				font: 1.1em monospace;
+				background-color: ##eee;
+				padding: 0.3em 0.5em;
+			}
 			##helpInfo {
 				padding: 0.4em;
 				position: relative;
 				margin: 1em 0;
-				min-width: 500px;
-				max-width: 800px;
+				/*min-width: 500px;
+				max-width: 800px;*/
 			}
 			##helpInfo h3 {
 				margin: 0 0 1em 0;
 				padding: 0.4em;
 				text-align: center;
 			}
-			##helpInfoUl li {
-				float: left;
+			##helpInfo div {
+				margin: 0 1em;
 			}
-			##helpInfoUl li h4,
-			##helpInfoUl li p {
-				margin-left: 25px;
+			##helpInfo p {
+				margin: 0.5em 0;
+			}
+			##helpInfo ul {
+				margin-left: 1em;
+			}
+			##helpInfo ul ul {
+				margin-left: 0;
+			}
+			##helpInfo li {
+				margin-left: 1em;
+				list-style: disc outside none;
+			}
+			##helpInfo li.nolistyle {
+				margin-left: 0;
+				list-style: none;
 			}
 		</style>
 		<script type="text/javascript">
