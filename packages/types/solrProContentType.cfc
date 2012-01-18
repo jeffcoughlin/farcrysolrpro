@@ -784,11 +784,16 @@
 	
 	<cffunction name="getAllContentTypes" access="public" output="false" returntype="query">
 		<cfargument name="lObjectIds" type="string" required="false" default="" />
+		<cfargument name="bIncludeNonSearchable" type="boolean" required="false" default="false" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
-			select objectid, contentType, title from solrProContentType
+			select objectid, contentType, title, bEnableSearch from solrProContentType
+			where 1=1
 			<cfif listLen(arguments.lObjectIds)>
-			where objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lObjectIds#" />)
+			and objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lObjectIds#" />)
+			</cfif>
+			<cfif bIncludeNonSearchable eq false>
+			and bEnableSearch = 1
 			</cfif>;
 		</cfquery>
 		<cfreturn q />

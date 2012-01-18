@@ -14,7 +14,9 @@
 		<cfset var lResult = ":All" />
 		
 		<cfloop query="qContentTypes">
-			<cfset lResult = listAppend(lResult, "#qContentTypes.contentType[qContentTypes.currentRow]#:#qContentTypes.title[qContentTypes.currentRow]#") />
+			<cfif qContentTypes.bEnableSearch eq 1>
+				<cfset lResult = listAppend(lResult, "#qContentTypes.contentType[qContentTypes.currentRow]#:#qContentTypes.title[qContentTypes.currentRow]#") />
+			</cfif>
 		</cfloop>
 		
 		<cfreturn lResult />
