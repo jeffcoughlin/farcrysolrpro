@@ -69,12 +69,24 @@
 		background: ##b9c9fe;
 	}
 	.statsTbl thead th:nth-child(1) {
+		-webkit-border-radius: 10px 0 0 0;
+		-moz-border-radius: 10px 0 0 0;
+		-o-border-radius: 10px 0 0 0;
+		-khtml-border-radius: 10px 0 0 0;
 		border-radius: 10px 0 0 0;
 	}
 	.statsTbl thead th:nth-child(5) {
+		-webkit-border-radius: 0 10px 0 0;
+		-moz-border-radius: 0 10px 0 0;
+		-o-border-radius: 0 10px 0 0;
+		-khtml-border-radius: 0 10px 0 0;
 		border-radius: 0 10px 0 0;
 	}
 	.statsTbl tfoot td:nth-child(1) {
+		-webkit-border-radius: 0 0 0 10px;
+		-moz-border-radius: 0 0 0 10px;
+		-o-border-radius: 0 0 0 10px;
+		-khtml-border-radius: 0 0 0 10px;
 		border-radius: 0 0 0 10px;
 		text-align: right;
 		font-weight: bold;
@@ -84,6 +96,10 @@
 		font-weight: bold;
 	}
 	.statsTbl tfoot td:nth-child(3) {
+		-webkit-border-radius:  0 0 10px 0;
+		-moz-border-radius:  0 0 10px 0;
+		-o-border-radius:  0 0 10px 0;
+		-khtml-border-radius:  0 0 10px 0;
 		border-radius: 0 0 10px 0;
 	}
 	.statsTbl tbody tr:hover td {
