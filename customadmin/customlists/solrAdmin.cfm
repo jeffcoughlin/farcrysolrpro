@@ -10,8 +10,7 @@
 <cfset uri = "http://" & host & ":" & port & path & "/admin/" />
 
 <!--- check that Solr is responding --->
-<cfhttp url="#uri#" method="get" />
-<cfset bContinue = (cfhttp.StatusCode eq "200 OK") />
+<cfset bContinue = application.fapi.getContentType("solrProContentType").isSolrRunning() />
 
 <admin:header title="Solr Admin" />
 

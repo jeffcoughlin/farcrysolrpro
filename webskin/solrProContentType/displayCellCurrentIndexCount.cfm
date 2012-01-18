@@ -4,11 +4,10 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cftry>
+<cfif application.fapi.getContentType("solrProContentType").isSolrRunning()>
 	<cfoutput>#getRecordCountForType(typename = stobj.contentType)#</cfoutput>
-	<cfcatch>
-		<cfoutput>[Solr Unavailable]</cfoutput>
-	</cfcatch>
-</cftry>
-
+<cfelse>
+	<cfoutput>[Solr Unavailable]</cfoutput>
+</cfif>
+	
 <cfsetting enablecfoutputonly="false" />

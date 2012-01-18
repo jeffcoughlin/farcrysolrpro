@@ -943,4 +943,34 @@
 	   <cfreturn ArrayToList(list1Array, Delim3) />
 	</cffunction>
 	
+	<cffunction name="isSolrRunning" access="public" returntype="boolean" output="false">
+		<cftry>
+			
+			<cfset var host = application.fapi.getConfig(key = 'solrserver', name = 'host') />
+			<cfset var port = application.fapi.getConfig(key = 'solrserver', name = 'port') />
+			<cfset var path = application.fapi.getConfig(key = 'solrserver', name = 'path') /> 
+			<cfset var uri = "http://" & host & ":" & port & path & "/admin/ping" />
+			<cfset var httpResult = {} />
+			
+			<!--- check that Solr is responding --->
+			<cfhttp url="#uri#" method="get" result="httpResult" />
+			
+			<cfif not isXml(httpResult.FileContent)>
+				<cfreturn false />
+			<cfelse>
+				<cfset var xml = xmlParse(httpResult.fileContent) />
+				<cfset var matches = XmlSearch(xml,"//response/str[@name='status']") />
+				<cfif arrayLen(matches)>
+					<cfreturn matches[1].xmlText eq "OK" />
+				<cfelse>
+					<cfreturn false />
+				</cfif>
+			</cfif>
+			
+			<cfcatch>
+				<cfreturn false />
+			</cfcatch>
+		</cftry>
+	</cffunction>
+	
 </cfcomponent>
