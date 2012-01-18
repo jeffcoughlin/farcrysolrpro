@@ -10,6 +10,7 @@
 	
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
 	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Built to Date" name="builtToDate" ftType="datetime" type="date" required="false" ftHint="The date of the last indexed item.  Used for batching when indexing items." />
+	<cfproperty ftSeq="165" ftFieldset="Solr Content Type" ftLabel="Default Document Boost" name="defaultDocBoost" ftType="list" ftListData="getBoostOptions" ftListDataTypename="solrProDocumentBoost" type="numeric" required="true" default="50" ftDefault="50" ftHint="The default document boost for all documents of this content type.  Use this to boost (or lower) all documents of a specific type." />
 	
 	<cfproperty ftSeq="170" ftFieldset="Solr Content Type" ftLabel="Indexed Properties" name="aIndexedProperties" ftType="array" type="array" ftJoin="solrProIndexedProperty" ftHint="The properties for this content type that will be indexed." />
 	
@@ -417,6 +418,11 @@
 		
 		<!--- check if this record has a document level boost --->
 		<cfset var docBoost = arguments.oDocumentBoost.getBoostValueForDocument(documentId = stRecord.objectid) />
+		
+		<!--- if there was no boost for the specific document, grab the default specified for the content type --->
+		<cfif not isNumeric(docBoost)>
+			<cfset docBoost = arguments.stContentType.defaultDocBoost />
+		</cfif>
 		
 		<!--- add it to solr --->
 		<cfset var args = { doc = doc, typename = stRecord.typename } />

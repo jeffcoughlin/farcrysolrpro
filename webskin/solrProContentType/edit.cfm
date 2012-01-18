@@ -258,7 +258,7 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Advanced Options">
-		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave" />
+		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave,defaultDocBoost" />
 	</ft:fieldset>
 	
 	<ft:farcryButtonPanel>
