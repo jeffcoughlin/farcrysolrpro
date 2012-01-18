@@ -8,14 +8,16 @@
 
 <cfset filePath = application.fapi.getConfig(key = 'solrserver', name = 'instanceDir') & "/conf/spellings.txt" />
 
+<admin:header title="Spellings" />
+
+<cfif fileExists(filePath)>
+
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
 	<skin:bubble title="Spellings" message="Updated spellings.txt" />
 </ft:processForm>
 
 <cfset contents = fileRead(filePath) />
-
-<admin:header title="Spellings" />
 
 <ft:form>
 	
@@ -34,6 +36,13 @@
 	</ft:fieldset>
 	
 </ft:form>
+
+<cfelse>
+
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>Unable to locate #filepath#.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct.</p></cfoutput>
+
+</cfif>
 
 <admin:footer />
 

@@ -53,17 +53,34 @@
 	];
 </cfscript>
 
-<ft:objectadmin 
-	typename="solrProContentType"
-	columnList="title,contentType,datetimecreated" 
-	sortableColumns="title,contentType,datetimelastUpdated"
-	lCustomColumns="Current Index Count:displayCellCurrentIndexCount"
-	lFilterFields="title,contentType"
-	sqlorderby="title"
-	aButtons="#aButtons#"
-	lButtons="Add,Delete,Unlock,Optimize All,Reset All"
-	plugin="farcrysolrpro"
-	lCustomActions="resetCollection:Reset Collection,indexCollection:Index Collection" />
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
+<cftry>
+
+	<ft:objectadmin 
+		typename="solrProContentType"
+		columnList="title,contentType,datetimecreated" 
+		sortableColumns="title,contentType,datetimelastUpdated"
+		lCustomColumns="Current Index Count:displayCellCurrentIndexCount"
+		lFilterFields="title,contentType"
+		sqlorderby="title"
+		aButtons="#aButtons#"
+		lButtons="Add,Delete,Unlock,Optimize All,Reset All"
+		plugin="farcrysolrpro"
+		lCustomActions="resetCollection:Reset Collection,indexCollection:Index Collection" />
+		
+	<cfcatch>
+		
+		<cfoutput><p><br />Error loading object admin, be sure you have deployed all COAPI objects.</p></cfoutput>
+		
+	</cfcatch>
+
+</cftry>
+
+<cfelse>
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can define any content types.</p></cfoutput>
+</cfif>
 
 <admin:footer />
 

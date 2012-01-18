@@ -8,13 +8,30 @@
 
 <admin:header title="Solr Pro Elevation Admin" />
 
-<ft:objectadmin 
-	typename="solrProElevation"
-	columnList="searchString,datetimecreated" 
-	sortableColumns="searchString,datetimecreated"
-	lFilterFields="searchString"
-	sqlorderby="datetimecreated"
-	plugin="farcrysolrpro" />
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
+<cftry>
+	
+	<ft:objectadmin 
+		typename="solrProElevation"
+		columnList="searchString,datetimecreated" 
+		sortableColumns="searchString,datetimecreated"
+		lFilterFields="searchString"
+		sqlorderby="datetimecreated"
+		plugin="farcrysolrpro" />
+	
+	<cfcatch>
+		
+		<cfoutput><p><br />Error loading object admin, be sure you have deployed all COAPI objects.</p></cfoutput>
+		
+	</cfcatch>
+
+</cftry>
+
+<cfelse>
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can define any elevations.</p></cfoutput>
+</cfif>
 
 <admin:footer />
 

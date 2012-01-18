@@ -42,6 +42,8 @@ $j('input.datefield').datepicker();
 	<cfoutput><p>NOTE: Search logging is currently turned OFF.</p></cfoutput>
 </cfif>
 
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
 <ft:form name="SearchLog">
 	
 	<ft:fieldset legend="Filter">
@@ -149,6 +151,11 @@ $j('input.datefield').datepicker();
 	</skin:htmlhead>
 
 </ft:form>
+
+<cfelse>
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can run this report.</p></cfoutput>
+</cfif>
 
 <admin:footer />
 

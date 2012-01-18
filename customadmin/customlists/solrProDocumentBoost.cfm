@@ -8,13 +8,30 @@
 
 <admin:header title="Solr Pro Document Boost Admin" />
 
-<ft:objectadmin 
-	typename="solrProDocumentBoost"
-	columnList="documentId,boostValue,datetimecreated" 
-	sortableColumns="datetimecreated"
-	lFilterFields=""
-	sqlorderby="datetimecreated"
-	plugin="farcrysolrpro" />
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
+<cftry>
+	
+	<ft:objectadmin 
+		typename="solrProDocumentBoost"
+		columnList="documentId,boostValue,datetimecreated" 
+		sortableColumns="datetimecreated"
+		lFilterFields=""
+		sqlorderby="datetimecreated"
+		plugin="farcrysolrpro" />
+
+	<cfcatch>
+		
+		<cfoutput><p><br />Error loading object admin, be sure you have deployed all COAPI objects.</p></cfoutput>
+		
+	</cfcatch>
+
+</cftry>
+
+<cfelse>
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can define any document boosts.</p></cfoutput>
+</cfif>
 
 <admin:footer />
 

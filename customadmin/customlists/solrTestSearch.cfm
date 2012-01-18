@@ -6,13 +6,15 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-<cfset oContentType = application.fapi.getContentType("solrProContentType") />
-<cfset qContentTypes = oContentType.getAllContentTypes() />
-
 <cfparam name="form.contentType" default="" />
 <cfparam name="form.searchcriteria" default="" />
 
 <admin:header title="Test Search" />
+
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
+<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+<cfset qContentTypes = oContentType.getAllContentTypes() />
 
 <!--- this is here so the pagination will work --->
 <cfset form.farcryFormSubmitButtonClickedTestSearch = "Search" />
@@ -147,6 +149,11 @@
 	</cfif>
 	
 </ft:form>
+
+<cfelse>
+	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
+</cfif>
 
 <admin:footer />
 
