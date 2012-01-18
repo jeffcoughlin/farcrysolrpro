@@ -137,9 +137,9 @@
 			<cfset arguments.fields = application.fapi.getContentType("farConfig").getConfig(key = 'solrserver') />
 		</cfif>
 		
+		<cfparam name="application.stPlugins.farcrysolrpro" default="#structNew()#" />
+		
 		<cfscript>
-			
-			application.stPlugins["farcrysolrpro"] = {};
 			
 			// setup javaloader
 			var solrjLibPath = "/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solrj-lib/";
