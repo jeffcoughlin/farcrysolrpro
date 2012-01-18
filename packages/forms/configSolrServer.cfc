@@ -13,8 +13,9 @@
 	<cfproperty ftSeq="220" ftFieldset="Performace Settings" name="bLogSearches" type="boolean" default="1" required="true" ftDefault="1" ftType="boolean" ftLabel="Log Searches?" ftHint="Should searches be logged? Default: true" />
 	
 	<cfproperty ftSeq="310" ftFieldset="Boost Settings" name="lFieldBoostValues" ftLabel="Field Boost Values" type="longchar" ftType="longchar" default="1,2,3,5,10,15,20,50" ftDefault="1,2,3,5,10,15,20,50" required="true" ftHint="A comma separated list of numeric values to use for field boost dropdowns. Default: 1,2,3,5,10,15,20,50" />
-	<cfproperty ftSeq="320" ftFieldset="Boost Settings" name="defaultBoostValue" type="numeric" ftType="numeric" default="5" ftDefault="5" ftLabel="Default Boost Value" required="true" ftHint="The default field boost value. Default: 5" />
+	<cfproperty ftSeq="320" ftFieldset="Boost Settings" name="defaultBoostValue" type="numeric" ftType="numeric" default="5" ftDefault="5" ftLabel="Default Field Boost Value" required="true" ftHint="The default field boost value. Default: 5" />
 	<cfproperty ftSeq="330" ftFieldset="Boost Settings" name="lDocumentBoostValues" type="longchar" ftType="longchar" default="0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" ftDefault="0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" ftLabel="Document Boost Values" required="true" ftHint="A comma separated list of values for the document boosts.  Should be in the format value:label. Example: 10:Low would have a value of 10 and a label of Low. Default: 0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" />
+	<cfproperty ftSeq="335" ftFieldset="Boost Settings" name="defaultDocBoost" type="numeric" ftType="numeric" default="50" ftDefault="50" ftLabel="Default Document Boost Value" required="true" ftHint="The default document boost value.  Default: 50" />
 	
 	<cfproperty name="bConfigured" type="boolean" ftType="hidden" default="0" required="true" hint="Flag to indicate that the user has configured the Solr server, this avoids creating folders and files using the default settings when FarCry is initialized." />
 	

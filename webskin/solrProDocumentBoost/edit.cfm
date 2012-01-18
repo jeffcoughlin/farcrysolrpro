@@ -51,7 +51,16 @@
 	<ft:fieldset>
 		<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
 	</ft:fieldset>
-	<ft:object objectid="#stobj.objectid#" lFields="documentId,boostValue" />
+	<cfset stPropMetadata = { 
+		boostValue = { 
+			ftDefault = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50),
+			default = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50)
+		} 
+	} />
+	<cfif not isNumeric(stObj.boostValue)>
+		<cfset stPropMetadata.boostValue.value = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50) />
+	</cfif>
+	<ft:object objectid="#stobj.objectid#" lFields="documentId,boostValue" stPropMetadata="#stPropMetadata#" />
 	<ft:farcryButtonPanel>
 		<ft:farcryButton type="submit" text="Complete" value="save" validate="true" />
 		<ft:farcryButton type="submit" text="Cancel" value="cancel" validate="false" confirmText="Are you sure you wish to discard your changes?" />

@@ -59,14 +59,27 @@
 		
 		<!--- check config for the list of boost options, also check the current record for the value, and if not in the list from config, add it as an option --->
 		<cfset var stDocBoost = getData(arguments.objectid) />
-		
+		<cfset var defaultValue = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50) />
 		<cfset var l = application.fapi.getConfig(key = 'solrserver', name = 'lDocumentBoostValues') /> 
+		<cfset var i = "" />
+		<cfset var counter = 0 />
+		<cfset var finalList = "" />
 		
-		<cfif not listContainsNoCase(l, stDocBoost.boostValue)>
-			<cfset l = listAppend(l, stDocBoost.boostValue) />
+		<cfloop list="#l#" index="i">
+			<cfset counter++ />
+			<cfset var a = listToArray(i,":") />
+			<cfif a[1] eq defaultValue>
+				<cfset finalList = listAppend(finalList,a[1] & ":" & a[2] & " &mdash; Default") />
+			<cfelse>
+				<cfset finalList = listAppend(finalList,i) />
+			</cfif>
+		</cfloop>
+		
+		<cfif not listContainsNoCase(finalList, stDocBoost.boostValue)>
+			<cfset finalList = listAppend(finalList, stDocBoost.boostValue) />
 		</cfif>
 		
-		<cfreturn l />
+		<cfreturn finalList />
 		
 	</cffunction>
 	

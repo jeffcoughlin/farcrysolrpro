@@ -258,7 +258,16 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Advanced Options">
-		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave,defaultDocBoost" />
+		<cfset stPropMetadata = { 
+			defaultDocBoost = { 
+				ftDefault = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50),
+				default = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50)
+			} 
+		} />
+		<cfif not isNumeric(stObj.defaultDocBoost)>
+			<cfset stPropMetadata.defaultDocBoost.value = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50) />
+		</cfif>
+		<ft:object stObject="#stobj#" lFields="bEnableSearch,builtToDate,bIndexOnSave,defaultDocBoost" stPropMetadata="#stPropMetadata#" />
 	</ft:fieldset>
 	
 	<ft:farcryButtonPanel>
