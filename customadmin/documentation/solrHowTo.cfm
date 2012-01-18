@@ -6,8 +6,26 @@
 
 <admin:header title="Solr Pro How-To" />
 
+<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+
 <cfoutput>
 	<!--- TODO: Finish these docs --->
+	<h1>Requirements</h1>
+	<ul>
+		<li>Although Solr can run from a separate server, FarCry needs directory access to the conf files (schema.xml, solrconfig.cml, etc).  So if you plan to run Solr on a separate server you'll need to setup a mapped network drive for FarCry to use (and then set those settings in the <a href="linkConfig">Solr Pro Config</a>).
+			<ul>
+				<li>Note: Running Solr on a separate machine can result in slower response times if the network is not properly configured.  Please keep in mind that Solr uses HTTP requests to send and recieve JSON/XML (we use JSON in our plugin) strings of data back and forth.  In most cases, it is faster to run Solr on the same box.  Reasons for runn ing it on a separate box are usually due to HDD space limiation, and/or CPU and RAM limitation.  If it is only HDD limitation that is the issue, you can still configure Solr to store the files on another mapped drive while running Solr on the same box as CF (to configure where the Solr configuration and data file live, see the <a href="linkConfig">Solr Pro Config</a>.)</li>
+			</ul>
+		</li>
+	</ul>
+	<h1>Setup</h1>
+	<h2>First Time Setup</h2>
+	<p>If you've just installed this plugin, below is a checklist of things you'll need to do to get yourself on your way</p>
+	<ol>
+		<li>Deploy new types in the FarCry <abbr title="Conent Object API">COAPI</abbr>.</li>
+		<li>Run the FarCry Solr config at least once.  Even if you don't plan to change any of the defaults, running it once will copy over the necessary configuration files into your project's Solr conf folder (that folder's destination is set in that config folder.  By default it is set to [project]/solr - with conf and data subfolders)</li>
+	</ol>
+	
 	<h1>Performance Tips</h1>
 	<h2>64-bit and More RAM for Solr</h2>
 	<p>By default Jetty is 32-bit and 32-bit java has a RAM limitation of about 1.5GB.  If you have a lot of data to index and search or are running into heap stack errors when searching or indexing, it is suggested to give Solr more RAM which requires a 64-bit JVM.  Setting this up is not difficult, but differs by operating system and setup.  Explaining how to do that goes beyond the documentation provided in this plugin, however finding steps on how to set that up on the web are pretty easy to find.</p>
@@ -41,6 +59,20 @@
 			font: 1.1em monospace;
 			background-color: ##eee;
 			padding: 0.3em 0.5em;
+		}
+		ul {
+			margin-left: 1em;
+		}
+		ul ul {
+			margin-left: 0;
+		}
+		li {
+			margin-left: 1em;
+			list-style: disc outside none;
+		}
+		li.nolistyle {
+			margin-left: 0;
+			list-style: none;
 		}
 	</style>
 	</cfoutput>
