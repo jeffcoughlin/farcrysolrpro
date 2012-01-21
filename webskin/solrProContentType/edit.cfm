@@ -205,6 +205,7 @@
 	</ft:fieldset>
 	
 	<ft:fieldset legend="Search Result Defaults">
+		<cfoutput><p>These options affect output and not what is indexed.  So if you want a specific field (or fields) to be used for the search result summary output, you can select that here.</p></cfoutput>
 		
 		<ft:field label="Result Title <em>*</em>" hint="The field that will be used for the search result title.  It is suggested to use a ""string"" field. You must store this value in Solr's index.">
 			<cfoutput>
