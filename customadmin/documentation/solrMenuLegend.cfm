@@ -27,7 +27,7 @@
 	<p>Solr has several ways to allow you to persuade and influence its search results.  This is helpful when you have specific pages or documents that you have determined are more important than others.  You know your content better than anyone, so why not help your users find the data they're looking for?</p>
 	<div class="indent">
 		<h2 id="b1">Elevation</h2>
-		<p>Elevation is Solr's way to override specific search terms (similar to Google's AdWords).  You can tell it to return specific results at the top of the search results when specific search terms are used.</p>
+		<p>Elevation is Solr's way to override specific search terms (similar to Google's AdWords).  This feature matches the user query text to a configured Map of top results.  This is sometimes called "sponsored search", "editorial boosting" or "best bets".</p>
 		<h2 id="b2">Document Boosting</h2>
 		<p>Give specific pages and documents more weight when people are searching for items.  Example: Out of your hundreds of web pages on your site lets say you have maybe 10 specific landing pages that hold a lot of importance (and are maybe parents to the majority of other pages on the site).  Giving these landing pages more weight in searching means that they are more likely to turn up in the search results when matching terms are used.</p>
 	</div>
