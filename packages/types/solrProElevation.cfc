@@ -1,8 +1,9 @@
 <cfcomponent output="false" extends="farcry.core.packages.types.types" displayname="Elevation" hint="Manages elevation data for Solr Pro Plugin" bFriendly="false" bObjectBroker="false">
 	
 	<cfproperty ftSeq="110" ftFieldset="Elevation" ftLabel="Search String" bLabel="true" name="searchString" type="nstring" ftType="string" required="true" ftValidation="required" ftHint="The search string to elevate." />
-	<cfproperty ftSeq="120" ftFieldset="Elevation" ftLabel="Documents" name="aDocuments" type="array" ftType="array" ftJoinMethod="getContentTypes" ftAllowCreate="false" ftAllowEdit="false" ftHint="The documents to elevate for this search string" />
-	
+	<cfproperty ftSeq="120" ftFieldset="Elevation" ftLabel="Documents to Elevate" name="aDocumentsToInclude" type="array" ftType="array" ftJoinMethod="getContentTypes" ftAllowCreate="false" ftAllowEdit="false" ftHint="Documents to elevate for this search string" />
+	<cfproperty ftSeq="130" ftFieldset="Elevation" ftLabel="Documents to Exclude" name="aDocumentsToExclude" type="array" ftType="array" ftJoinMethod="getContentTypes" ftAllowCreate="false" ftAllowEdit="false" ftHint="Documents to exclude for this search string" />
+		
 	<cffunction name="getContentTypes" access="public" output="false" returntype="string">
 		<cfset var oType = application.fapi.getcontenttype("solrProContentType") />
 		<cfset var q = oType.getAllContentTypes() />
@@ -23,7 +24,7 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
+		<cfset var stResult = {} />		
 		<cfset var oField = createObject("component", "farcry.core.packages.formtools.field") />
 		<cfset var qDupeCheck = "" />		
 		
@@ -66,23 +67,30 @@
 		     loaded once at startup.  If it is found in Solr's data
 		     directory, it will be re-loaded every commit.
 		-->
-		<elevate>
-		</cfoutput>
+		<elevate></cfoutput>
 		
 		<cfset var st = "" />
-		<cfset var docId = "" />
+		<cfset var docElevateId = "" />
+		<cfset var docExcludeId = "" />
 		
 		<!--- loop over each and output XML --->
 		<cfloop query="qElevation">
 			
 			<cfset st = getData(qElevation.objectid[qElevation.currentRow]) />
-			
+
 			<cfoutput>
 			<query text="#xmlFormat(st.searchString)#"></cfoutput>
 			
-				<cfloop array="#st.aDocuments#" index="docId">
-					<cfoutput>
-					<doc id="#docId#" /></cfoutput>
+				<!--- Documents to elevate --->
+				<cfloop array="#st.aDocumentsToInclude#" index="docElevateId">
+				<cfoutput>
+				<doc id="#docElevateId#" /></cfoutput>
+				</cfloop>
+
+				<!--- Documents to exclude --->
+				<cfloop array="#st.aDocumentsToExclude#" index="docExcludeId">
+				<cfoutput>
+				<doc id="#docExcludeId#" exclude="true" /></cfoutput>
 				</cfloop>
 				
 			<cfoutput>
@@ -91,8 +99,7 @@
 		</cfloop>
 		
 		<cfoutput>
-		</elevate>
-		</cfoutput>
+		</elevate></cfoutput>
 		
 		</cfsavecontent>
 		

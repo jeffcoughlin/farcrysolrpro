@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Edit --->
-<!--- @@author: Sean Coyne (sean@n42designs.com) --->
+<!--- @@author: Sean Coyne (sean@n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
@@ -16,7 +16,8 @@
 	<ft:processFormObjects typename="solrProElevation" bSessionOnly="true" r_stObject="stObj">
 		
 		<cfparam name="stProperties.searchstring" default="" />
-		<cfparam name="stProperties.aDocuments" default="#arrayNew(1)#" />
+		<cfparam name="stProperties.aDocumentsToInclude" default="#arrayNew(1)#" />
+		<cfparam name="stProperties.aDocumentsToExclude" default="#arrayNew(1)#" />
 		
 		<!--- ensure we have no duplicates --->
 		<cfset stSearchStringValidationResult = ftValidateSearchString(
@@ -36,11 +37,11 @@
 		</cfif>
 		
 		<!--- ensure at least one document selected --->
-		<cfif not arrayLen(stProperties.aDocuments)>
+		<cfif not arrayLen(stProperties.aDocumentsToInclude) and not arrayLen(stProperties.aDocumentsToExclude)>
 			<ft:advice 
 				objectid="#stProperties.objectid#" 
 				field="aDocuments" 
-				message="You must select at least one document to elevate" 
+				message="You must select at least one document to elevate or exclude" 
 				value="#stProperties.aDocuments#" />
 			<cfset bContinueSave = false />
 		</cfif>
@@ -61,7 +62,7 @@
 	<ft:fieldset>
 		<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
 	</ft:fieldset>
-	<ft:object objectid="#stobj.objectid#" lFields="searchString,aDocuments" />
+	<ft:object objectid="#stobj.objectid#" lFields="searchString,aDocumentsToInclude,aDocumentsToExclude" />
 	<ft:farcryButtonPanel>
 		<ft:farcryButton type="submit" text="Complete" value="save" validate="true" />
 		<ft:farcryButton type="submit" text="Cancel" value="cancel" validate="false" confirmText="Are you sure you wish to discard your changes?" />
