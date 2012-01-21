@@ -130,7 +130,7 @@
 				<td>#statResult.typeName#</td>
 				<td>#statResult.indexRecordCount#</td>
 				<td>#statResult.totalRecordCount#</td>
-				<td>#dateFormat(statResult.builtToDate,"mm/dd/yyyy")# #timeFormat(statResult.builtToDate,"h:mm tt")#</td>
+				<td>#dateFormat(statResult.builtToDate,"mmm dd, yyyy")# #timeFormat(statResult.builtToDate,"h:mm tt")#</td>
 				<td>#timeFormat(millisecondsToDate(statResult.processtime),"HH:mm:ss")#</td>
 			</tr>
 		</cfloop>
