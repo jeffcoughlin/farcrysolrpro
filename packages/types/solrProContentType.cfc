@@ -8,8 +8,8 @@
 	<cfproperty ftSeq="142" ftFieldset="Solr Content Type" ftLabel="Summary Fields" name="lSummaryFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to build the summary" />
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Result Image" name="resultImageField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result teaser image." />
 	
-	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
-	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Built to Date" name="builtToDate" ftType="datetime" type="date" required="false" ftHint="The date of the last indexed item.  Used for batching when indexing items." />
+	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Site Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
+	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Built to Date" name="builtToDate" ftType="datetime" type="date" required="false" ftHint="For system use.  Updated by the system.  Used as a reference date of the last indexed item.  Used for batching when indexing items.  Default is blank (no date)." />
 	<cfproperty ftSeq="165" ftFieldset="Solr Content Type" ftLabel="Default Document Boost" name="defaultDocBoost" ftType="list" ftListData="getBoostOptions" ftListDataTypename="solrProDocumentBoost" type="numeric" required="true" ftHint="The default document boost for all documents of this content type.  Use this to boost (or lower) all documents of a specific type." />
 	
 	<cfproperty ftSeq="170" ftFieldset="Solr Content Type" ftLabel="Indexed Properties" name="aIndexedProperties" ftType="array" type="array" ftJoin="solrProIndexedProperty" ftHint="The properties for this content type that will be indexed." />
