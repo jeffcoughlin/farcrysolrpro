@@ -26,7 +26,7 @@
 
 <!--- Get result teaser --->
 <cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField) and stObj[stContentType.resultSummaryField] neq "">
-	<cfset variables.teaser = oCustomFunctions.tagStripped(stObj[stContentType.resultSummaryField]) />		
+	<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />		
 	<!--- abbreviate teaser --->
 	<cfset teaser = oCustomFunctions.abbreviate(teaser, 450) />
 <cfelse>
