@@ -19,6 +19,12 @@
 
 <cfset contents = fileRead(filePath) />
 
+<cfoutput>
+	<h1>Synonyms</h1> 
+	<p>Matches strings of tokens and replaces them with other strings of tokens.
+One example provided is matching similar terms for <span class="code">ipod, i-pod, i pod => ipod</span></p>
+</cfoutput>
+
 <ft:form>
 	
 	<ft:fieldset legend="Synonyms">
@@ -44,6 +50,33 @@
 	<cfoutput><p>Unable to locate #filepath#.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct.</p></cfoutput>
 
 </cfif>
+
+<!--- Styling and javascript --->
+<skin:htmlhead id="solrPro-protwords">
+	<cfoutput>
+	<style type="text/css" media="all">
+		strong {
+			font-weight: bold;
+		}
+		em {
+			font-style: italic;
+		}
+		h1 {
+			margin: 1.2em 0 0;
+		}
+		p {
+			margin: .5em 0;
+		}
+		code,
+		.code {
+			color: ##555;
+			font: 1.1em monospace;
+			background-color: ##eee;
+			padding: 0.3em 0.5em;
+		}
+	</style>
+	</cfoutput>
+</skin:htmlhead>
 
 <admin:footer />
 

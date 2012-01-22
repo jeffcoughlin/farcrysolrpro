@@ -19,6 +19,11 @@
 
 <cfset contents = fileRead(filePath) />
 
+<cfoutput>
+	<h1>Stopwords</h1> 
+	<p>These are words that Solr will ignore when searching. Some default english examples are "and, or, the" because they are words that are commonly used and can affect search result scoring.</p>
+</cfoutput>
+
 <ft:form>
 	
 	<ft:fieldset legend="Stop Words">
@@ -43,6 +48,26 @@
 	<cfoutput><p>Unable to locate #filepath#.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct.</p></cfoutput>
 
 </cfif>
+
+<!--- Styling and javascript --->
+<skin:htmlhead id="solrPro-stopwords">
+	<cfoutput>
+	<style type="text/css" media="all">
+		strong {
+			font-weight: bold;
+		}
+		em {
+			font-style: italic;
+		}
+		h1 {
+			margin: 1.2em 0 0;
+		}
+		p {
+			margin: .5em 0;
+		}
+	</style>
+	</cfoutput>
+</skin:htmlhead>
 
 <admin:footer />
 
