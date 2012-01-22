@@ -4,14 +4,40 @@
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
+<cfset oManifest = application.stPlugins.farcrysolrpro.oManifest />
+
+<cfsavecontent variable="supportedFarCryVersions">
+	<cfoutput>	
+		<cfloop collection="#oManifest.stSupportedCores#" item="core">
+			<cfloop collection="#oManifest.stSupportedCores[core]#" item="patchversion">
+				#core#-#oManifest.stSupportedCores[core][patchversion]#,
+			</cfloop>
+		</cfloop>
+	</cfoutput> 
+</cfsavecontent>
+<cfset supportedFarCryVersions = trim(supportedFarCryVersions) />
+<cfif len(supportedFarCryVersions)>
+	<!--- Remove trailing comma --->
+	<cfset supportedFarCryVersions = left(supportedFarCryVersions, len(supportedFarCryVersions)-1) />
+</cfif>
+
 <admin:header title="Solr Pro: About" />
 
 <cfoutput>
+	<h1>Plugin Info</h1>
+	<ul>
+		<li><strong>Name:</strong> #oManifest.name#</li>
+		<li><strong>Description:</strong> #oManifest.description#</li>
+		<li><strong>Version:</strong> #oManifest.version#<cfif oManifest.buildState neq ""> (#oManifest.buildState#)</cfif></li>
+		<li><strong>License:</strong> <a href="#oManifest.license.link#">#oManifest.license.name#</a></li>
+		<li><strong>Supported FarCry Minimum:</strong> #supportedFarCryVersions#</li>
+		<li><strong>Required Plugins:</strong> <cfif oManifest.lRequiredPlugins neq "">#oManifest.lRequiredPlugins#<cfelse><em>none</em></cfif></li>
+	</ul>
 	<h1>What is the FarCry Solr Pro Plugin?</h1>
 	<p>The FarCry Solr Pro plugin lets you use the power of of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.</p>
 	<p>FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unque record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.</p>
 	<h1>Features</h1>
-	<ul id="features">
+	<ul class="features">
 		<li>Boosting
 			<ul>
 				<li>by field You can give certain fields more weight than others.</li>
@@ -105,7 +131,7 @@
 			</ul>
 		</li>
 	</ul>
-	<h2>Avid Testers</h2>
+	<h2>Devoted Testers</h2>
 	<ul>
 		<li>None yet :)</li>
 	</ul>
@@ -155,10 +181,10 @@
 		ul li li {
 			list-style: square outside none;
 		}
-		ul##features li {
+		ul.features li {
 			font-weight: bold;
 		}
-		ul##features li li {
+		ul.features li li {
 			font-weight: normal;
 		}
 		li.nolistyle {

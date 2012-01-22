@@ -12,5 +12,6 @@
 </cfif>
 
 <cfset application.stPlugins.farcrysolrpro.oCustomFunctions = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.customFunctions") />
+<cfset application.stPlugins.farcrysolrpro.oManifest = createObject("component","farcry.plugins.farcrysolrpro.install.manifest") />
 
 <cfsetting enablecfoutputonly="false" />
