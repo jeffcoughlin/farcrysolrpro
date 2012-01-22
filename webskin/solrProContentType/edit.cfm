@@ -219,7 +219,7 @@
 		<cfelse>
 			<cfset className = "" />
 		</cfif>
-		<ft:field label="Result Summary" bMultiField="true" class="#className#" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term.<br />2. Use a manually selected field. You must store this value in Solr's index.">
+		<ft:field label="Result Summary" bMultiField="true" class="#className#" hint="The field that will be used for the search result summary.<br />Options are:<br />1. Solr Generated Summary: Select any desired FarCry field(s) and Solr will use it's highlighting engine to return areas of the field(s) that match the search term. These do <strong>not</strong> have to be stored above in order to use this feature.<br />2. Use a manually selected field. You must store this value in Solr's index for it to appear here.">
 			<cfoutput>
 				<cfif structKeyExists(request.stFarcryFormValidation,stobj.objectid) and structKeyExists(request.stFarcryFormValidation[stobj.objectid],"lSummaryFields")>
 				<p class="errorField" htmlfor="lSummaryFields" for="lSummaryFields">#request.stFarcryFormValidation[stobj.objectid]['lSummaryFields'].stError.message#</p>
@@ -247,9 +247,9 @@
 			
 			<cfloop array="#aRules#" index="rule">
 				<cfoutput>
-				<div class="rule">
-					<input type="checkbox" name="lIndexedRules" id="lIndexedRules_#rule.typename#" value="#rule.typename#" <cfif listFindNoCase(stobj.lIndexedRules, rule.typename)>checked="checked"</cfif> />
-					<label for="lIndexedRules_#rule.typename#">#rule.displayname#<br /><div class="indexableFields"><span>(#replace(rule.indexableFields, ",", ", ", "all")#)</span></div></label>
+				<div class="rule">			
+					<div class="indexRuleCheckbox"><input type="checkbox" name="lIndexedRules" id="lIndexedRules_#rule.typename#" value="#rule.typename#" <cfif listFindNoCase(stobj.lIndexedRules, rule.typename)>checked="checked"</cfif> /></div>
+					<div class="indexRuleDescription"><label for="lIndexedRules_#rule.typename#">#rule.displayname#<br /><span>(#replace(rule.indexableFields, ",", ", ", "all")#)</span></label></div>
 				</div>
 				</cfoutput>
 			</cfloop>
@@ -283,7 +283,7 @@
 				<h4>Indexed Properties</h3>
 				<p>Any fields that you would like Solr to index are chosen here.</p>
 				<h5>Custom Properties</h5>
-				<p>These represent the fields for your FarCry types that are not FarCry default types.  ie. These wouldn't be fields like <var>objectid</var> and <var>label</var> (ref. Default Properties), but rather the other fields in your object like <var>title</var>.</p>
+				<p>These represent the fields for your FarCry types that are not FarCry default types.  ie. These wouldn't be fields like <var>objectid</var> and <var>label</var> (ref. <a href="##defaultproperties">Default Properties</a>), but rather the other custom fields you might have in your object like <var>title</var>.</p>
 				<p>Your options here are the following:</p>
 				<h6>Indexing a Field</h6>
 				<ul>
@@ -309,7 +309,7 @@
 					</li>
 				</ul>
 
-				<h5>Default Properties</h5>
+				<h5 id="defaultproperties">Default Properties</h5>
 				<p>Default properties are fields that are always indexed (and many stored) for all types.  Some of them are from FarCry core, while others are additional fields used to help with extra data.  For most people, these fields and their settings can be left alone including their boost settings, however their boost values can be adjusted here if desired.</p>
 				<p>The reason that the first seven items are stored in Solr is to enhance performance on seaches.  When a user searches your site, Solr is already returning back data.  Much of the teaser data needed to be displayed to the user can be returned from Solr and there is no need to do an extra query lookup per item on the search result page.  This is another reason that we suggest storing a search result <var>title</var> and <var>teaser</var> (and any other fields you want displayed on the search results page - like a <var>teaser image</var>).</p>
 				<h6>Stored and indexed FarCry core fieldnames:</h6>
@@ -377,6 +377,12 @@
 	<skin:htmlhead id="solrProContentType-edit">
 		<cfoutput>
 		<style type="text/css" media="all">
+			/* Uniform override */
+			.uniForm .inlineLabels .multiField {
+				width: 60%;
+			}
+
+			/* Page styling */
 			strong {
 				font-weight: bold;
 			}
@@ -472,8 +478,19 @@
 				width: 55%;
 				white-space: nowrap;
 			}
-			div.rule div.indexableFields {
-				padding-left: 1.2em;
+			div.rule {
+				float: left;
+				width: 269px;
+				margin: 5px 5px 5px 0;
+			}
+			div.rule div.indexRuleDescription {
+				 margin-left: 1.3em;
+			}
+			div.rule label span {
+				 font-style: italic;
+			}
+			div.rule input {
+				float: left;
 			}
 			##lSummaryFields {
 				margin: 10px 0;
