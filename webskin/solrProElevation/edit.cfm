@@ -40,9 +40,14 @@
 		<cfif not arrayLen(stProperties.aDocumentsToInclude) and not arrayLen(stProperties.aDocumentsToExclude)>
 			<ft:advice 
 				objectid="#stProperties.objectid#" 
-				field="aDocuments" 
+				field="aDocumentsToInclude" 
 				message="You must select at least one document to elevate or exclude" 
-				value="#stProperties.aDocuments#" />
+				value="#stProperties.aDocumentsToInclude#" />
+			<ft:advice 
+				objectid="#stProperties.objectid#" 
+				field="aDocumentsToExclude" 
+				message="You must select at least one document to elevate or exclude" 
+				value="#stProperties.aDocumentsToExclude#" />
 			<cfset bContinueSave = false />
 		</cfif>
 		
