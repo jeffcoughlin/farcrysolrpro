@@ -799,6 +799,53 @@
 		<cfreturn q />
 	</cffunction>
 	
+	<cffunction name="buildQueryString" access="public" output="false" returntype="string">
+		<cfargument name="searchString" required="true" type="string" />
+		<cfargument name="operator" required="false" type="string" default="ANY" hint="ANY,ALL,PHRASE" />
+		<cfargument name="lContentTypes" required="false" type="string" default="" />
+		
+		<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
+		<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />
+		
+		<cfif reFind("[[:space:]]",q) gt 0>
+				
+			<!--- remove operators from string (AND, OR, NOT) --->
+			<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
+			
+			<!--- build the main search phrase --->
+			<cfif arguments.operator eq "all">
+				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
+			<cfelseif arguments.operator eq "any">
+				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," OR ","ALL") & ")" />
+			<cfelseif arguments.operator eq "phrase">
+				<cfset q = '("' & q & '")' />
+			</cfif>
+			
+		</cfif>
+		
+		<!--- add a typename filter --->
+		<cfif listLen(arguments.lContentTypes)>
+			<cfset q = q & " AND (" />
+			
+			<cfset var counter = 0 />
+			<cfloop list="#arguments.lContentTypes#" index="type">
+				<cfset counter++ />
+				
+				<cfif counter gt 1>
+					<cfset q = q & " OR " />
+				</cfif>
+				
+				<cfset q = q & "typename:" & type />
+				
+			</cfloop>
+		
+			<cfset q = q & ")" />
+		</cfif>
+		
+		<cfreturn q />
+		
+	</cffunction>
+	
 	<!--- cfsolrlib abstractions --->
 	
 	<cffunction name="resetIndex" access="public" output="false" returntype="void">

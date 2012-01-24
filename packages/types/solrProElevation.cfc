@@ -50,6 +50,8 @@
 	
 	<cffunction name="generateElevateXml" access="public" output="false" returntype="void">
 		
+		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+		
 		<!--- regenerate XML file in its entirety since we cannot match a <query /> block to an elevation record in the database --->
 		
 		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
@@ -70,31 +72,21 @@
 		<elevate></cfoutput>
 		
 		<cfset var st = "" />
-		<cfset var docElevateId = "" />
-		<cfset var docExcludeId = "" />
 		
 		<!--- loop over each and output XML --->
 		<cfloop query="qElevation">
 			
 			<cfset st = getData(qElevation.objectid[qElevation.currentRow]) />
-
-			<cfoutput>
-			<query text="#xmlFormat(st.searchString)#"></cfoutput>
 			
-				<!--- Documents to elevate --->
-				<cfloop array="#st.aDocumentsToInclude#" index="docElevateId">
-				<cfoutput>
-				<doc id="#docElevateId#" /></cfoutput>
+			<cfoutput>#generateElevateXmlNode(st.searchString, st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
+			
+			<!--- TODO: how do we handle if the user does a search on a specific content type? --->
+			<cfif reFind("[[:space:]]",st.searchString) gt 0>
+				<cfset var operator = "" />
+				<cfloop list="ANY,ALL,PHRASE" index="operator">
+					<cfoutput>#generateElevateXmlNode(oContentType.buildQueryString(searchString = st.searchString, operator = operator), st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
 				</cfloop>
-
-				<!--- Documents to exclude --->
-				<cfloop array="#st.aDocumentsToExclude#" index="docExcludeId">
-				<cfoutput>
-				<doc id="#docExcludeId#" exclude="true" /></cfoutput>
-				</cfloop>
-				
-			<cfoutput>
-			</query></cfoutput>
+			</cfif>
 			
 		</cfloop>
 		
@@ -107,7 +99,40 @@
 		<cffile action="write" file="#xmlFilePath#" output="#trim(xml)#" addnewline="false" />
 		
 		<!--- call solr commit so Solr will pick up the changes to elevate.xml --->
+		<!--- TODO: just a commit isn't enough, we need SOMETHING to comming.  Perhaps grab a document from solr, and recommit it? eh. lamerz --->
 		<cfset application.fapi.getContentType("solrProContentType").commit() />
+		
+	</cffunction>
+	
+	<cffunction name="generateElevateXmlNode" access="public" output="false" returntype="string">
+		<cfargument name="searchString" type="string" required="true" />
+		<cfargument name="aDocumentsToInclude" type="array" required="true" />
+		<cfargument name="aDocumentsToExclude" type="array" required="true" />
+		<cfset var docElevateId = "" />
+		<cfset var docExcludeId = "" />
+		<cfset var xml = "" />
+		
+		<cfsavecontent variable="xml">
+		<cfoutput>
+		<query text="#xmlFormat(arguments.searchString)#"></cfoutput>
+		
+			<!--- Documents to elevate --->
+			<cfloop array="#arguments.aDocumentsToInclude#" index="docElevateId">
+			<cfoutput>
+			<doc id="#docElevateId#" /></cfoutput>
+			</cfloop>
+
+			<!--- Documents to exclude --->
+			<cfloop array="#arguments.aDocumentsToExclude#" index="docExcludeId">
+			<cfoutput>
+			<doc id="#docExcludeId#" exclude="true" /></cfoutput>
+			</cfloop>
+			
+		<cfoutput>
+		</query></cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn xml />
 		
 	</cffunction>
 	

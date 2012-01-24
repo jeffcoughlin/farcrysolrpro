@@ -63,40 +63,11 @@
 			<cfelse>
 				<cfset params["spellcheck"] = false />
 			</cfif>
-
-			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
-			<cfset var q = reReplaceNoCase(stSearchForm.q,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL") />
 			
-			<!--- remove operators from string (AND, OR, NOT) --->
-			<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
-			
-			<cfif stSearchForm.operator eq "all">
-				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
-			<cfelseif stSearchForm.operator eq "any">
-				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," OR ","ALL") & ")" />
-			<cfelseif stSearchForm.operator eq "phrase">
-				<cfset q = '("' & q & '")' />
-			</cfif>
-			
-			<cfif listLen(stSearchForm.lContentTypes)>
-				<cfset q = q & " AND (" />
-				
-				<cfset var counter = 0 />
-				<cfloop list="#stSearchForm.lContentTypes#" index="type">
-					<cfset counter++ />
-					
-					<cfif counter gt 1>
-						<cfset q = q & " OR " />
-					</cfif>
-					
-					<cfset q = q & "typename:" & type />
-					
-				</cfloop>
-			
-				<cfset q = q & ")" />
-			</cfif>
+			<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes) />
 			
 			<!--- get the field list for the content type(s) we are searching --->
+			<!--- TODO: if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
 			<cfif listLen(stSearchForm.lContentTypes) eq 1>
 				<cfset params["qf"] = oContentType.getFieldListCacheForType(stSearchForm.lContentTypes) />
 			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
