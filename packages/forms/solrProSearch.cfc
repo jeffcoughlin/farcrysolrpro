@@ -67,13 +67,13 @@
 			<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes) />
 			
 			<!--- get the field list for the content type(s) we are searching --->
-			<!--- TODO: if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
+			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
 			<cfif listLen(stSearchForm.lContentTypes) eq 1>
-				<cfset params["qf"] = oContentType.getFieldListCacheForType(stSearchForm.lContentTypes) />
+				<cfset params["qf"] = oContentType.getFieldListCacheForType(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
 			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
-				<cfset params["qf"] = oContentType.getFieldListForTypes(stSearchForm.lContentTypes) />
+				<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
 			<cfelse>
-				<cfset params["qf"] = oContentType.getFieldListForTypes() />
+				<cfset params["qf"] = oContentType.getFieldListForTypes(bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
 			</cfif>
 			
 			<!--- return the score --->
