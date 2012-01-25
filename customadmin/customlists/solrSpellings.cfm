@@ -15,6 +15,7 @@
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
 	<cfset application.fapi.getContentType("solrProContentType").reload() />
+	<!--- TODO: check if a reload is sufficient --->
 	<skin:bubble title="Spellings" message="Updated spellings.txt" />
 </ft:processForm>
 
@@ -23,6 +24,7 @@
 <cfoutput>
 	<h1>Spellings</h1> 
 	<p><em>More info soon...</em></p>
+	<!--- Spellings.txt is the dictionary file for the file based spellchecker.  if you set spellchecker.dictionary = 'file' when doing a query, the file spell checker will be used, and the spellings.txt file is used as the dictionary --->
 </cfoutput>
 
 <ft:form>
