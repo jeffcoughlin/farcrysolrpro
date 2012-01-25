@@ -17,16 +17,24 @@
 	<cfset request.stObj[i] = trim(request.stObj[i]) />
 </cfloop>
 
-<!--- Get result title --->
-<cfif structKeyExists(stObj, stContentType.resultTitleField) and len(stObj[stContentType.resultTitleField])>
-	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />
+<!--- Get result title ---><!--- TODO: check to see if value is an array --->
+<cfif structKeyExists(stObj, stContentType.resultTitleField)>
+	<cfif isArray(stobj[stContentType.resultTitleField]) and len(stObj[stContentType.resultTitleField][1])>
+		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField][1]) />
+	<cfelse>
+		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />	
+	</cfif>
 <cfelse>
 	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj.label) />
 </cfif>
 
 <!--- Get result teaser --->
-<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField) and stObj[stContentType.resultSummaryField] neq "">
-	<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />		
+<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField)>
+	<cfif isArray(stObj[stContentType.resultSummaryField]) and stObj[stContentType.resultSummaryField] neq "">
+		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField][1]) />
+	<cfelse>
+		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />
+	</cfif>
 	<!--- abbreviate teaser --->
 	<cfset teaser = oCustomFunctions.abbreviate(teaser, 450) />
 <cfelse>
@@ -49,13 +57,22 @@
 <!--- Get result image teaser --->
 <cfif structKeyExists(stObj, stContentType.resultImageField) and len(stObj[stContentType.resultImageField])>
 	<!--- if the teaser image value is a UUID, then check if it points to a dmImage object.  if it does, use the ThumbnailImage as the teaser image --->
-	<cfif isValid("uuid",stObj[stContentType.resultImageField])>
+	<cfif isArray(stObj[stContentType.resultImageField]) and isValid("uuid",stObj[stContentType.resultImageField][1])>
+		<cfif application.fapi.findType(stObj[stContentType.resultImageField][1]) eq "dmImage">
+			<cfset stImage = application.fapi.getContentObject(objectid = stObj[stContentType.resultImageField][1], typename = "dmImage") />
+			<cfset variables.teaserImage = stImage["ThumbnailImage"] />
+		</cfif>
+	<cfelseif not isArray(stObj[stContentType.resultImageField]) and isValid("uuid",stObj[stContentType.resultImageField])>
 		<cfif application.fapi.findType(stObj[stContentType.resultImageField]) eq "dmImage">
 			<cfset stImage = application.fapi.getContentObject(objectid = stObj[stContentType.resultImageField], typename = "dmImage") />
 			<cfset variables.teaserImage = stImage["ThumbnailImage"] />
 		</cfif>
 	<cfelse>
-		<cfset variables.teaserImage = stObj[stContentType.resultImageField] />
+		<cfif isArray(stObj[stContentType.resultImageField])>
+			<cfset variables.teaserImage = stObj[stContentType.resultImageField][1] />
+		<cfelse>
+			<cfset variables.teaserImage = stObj[stContentType.resultImageField] />
+		</cfif>
 	</cfif>
 <cfelse>
 	<cfset variables.teaserImage = "" />
