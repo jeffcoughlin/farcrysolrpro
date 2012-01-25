@@ -6,13 +6,16 @@
 		<fieldset>
 			
 			<label for="q">Search</label>
-			<input type="text" name="q" id="q" value="#stobj.q#" />
+			<input type="text" name="q" id="q" value="#htmlEditFormat(stobj.q)#" />
 			
 			<label for="operator">Search Operator</label>
 			<select name="operator" id="operator">
 				<option value="any"<cfif stobj.operator eq 'any'> selected="selected"</cfif>>Any of these words</option>
 				<option value="all"<cfif stobj.operator eq 'all'> selected="selected"</cfif>>All of these words</option>
 				<option value="phrase"<cfif stobj.operator eq 'phrase'> selected="selected"</cfif>>These words as a phrase</option>
+				<cfif application.fapi.checkPermission("Developer")>
+				<option value="nofilter"<cfif stobj.operator eq 'nofilter'> selected="selected"</cfif>>No Filter</option>
+				</cfif>
 			</select>
 			
 			<label for="lContentTypes">Content Types</label>

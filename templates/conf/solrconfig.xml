@@ -723,6 +723,8 @@
        <int name="rows">10</int>
 	   <str name="defType">edismax</str>
 	   <str name="qf">label</str>
+	   <!-- https://issues.apache.org/jira/browse/SOLR-2649: defaultOperator and q.op should set mm but there is a bug that prevents it -->
+	   <str name="mm">0%</str>
      </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of

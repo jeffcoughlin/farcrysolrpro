@@ -297,6 +297,7 @@
  	<defaultSearchField>label</defaultSearchField>
 
  	<!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+ 	<!-- https://issues.apache.org/jira/browse/SOLR-2649: defaultOperator and q.op should set mm but there is a bug that prevents it -->
  	<solrQueryParser defaultOperator="OR"/>
 	
 </schema>

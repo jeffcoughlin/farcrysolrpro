@@ -59,7 +59,12 @@
 		
 	<!--- Get the search Results --->
 	<cfset oSearchService = application.fapi.getContentType("solrProSearch") />
-	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows) />
+	<cfif form.operator eq "nofilter">
+		<cfset bCleanString = false />
+	<cfelse>
+		<cfset bCleanString = true />
+	</cfif>
+	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows, bCleanString = bCleanString) />
 
 	<cfif stSearchResult.bSearchPerformed>
 		

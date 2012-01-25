@@ -34,6 +34,7 @@
 		<cfargument name="hlPre" required="false" type="string" default="<strong>" hint="HTML to use to wrap instances of search terms" />
 		<cfargument name="hlPost" required="false" type="string" default="</strong>" hint="HTML to use to wrap instances of search terms" />
 		<cfargument name="bLogSearch" required="false" type="boolean" default="#application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true)#" hint="Log the search criteria and number of results?" />
+		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		
 		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
@@ -64,7 +65,7 @@
 				<cfset params["spellcheck"] = false />
 			</cfif>
 			
-			<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes) />
+			<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes, bCleanString = arguments.bCleanString) />
 			
 			<!--- get the field list for the content type(s) we are searching --->
 			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
@@ -78,7 +79,7 @@
 			
 			<!--- return the score --->
 			<cfset params["fl"] = "*,score" />
-						
+			
 			<!--- apply the sort --->
 			<cfif stSearchForm.orderby eq "date">
 				<cfset params["sort"] = "datetimelastupdated desc" />

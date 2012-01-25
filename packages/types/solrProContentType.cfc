@@ -808,24 +808,29 @@
 		<cfargument name="searchString" required="true" type="string" />
 		<cfargument name="operator" required="false" type="string" default="ANY" hint="ANY,ALL,PHRASE" />
 		<cfargument name="lContentTypes" required="false" type="string" default="" />
+		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		
-		<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
-		<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />
-		
-		<cfif reFind("[[:space:]]",q) gt 0>
+		<cfif arguments.bCleanString>
+			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
+			<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />
+			
+			<cfif reFind("[[:space:]]",q) gt 0>
+					
+				<!--- remove operators from string (AND, OR, NOT) --->
+				<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
 				
-			<!--- remove operators from string (AND, OR, NOT) --->
-			<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
-			
-			<!--- build the main search phrase --->
-			<cfif arguments.operator eq "all">
-				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
-			<cfelseif arguments.operator eq "any">
-				<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," OR ","ALL") & ")" />
-			<cfelseif arguments.operator eq "phrase">
-				<cfset q = '("' & q & '")' />
+				<!--- build the main search phrase --->
+				<cfif arguments.operator eq "all">
+					<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
+				<cfelseif arguments.operator eq "any">
+					<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," OR ","ALL") & ")" />
+				<cfelseif arguments.operator eq "phrase">
+					<cfset q = '("' & q & '")' />
+				</cfif>
+				
 			</cfif>
-			
+		<cfelse>
+			<cfset q = '(' & q & ')' />
 		</cfif>
 		
 		<!--- add a typename filter --->
