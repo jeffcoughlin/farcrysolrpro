@@ -204,6 +204,7 @@
 		
 	</cffunction>
 	
+	<!--- TODO: when the content type configuration is changed, flush the field list cache --->
 	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
@@ -249,9 +250,9 @@
 	<cffunction name="getFieldListForType" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a given content type.  Used for the qf (query fields) Solr parameter">
 		<cfargument name="typename" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
+		<cfargument name="qf" type="array" required="false" default="#['rulecontent','rulecontent_phonetic','objectid']#" hint="The starting list for the query fields" />
 		<cfset var st = getByContentType(arguments.typename) />
 		<cfset var oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
-		<cfset var qf = [] />
 		<cfset var prop = "" />
 		<cfset var propId = "" />
 		<cfset var ft = "" />
@@ -268,11 +269,11 @@
 					<cfset fieldType[2] = "stored" />
 				</cfif>
 				<cfif arguments.bIncludePhonetic or (fieldType[1] neq 'phonetic' and arguments.bIncludePhonetic eq false)>
-					<cfset arrayAppend(qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
+					<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
 				</cfif>
 			</cfloop>
 		</cfloop>
-		<cfreturn arrayToList(qf, " ") />
+		<cfreturn arrayToList(arguments.qf, " ") />
 	</cffunction>
 	
 	<cffunction name="getCorePropertyBoosts" returntype="struct" access="public" output="false" hint="Returns a struct of core property boost values for a given content type">
