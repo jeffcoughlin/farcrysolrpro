@@ -73,7 +73,8 @@
 		<skin:view 
 			stobject="#stobj#" 
 			webskin="displaySearchCount" 
-			totalResults="#stSearchResult.totalResults#" />
+			totalResults="#stSearchResult.totalResults#"
+			qTime="#stSearchResult.qTime#" />
 		
 		<cfif structKeyExists(stSearchResult,"spellcheck") and arrayLen(stSearchResult.spellcheck)>
 			<skin:view  
