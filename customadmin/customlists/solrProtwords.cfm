@@ -14,6 +14,7 @@
 
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
+	<cfset application.fapi.getContentType("solrProContentType").reload() />
 	<skin:bubble title="Protected Words" message="Updated protwords.txt" />
 </ft:processForm>
 

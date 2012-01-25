@@ -14,6 +14,7 @@
 
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
+	<cfset application.fapi.getContentType("solrProContentType").reload() />
 	<skin:bubble title="Synonyms" message="Updated synonyms.txt" />
 </ft:processForm>
 
@@ -29,7 +30,7 @@ One example provided is matching similar terms for <span class="code">ipod, i-po
 	
 	<ft:fieldset legend="Synonyms">
 		
-		<ft:field for="contents" label="File Contents:" hint="No reindex is required. This file is read by Solr at query time.">
+		<ft:field for="contents" label="File Contents:" hint="Reindex is required after changing the synonyms.">
 			<cfoutput>
 			<textarea class="textareaInput" name="contents" id="contents" style="min-height: 400px;">#contents#</textarea>
 			</cfoutput>
