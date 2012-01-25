@@ -70,7 +70,7 @@
 			<!--- get the field list for the content type(s) we are searching --->
 			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
 			<cfif listLen(stSearchForm.lContentTypes) eq 1>
-				<cfset params["qf"] = oContentType.getFieldListCacheForType(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
+				<cfset params["qf"] = oContentType.getFieldListCacheForType(typename = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
 			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
 				<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
 			<cfelse>
