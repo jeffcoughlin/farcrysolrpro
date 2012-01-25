@@ -27,8 +27,9 @@
 		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" type="struct" default="#structNew()#" />
 		<cfset structDelete(application.stPlugins.farcrysolrpro.corePropertyBoosts,stProperties.objectid) />
 		
-		<!--- cache the field list for this type --->
-		<cfset setFieldListCacheForType(stProperties.contentType) />
+		<!--- cache the field list for this type (both phonetic and non-phonetic) --->
+		<cfset setFieldListCacheForType(stProperties.contentType,true) />
+		<cfset setFieldListCacheForType(stProperties.contentType,false) />
 		
 		<cfreturn super.aftersave(argumentCollection = arguments) />
 		
@@ -204,7 +205,6 @@
 		
 	</cffunction>
 	
-	<!--- TODO: when the content type configuration is changed, flush the field list cache --->
 	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
