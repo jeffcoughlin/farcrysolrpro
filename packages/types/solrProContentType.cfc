@@ -954,7 +954,7 @@
 	<cffunction name="deleteByID" access="public" output="false" hint="Delete a document from the index by ID">
 		<cfargument name="id" type="string" required="true" hint="ID of object to delete.">
 		<cfargument name="bCommit" type="boolean" required="false" default="false" />
-		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteById(id = arguments.id) />
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteById(id = arguments.id, idFieldName = "objectid") />
 		<cfif arguments.bCommit>
 			<cfset commit() />
 		</cfif>
