@@ -41,16 +41,16 @@
 			returnvariable="stMetadata.ftJoin" />
 	</cfif>
 	<!--- (farcrysolrpro) --->
-	
+
 	<!--- FILTERING SETUP --->
 	<cfif not len(url.filterTypename)>		
 		<cfset url.filterTypename = listFirst(stMetadata.ftJoin) />
 	</cfif>
-	
+
 	<cfif structKeyExists(form, "filterTypename")>
 		<cfset url.filterTypename = form.filterTypename />
 	</cfif>
-	
+
 	<cfparam name="form.searchTypename" default="" />
 	
 	<cfif len(form.searchTypename)>
