@@ -81,12 +81,6 @@
 			<cfoutput>#generateElevateXmlNode(st.searchString, st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
 			
 			<!--- TODO: how do we handle if the user does a search on a specific content type? --->
-			<cfif reFind("[[:space:]]",st.searchString) gt 0>
-				<cfset var operator = "" />
-				<cfloop list="ANY,ALL,PHRASE" index="operator">
-					<cfoutput>#generateElevateXmlNode(oContentType.buildQueryString(searchString = st.searchString, operator = operator), st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
-				</cfloop>
-			</cfif>
 			
 		</cfloop>
 		
@@ -99,9 +93,54 @@
 		<cffile action="write" file="#xmlFilePath#" output="#trim(xml)#" addnewline="false" />
 		
 		<!--- call solr commit so Solr will pick up the changes to elevate.xml --->
-		<!--- TODO: just a commit isn't enough, we need SOMETHING to comming.  Perhaps grab a document from solr, and recommit it? eh. lamerz --->
-		<cfset application.fapi.getContentType("solrProContentType").commit() />
+		<!--- just a commit isn't enough, we need SOMETHING to commit.  So we will grab a document from solr and recommit it? sucks, but only way. --->
 		
+		<!--- make sure solr is running --->
+		<cfif oContentType.isSolrRunning()>
+			
+			<cfset var counter = 0 />
+			<cfset var stItem = {} />
+			
+			<!--- try to find a record, at most do this 5 times --->
+			<cfloop condition="counter lt 5">
+				
+				<cfset counter++ />				
+
+				<!--- grab a result from solr --->	
+				<cfset var stResult = oContentType.search(q = "*:*", start = 1, rows = 1) />
+				
+				<!--- look up in FarCry --->
+				<cfif stResult.totalResults gt 0>
+					
+					<cfset stItem = application.fapi.getContentObject(typename = stResult.results[1].typename, objectid = stResult.results[1].objectid) />
+					
+					<cfif not (structKeyExists(stItem, "bDefaultObject") and stItem.bDefaultObject is true)>
+						<!--- this object is in FarCry --->
+						<cfset stItem.datetimelastupdated = now() />
+						<cfset application.fapi.setData(objectid = stItem.objectid, typename = stItem.typename, stProperties = stItem) />
+						<cfbreak />
+					</cfif>
+					
+				<cfelse>
+					<!--- there are no records in Solr, get out of loop --->
+					<cfbreak />
+				</cfif>
+				
+			</cfloop>
+			
+			<cfif structCount(stItem)>
+				
+				<!--- re-index record --->
+				<cfset oContentType.addRecordToIndex(
+					objectid = stItem.objectid,
+					typename = stItem.typename,
+					stContentType = oContentType.getByContentType(stItem.typename),
+					bCommit = true
+				) />
+				
+			</cfif>
+			
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="generateElevateXmlNode" access="public" output="false" returntype="string">
