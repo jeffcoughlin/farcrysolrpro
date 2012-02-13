@@ -166,7 +166,7 @@
 			<!--- delete any records in the index that are no longer in the database. (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
 			<cfset var lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
 			<cfif listLen(lItemsToDelete)>
-				<cfset deleteByTypename(typename = stContentType.contentType, lObjectIds = lItemsToDelete, bCommit = false) />
+				<cfset deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, lObjectIds = lItemsToDelete, bCommit = false) />
 			</cfif>
 			
 			<!--- update metadata for this content type --->
@@ -294,7 +294,7 @@
 	
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename, params = { "fl" = "objectid" }, rows = 9999999).results) />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " farcrysitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
@@ -322,6 +322,9 @@
 		<!--- load the record from the database --->
 		<cfset var stRecord = application.fapi.getContentObject(typename = arguments.typename, objectid = arguments.objectid) />
 		
+		<!--- each record in Solr should track the application name --->
+		<cfset stRecord["farcrysitename"] = application.applicationName />
+		
 		<!--- create a solr object for this record --->
 		<cfset var doc = [] />
 		<cfset var field = "" />
@@ -333,7 +336,7 @@
 				<cfif arrayFindNoCase(aCoreFields, field)>
 					
 					<!--- core property --->
-						
+				
 					<!--- if this is a legit FC property then set the farcryField, otherwise leave it blank --->
 					<cfif listFindNoCase(lFarCryProps, field)>
 						
@@ -452,6 +455,12 @@
 		<cfset var oType = application.fapi.getContentType(arguments.typename) />
 		<cfset var stResult = {} />
 		
+		<cfif structKeyExists(oType,"getTablename")>
+			<cfset var tablename = oType.getTablename() />
+		<cfelse>
+			<cfset var tablename = oType.getTypename() />
+		</cfif>
+					
 		<cfif structKeyExists(oType, "contentToIndex")>
 			<!--- run the contentToIndex method for this content type --->
 			<cfset stResult.qContentToIndex = oType.contentToIndex() />
@@ -459,8 +468,8 @@
 			<!--- no contentToIndex method, just grab all the records --->
 			<cfquery name="stResult.qContentToIndex" datasource="#application.dsn#">
 			SELECT objectID, datetimelastupdated
-			FROM #oType.getTablename()#
-			<cfif structkeyexists(application.stcoapi[oType.getTablename()].stprops, "status")>
+			FROM #tablename#
+			<cfif structkeyexists(application.stcoapi[tablename].stprops, "status")>
 			where status = 'approved'
 			</cfif>
 			</cfquery>
@@ -482,9 +491,13 @@
 	
 	<cffunction name="deleteByTypename" returntype="void" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
 		<cfargument name="lObjectIds" required="false" type="string" default="" hint="optional list of objectIds to delete from the solr index" />
 		<cfargument name="bCommit" required="false" type="boolean" default="true" />
 		<cfset var deleteQuery = "typename:" & arguments.typename />
+		<cfif len(trim(arguments.sitename))>
+			<cfset deleteQuery = "farcrysitename:" & arguments.sitename />
+		</cfif>
 		<cfset var i = "" />
 		<cfif listLen(arguments.lObjectIds)>
 			<cfset deleteQuery = deleteQuery & " AND (" />
@@ -493,6 +506,16 @@
 			</cfloop>
 			<cfset deleteQuery = deleteQuery & " )" />
 		</cfif>
+		<cfset deleteByQuery(q = deleteQuery) />
+		<cfif arguments.bCommit>
+			<cfset commit() />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="deleteBySitename" returntype="void" access="public" output="false">
+		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
+		<cfargument name="bCommit" required="false" type="boolean" default="true" />
+		<cfset var deleteQuery = "farcrysitename:" & arguments.sitename />
 		<cfset deleteByQuery(q = deleteQuery) />
 		<cfif arguments.bCommit>
 			<cfset commit() />
@@ -1040,7 +1063,8 @@
 		<cfset var host = application.fapi.getConfig(key = 'solrserver', name = 'host') />
 		<cfset var port = application.fapi.getConfig(key = 'solrserver', name = 'port') />
 		<cfset var collectionName = application.fapi.getConfig(key = 'solrserver', name = 'collectionName') />
-		<cfset uri = "http://" & host & ":" & port & "/solr/admin/cores?action=RELOAD&core=" & collectionName />
+		<cfset var uri = "http://" & host & ":" & port & "/solr/admin/cores?action=RELOAD&core=" & collectionName />
+		<cfhttp url="#uri#" method="get" />
 	</cffunction>
 	
 </cfcomponent>

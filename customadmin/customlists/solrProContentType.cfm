@@ -8,10 +8,35 @@
 
 <admin:header title="Solr Pro Content Type Admin" />
 
+<cfif application.ApplicationName neq application.fapi.getConfig(key = 'solrserver', name = 'collectionName')>
+	
+	<ft:processForm action="Reset This Site">
+		<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset oContentType.deleteBySitename(sitename = application.ApplicationName) />
+		<cfset qContentTypes = oContentType.getAllContentTypes() />
+		<cfloop query="qContentTypes">
+			<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
+			<cfset stContentType.builtToDate = "" />
+			<cfset oContentType.setData(stContentType) />
+		</cfloop>
+		<skin:bubble title="Reset This Site" message="All records for site #application.applicationName# have been reset." />
+	</ft:processForm>
+	
+	<ft:processForm action="resetCollectionBySite">
+		<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset stContentType = oContentType.getData(form.selectedObjectId) />
+		<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, bCommit = true) />
+		<cfset stContentType.builtToDate = "" />
+		<cfset oContentType.setData(stContentType) />
+		<skin:bubble title="Reset Collection" message="#stContentType.title# has been reset for site #application.applicationName#" />
+	</ft:processForm>	
+	
+</cfif>
+
 <ft:processForm action="resetCollection">
 	<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 	<cfset stContentType = oContentType.getData(form.selectedObjectId) />
-	<cfset oContentType.deleteByTypename(typename = stContentType.contentType, bCommit = true) />
+	<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = "", bCommit = true) />
 	<cfset stContentType.builtToDate = "" />
 	<cfset oContentType.setData(stContentType) />
 	<skin:bubble title="Reset Collection" message="#stContentType.title# has been reset" />
@@ -53,10 +78,25 @@
 	];
 </cfscript>
 
+<cfif application.applicationName neq application.fapi.getConfig(key = 'solrserver', name = 'collectionName')>
+	<cfset arrayAppend(aButtons, { 
+		value = "Reset This Site", 
+		permission = 1, 
+		onclick = "", 
+		confirmText = "This will clear all records from Solr for this site (#application.applicationName#), are you sure you wish to do this?"
+	}) />
+</cfif>
+
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
 <cftry>
-
+	
+	<cfset lCustomActions = "indexCollection:Index Collection,resetCollection:Reset Content Type" />
+	
+	<cfif application.applicationName neq application.fapi.getConfig(key = 'solrserver', name = 'collectionName')>
+		<cfset lCustomActions = lCustomActions & " (All Sites),resetCollectionBySite:Reset Content Type (This Site)" />
+	</cfif>
+	
 	<ft:objectadmin 
 		typename="solrProContentType"
 		columnList="title,contentType,datetimecreated" 
@@ -65,9 +105,9 @@
 		lFilterFields="title,contentType"
 		sqlorderby="title"
 		aButtons="#aButtons#"
-		lButtons="Add,Delete,Unlock,Optimize All,Reset All"
+		lButtons="Add,Delete,Unlock,Optimize All,Reset This Site,Reset All"
 		plugin="farcrysolrpro"
-		lCustomActions="resetCollection:Reset Collection,indexCollection:Index Collection" />
+		lCustomActions="#lCustomActions#" />
 		
 	<cfcatch>
 		

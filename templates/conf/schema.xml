@@ -222,6 +222,9 @@
 		
 		<field name="highlight" type="text" indexed="false" stored="true" required="false" multiValued="true" />
 		
+		<!-- field to store the site this record came from. (used when multiple sites share a common solr core) -->
+		<field name="farcrysitename" type="text" indexed="true" stored="true" required="true" multiValued="false" />
+		
 		<!-- dynamic fields -->
 
 		<!-- NOTE: fc* prefixed fields are FarCry Solr Pro plugin specific.  fcDataTypes indicates FarCry datatypes that the Solr field is suggested for.  If unsure, or it doesn't match up well with a FarCry datatype, leave it blank. -->
