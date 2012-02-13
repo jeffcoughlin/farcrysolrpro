@@ -294,7 +294,7 @@
 	
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " farcrysitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND farcrysitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
