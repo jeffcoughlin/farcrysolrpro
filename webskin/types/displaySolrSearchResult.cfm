@@ -17,7 +17,7 @@
 	<cfset request.stObj[i] = trim(request.stObj[i]) />
 </cfloop>
 
-<!--- Get result title ---><!--- TODO: check to see if value is an array --->
+<!--- Get result title --->
 <cfif structKeyExists(stObj, stContentType.resultTitleField)>
 	<cfif isArray(stobj[stContentType.resultTitleField]) and len(stObj[stContentType.resultTitleField][1])>
 		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField][1]) />
