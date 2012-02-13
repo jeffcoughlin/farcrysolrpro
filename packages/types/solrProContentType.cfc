@@ -1039,7 +1039,8 @@
 	<cffunction name="reload" access="public" returntype="void" output="false">
 		<cfset var host = application.fapi.getConfig(key = 'solrserver', name = 'host') />
 		<cfset var port = application.fapi.getConfig(key = 'solrserver', name = 'port') />
-		<cfset uri = "http://" & host & ":" & port & "/solr/admin/cores?action=RELOAD&core=" & application.applicationName />
+		<cfset var collectionName = application.fapi.getConfig(key = 'solrserver', name = 'collectionName') />
+		<cfset uri = "http://" & host & ":" & port & "/solr/admin/cores?action=RELOAD&core=" & collectionName />
 	</cffunction>
 	
 </cfcomponent>

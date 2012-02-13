@@ -3,7 +3,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Load Search CSS --->
-<skin:loadCss id="siteSearch-css" media="all" baseHref="#application.fapi.getWebroot()#/farcrysolrpro/css" lFiles="search.css" />
+<skin:loadCss id="siteSearch-css" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="search.css" />
 
 <!--- default local vars --->
 <cfparam name="stQueryStatus" default="#structNew()#" type="struct" />

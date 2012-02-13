@@ -1080,7 +1080,7 @@
 					error: function(req, status, err) {
 						
 						var contentType = $j('###generalPrefix#contentType');
-						var message = '<p class="errorField">There was an error loading the indexed fields for that content type.  Make sure you have created an web server mapping for /farcrysolrpro. See documentation for more information.</p>';
+						var message = '<p class="errorField">There was an error loading the indexed fields for that content type.  Make sure you have created an web server mapping for #application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#. See documentation for more information.</p>';
 						contentType.closest(".ctrlHolder").addClass("error").prepend(message);
 						
 					}
@@ -1094,7 +1094,7 @@
 				lSummaryFields.empty();
 				
 				$j.ajax({
-					url: "#application.fapi.getwebroot()#/farcrysolrpro/facade/remote.cfc?method=getTextPropertiesByType&returnformat=json&typename=" + contentType,
+					url: "#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/facade/remote.cfc?method=getTextPropertiesByType&applicationName=#application.applicationName#&returnformat=json&typename=" + contentType,
 					type: "GET",
 					datatype: "json",
 					success: function(data,status,req){
@@ -1118,7 +1118,7 @@
 					error: function(req,status,err){
 						
 						var contentType = $j('###generalPrefix#contentType');
-						var message = '<p class="errorField">There was an error loading the fields for that content type.  Make sure you have created an web server mapping for /farcrysolrpro. See documentation for more information.</p>';
+						var message = '<p class="errorField">There was an error loading the fields for that content type.  Make sure you have created an web server mapping for #application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#. See documentation for more information.</p>';
 						
 						contentType.closest(".ctrlHolder").addClass("error").prepend(message);
 						

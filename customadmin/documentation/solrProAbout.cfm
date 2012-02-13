@@ -111,8 +111,8 @@
 	<h1>Credits</h1>
 	<h2>
 		Development Team
-		<img src="#application.fapi.getWebroot()#/farcrysolrpro/css/images/logo-farcrySolrPro-75.png" style="float: right; margin: 0 0 30px 10px; clear: left;" />
-		<img src="#application.fapi.getWebroot()#/farcrysolrpro/css/images/logo-apacheSolr-75.png" style="float: right; margin: 0 0 10px 10px; clear: right;" />
+		<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="float: right; margin: 0 0 30px 10px; clear: left;" />
+		<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right; margin: 0 0 10px 10px; clear: right;" />
 	</h2>
 	<p>Many hours went into creating this plugin and there are many people to thank.  If you'd like to show your appreciation, see the list of people below.  Maybe say thanks by visiting their Amazon wishlist :).</p>
 	<ul class="credits">

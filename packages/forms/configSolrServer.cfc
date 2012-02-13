@@ -1,8 +1,10 @@
 <cfcomponent output="false" extends="farcry.core.packages.forms.forms" displayname="Solr Pro Plugin" key="solrserver" hint="Configures Solr Server settings">
 	
+	<cfproperty ftSeq="105" ftFieldset="Server Setting" name="collectionName" type="nstring" default="" required="true" ftDefault="application.applicationName" ftDefaultType="evaluate" ftValidation="required" ftLabel="Collection Name" ftHint="For most installations the application name will suffice.  If you want a single collection used with multiple sites, you can use a custom collection name here. (default: applicationName)" />
+	
 	<cfproperty ftSeq="110" ftFieldset="Server Settings" name="host" type="nstring" default="localhost" required="true" ftDefault="localhost" ftType="string" ftValidation="required" ftLabel="Host" ftHint="The hostname of the server (default: localhost)" />
 	<cfproperty ftSeq="120" ftFieldset="Server Settings" name="port" type="nstring" default="8983" required="true" ftDefault="8983" ftType="string" ftValidation="required,digits" ftLabel="Port" ftHint="The port number of the server (default: 8983)" />
-	<cfproperty ftSeq="130" ftFieldset="Server Settings" name="path" type="nstring" default="/solr" ftDefault="'/solr/' & application.applicationName" ftDefaultType="evaluate" required="true" ftType="string" ftValidation="required" ftLabel="Path" ftHint="The path to the solr instance & collection (default: /solr/[application name])" />
+	<cfproperty ftSeq="130" ftFieldset="Server Settings" name="path" type="nstring" default="/solr" ftDefault="'/solr/' & application.applicationName" ftDefaultType="evaluate" required="true" ftType="string" ftValidation="required" ftLabel="Path" ftHint="The path to the solr instance & collection.  If you specified a collection name above, you should provide that here as well. (default: /solr/[application name], ex: /solr/mycollectionname)" />
 	<cfproperty ftSeq="140" ftFieldset="Server Settings" name="queueSize" type="integer" default="100" required="true" ftDefault="100" ftType="integer" ftValidation="required,digits" ftLabel="Queue Size" ftHint="The buffer size before the documents are sent to the server (default: 100)" />
 	<cfproperty ftSeq="150" ftFieldset="Server Settings" name="threadCount" type="integer" default="5" required="true" ftDefault="5" ftType="integer" ftValidation="required,digits" ftLabel="Thread Count" ftHint="The number of background threads used to empty the queue (default: 5)" />
 	<cfproperty ftSeq="160" ftFieldset="Server Settings" name="binaryEnabled" type="boolean" default="1" required="true" ftDefault="1" ftType="boolean" ftLabel="Binary Enabled?" ftHint="Should we use the faster binary data transfer format? (default: true)" /> 
@@ -17,8 +19,10 @@
 	<cfproperty ftSeq="330" ftFieldset="Boost Settings" name="lDocumentBoostValues" type="longchar" ftType="longchar" default="0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" ftDefault="0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" ftLabel="Document Boost Values" required="true" ftHint="A comma separated list of values for the document boosts.  Should be in the format value:label. Example: 10:Low would have a value of 10 and a label of Low. Default: 0:Very Low (0),25:Low (25),50:Medium (50),75:High (75),100:Very High (100)" />
 	<cfproperty ftSeq="335" ftFieldset="Boost Settings" name="defaultDocBoost" type="numeric" ftType="numeric" default="50" ftDefault="50" ftLabel="Default Document Boost Value" required="true" ftHint="The default document boost value.  Default: 50" />
 	
-	<cfproperty name="bConfigured" type="boolean" ftType="hidden" default="0" required="true" hint="Flag to indicate that the user has configured the Solr server, this avoids creating folders and files using the default settings when FarCry is initialized." />
+	<cfproperty ftSeq="410" ftFieldset="Plugin Settings" name="pluginWebRoot" ftLabel="Plugin Web Root" type="nstring" ftType="string" default="/farcrysolrpro" ftDefault="application.fapi.getwebroot() & '/farcrysolrpro'" ftDefaultType="evaluate" required="true" ftValidation="required" ftHint="The url path to the plugin's www directory.  You should create a webserver alias to this directory, or copy the www directory to a 'farcrysolrpro' directory in the webroot." />
 	
+	<cfproperty name="bConfigured" type="boolean" ftType="hidden" default="0" required="true" hint="Flag to indicate that the user has configured the Solr server, this avoids creating folders and files using the default settings when FarCry is initialized." />
+		
 	<cffunction name="setupCollectionConfig" access="public" output="false" returntype="void" hint="Copies the collection configuration default templates to the collection conf directory.  Optionally, overwrites existing files.">
 		<cfargument name="bOverwrite" type="boolean" required="false" default="false" />
 		
@@ -87,6 +91,7 @@
 		
 		<cfset var instanceDir = arguments.config.instanceDir />
 		<cfset var solrXmlLocation = arguments.config.solrXmlLocation />
+		<cfset var collectionName = arguments.config.collectionName />
 		<cfset var solrXml = "" />
 		
 		<!--- ensure solr.xml exists --->
@@ -94,7 +99,7 @@
 			<cfsavecontent variable="solrXml"><cfoutput><?xml version='1.0' encoding='UTF-8'?>
 				<solr persistent='true'>
 					<cores adminPath='/admin/cores'>
-						<core name='#application.applicationName#' instanceDir='#instanceDir#'/>
+						<core name='#collectionName#' instanceDir='#instanceDir#'/>
 					</cores>
 				</solr>
 				</cfoutput>
@@ -105,7 +110,7 @@
 			<!--- ensure collection is defined in solr.xml --->
 			<cfset var solrXml = fileRead(solrXmlLocation) />
 			
-			<cfset var results = xmlSearch(xmlParse(solrXml),"//core[@name='#application.applicationName#']") />
+			<cfset var results = xmlSearch(xmlParse(solrXml),"//core[@name='#collectionName#']") />
 			
 			<cfif arrayLen(results) eq 0>
 				
@@ -113,7 +118,7 @@
 					
 				<cfset var insertPos = findNoCase("</cores>",solrXml) - 1 />
 				<cfset var startXml = left(solrXml, insertPos) />
-				<cfset var newXml = "<core name='#application.applicationName#' instanceDir='#instanceDir#'/>" />
+				<cfset var newXml = "<core name='#collectionName#' instanceDir='#instanceDir#'/>" />
 				<cfset var endXml = mid(solrXml,insertPos,len(solrXml) - len(startXml) + 1) />
 				<cfset solrXml = indentXml(trim(startXml & newXml & endXml)) />
 				
@@ -159,7 +164,6 @@
 				],
 				loadColdFusionClassPath = true
 			);
-			
     		// setup cfsolrlib
     		application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
 				javaloaderInstance = application.stPlugins["farcrysolrpro"].javaloader,

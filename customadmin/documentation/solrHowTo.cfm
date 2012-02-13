@@ -10,8 +10,8 @@
 
 <cfoutput>
 	<!--- TODO: Finish these docs --->
-	<img src="#application.fapi.getWebroot()#/farcrysolrpro/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
-	<img src="#application.fapi.getWebroot()#/farcrysolrpro/css/images/logo-apacheSolr-75.png" style="float: right;" />
+	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
+	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right;" />
 	<h1>Requirements</h1>
 	<ul>
 		<li>Although Solr can run from a separate server, FarCry needs directory access to the conf files (schema.xml, solrconfig.cml, etc).  So if you plan to run Solr on a separate server you'll need to setup a mapped network drive for FarCry to use (and then set those settings in the <a href="linkConfig">Solr Pro Config</a>).
