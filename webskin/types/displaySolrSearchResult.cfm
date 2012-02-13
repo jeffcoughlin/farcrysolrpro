@@ -19,7 +19,7 @@
 
 <!--- Get result title --->
 <cfif structKeyExists(stObj, stContentType.resultTitleField)>
-	<cfif isArray(stobj[stContentType.resultTitleField]) and len(stObj[stContentType.resultTitleField][1])>
+	<cfif isArray(stobj[stContentType.resultTitleField]) and arrayLen(stobj[stContentType.resultTitleField]) and len(stObj[stContentType.resultTitleField][1])>
 		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField][1]) />
 	<cfelse>
 		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />	
@@ -29,8 +29,8 @@
 </cfif>
 
 <!--- Get result teaser --->
-<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField)>
-	<cfif isArray(stObj[stContentType.resultSummaryField]) and stObj[stContentType.resultSummaryField] neq "">
+<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField) and len(stObj[stContentType.resultSummaryField][1])>
+	<cfif isArray(stObj[stContentType.resultSummaryField]) and arrayLen(stObj[stContentType.resultSummaryField])>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField][1]) />
 	<cfelse>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />
