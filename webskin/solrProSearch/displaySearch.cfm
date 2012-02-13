@@ -64,7 +64,7 @@
 	<cfelse>
 		<cfset bCleanString = true />
 	</cfif>
-	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows, bCleanString = bCleanString) />
+	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows, bCleanString = bCleanString, bFilterBySite = true) />
 
 	<cfif stSearchResult.bSearchPerformed>
 		

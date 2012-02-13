@@ -833,6 +833,7 @@
 		<cfargument name="operator" required="false" type="string" default="ANY" hint="ANY,ALL,PHRASE" />
 		<cfargument name="lContentTypes" required="false" type="string" default="" />
 		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
+		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" />
 		
 		<cfif arguments.bCleanString>
 			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
@@ -874,6 +875,10 @@
 			</cfloop>
 		
 			<cfset q = q & ")" />
+		</cfif>
+		
+		<cfif arguments.bFilterBySite>
+			<cfset q = "(" & q & ") AND (farcrysitename:" & application.applicationName & ")" />
 		</cfif>
 		
 		<cfreturn q />
