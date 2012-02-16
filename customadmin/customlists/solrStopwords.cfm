@@ -15,7 +15,6 @@
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
 	<cfset application.fapi.getContentType("solrProContentType").reload() />
-	<!--- TODO: check if a reload is sufficient --->
 	<skin:bubble title="Stop Words" message="Updated stopwords.txt" />
 </ft:processForm>
 

@@ -80,7 +80,7 @@
 			
 			<cfoutput>#generateElevateXmlNode(st.searchString, st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
 			
-			<!--- TODO: how do we handle if the user does a search on a specific content type? --->
+			<!--- TODO: when setting up a new elevation specify certain content types --->
 			
 		</cfloop>
 		

@@ -105,8 +105,8 @@
 		<cfset var oDocumentBoost = application.fapi.getContentType("solrProDocumentBoost") />
 		
 		<!--- get all the content types that are being indexed --->
-		<cfset var qContentTypes = getAllContentTypes() />
-		
+		<cfset var qContentTypes = getAllContentTypes(bIncludeNonSearchable = true) />
+
 		<!--- delete any records that have a typename value that is not in the list of indexed typenames --->
 		<cfset var lValidTypenames = valueList(qContentTypes.contentType) />
 		<cfset var deleteQueryString = "q={!lucene q.op=AND}" />
@@ -123,7 +123,7 @@
 				select objectid, contentType from qContentTypes where objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lContentTypeIds#" /> )
 			</cfquery>
 		</cfif>
-		
+
 		<cfset var aStats = [] />
 		<cfloop query="qContentTypes">
 			
@@ -250,7 +250,7 @@
 	<cffunction name="getFieldListForType" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a given content type.  Used for the qf (query fields) Solr parameter">
 		<cfargument name="typename" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
-		<cfargument name="qf" type="array" required="false" default="#['rulecontent','rulecontent_phonetic','objectid']#" hint="The starting list for the query fields" />
+		<cfargument name="qf" type="array" required="false" default="#['fcsp_rulecontent','fcsp_rulecontent_phonetic','objectid']#" hint="The starting list for the query fields" />
 		<cfset var st = getByContentType(arguments.typename) />
 		<cfset var oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 		<cfset var prop = "" />
@@ -294,7 +294,7 @@
 	
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND farcrysitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
@@ -317,13 +317,13 @@
 		<!--- note: these results are cached so it is safe to loop and call this method --->
 		<cfset var stPropBoosts = getCorePropertyBoosts(stContentType = arguments.stContentType) />
 		<cfset var lFarCryProps = getPropertiesByType(typename = arguments.typename) />
-		<cfset var aCoreFields = getSolrFields(lOmitFields = "rulecontent") />
+		<cfset var aCoreFields = getSolrFields(lOmitFields = "fcsp_rulecontent") />
 		
 		<!--- load the record from the database --->
 		<cfset var stRecord = application.fapi.getContentObject(typename = arguments.typename, objectid = arguments.objectid) />
 		
 		<!--- each record in Solr should track the application name --->
-		<cfset stRecord["farcrysitename"] = application.applicationName />
+		<cfset stRecord["fcsp_sitename"] = application.applicationName />
 		
 		<!--- create a solr object for this record --->
 		<cfset var doc = [] />
@@ -391,12 +391,12 @@
 		<cfif listLen(arguments.stContentType.lIndexedRules)>
 			<cfset var ruleContent = getRuleContent(objectid = arguments.objectid, lRuleTypes = arguments.stContentType.lIndexedRules) />
 			<cfset arrayAppend(doc, {
-			 	name = "rulecontent", 
+			 	name = "fcsp_rulecontent", 
 			 	value = ruleContent,
 			 	farcryField = ""
 			}) />
 			<cfset arrayAppend(doc, {
-			 	name = "rulecontent_phonetic", 
+			 	name = "fcsp_rulecontent_phonetic", 
 			 	value = ruleContent,
 			 	farcryField = "" 
 			}) />
@@ -408,12 +408,19 @@
 		<cfloop list="#lSummaryFields#" index="f">
 			<cfif structKeyExists(stRecord, f)>
 				<cfset arrayAppend(doc, {
-					name = "highlight",
+					name = "fcsp_highlight",
 					value = application.stPlugins.farcrysolrpro.oCustomFunctions.tagStripper(stRecord[f]),
 					farcryField = ""
 				}) />
 			</cfif>
 		</cfloop>
+		
+		<!--- note whether or not this record should be included in the site-wide search --->
+		<cfset arrayAppend(doc, {
+			name = "fcsp_benablesearch",
+			value = javacast("boolean",stContentType.bEnableSearch),
+			farcryField = ""
+		}) />
 		
 		<!--- add core boost values to document --->
 		<cfset var i = "" />
@@ -496,7 +503,7 @@
 		<cfargument name="bCommit" required="false" type="boolean" default="true" />
 		<cfset var deleteQuery = "typename:" & arguments.typename />
 		<cfif len(trim(arguments.sitename))>
-			<cfset deleteQuery = "farcrysitename:" & arguments.sitename />
+			<cfset deleteQuery = "fcsp_sitename:" & arguments.sitename />
 		</cfif>
 		<cfset var i = "" />
 		<cfif listLen(arguments.lObjectIds)>
@@ -515,7 +522,7 @@
 	<cffunction name="deleteBySitename" returntype="void" access="public" output="false">
 		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
 		<cfargument name="bCommit" required="false" type="boolean" default="true" />
-		<cfset var deleteQuery = "farcrysitename:" & arguments.sitename />
+		<cfset var deleteQuery = "fcsp_sitename:" & arguments.sitename />
 		<cfset deleteByQuery(q = deleteQuery) />
 		<cfif arguments.bCommit>
 			<cfset commit() />
@@ -722,9 +729,6 @@
 		
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
-		<cfif not fileExists(schemaXmlFile)>
-			<!--- TODO: XML file doesn't exist. Need a solution or message to user --->
-		</cfif>
 		<cfset var fieldTypes = xmlSearch(schemaXmlFile, "//schema/fields/dynamicField | //schema/fields/dynamicfield") />
 		<cfset var fieldType = "" />
 		
@@ -767,7 +771,7 @@
 	
 	<cffunction name="getSchemaFieldMetadata" access="public" output="false" returntype="array" hint="Returns field metadata from the schema.xml file">
 		<cfargument name="lFieldNames" type="string" required="false" default="" hint="List of fields to return metadata.  If not specified, all fields will be returned." />
-		<cfargument name="lOmitFields" type="string" required="false" default="random" />
+		<cfargument name="lOmitFields" type="string" required="false" default="fcsp_random" />
 		<cfargument name="bIncludeIgnored" type="boolean" required="false" default="false" /> 
 		<cfset var a = [] />
 		<cfset var schemaXmlFile = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/conf/schema.xml" />
@@ -878,8 +882,10 @@
 		</cfif>
 		
 		<cfif arguments.bFilterBySite>
-			<cfset q = "(" & q & ") AND (farcrysitename:" & application.applicationName & ")" />
+			<cfset q = "(" & q & ") AND (fcsp_sitename:" & application.applicationName & ")" />
 		</cfif>
+		
+		<cfset q = "(" & q & ") AND fcsp_benablesearch:true" />
 		
 		<cfreturn q />
 		
@@ -931,7 +937,6 @@
 					
 					<cfif fileExists(filePath)>
 
-						<!--- TODO: make sure we have a supported file type before passing it to Tika --->
 						<!--- TODO: test performance with LOTS of Open XML format documents --->
 						
 						<cfscript>

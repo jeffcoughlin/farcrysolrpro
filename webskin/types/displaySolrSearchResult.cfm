@@ -13,8 +13,10 @@
 <cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
 
 <!--- Trim all stObj fields --->
-<cfloop collection="#request.stObj#" item="i">
-	<cfset request.stObj[i] = trim(request.stObj[i]) />
+<cfloop collection="#stObj#" item="i">
+	<cfif isSimpleValue(stobj[i])>
+		<cfset stObj[i] = trim(stObj[i]) />
+	</cfif>
 </cfloop>
 
 <!--- Get result title --->

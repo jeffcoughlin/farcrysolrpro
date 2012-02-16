@@ -1117,7 +1117,7 @@
 	
 		<lst name="spellchecker">
 			<str name="name">default</str>
-			<str name="field">spell</str>
+			<str name="field">fcsp_spell</str>
 			<str name="accuracy">0.7</str><!-- Require terms to occur in 70% of the documents in order to be included in the dictionary -->
 			<str name="spellcheckIndexDir">spellchecker</str>
 			<str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
@@ -1125,7 +1125,7 @@
 		</lst>
 		<lst name="spellchecker">
 			<str name="name">phrase</str>
-			<str name="field">spellphrase</str>
+			<str name="field">fcsp_spellphrase</str>
 			<str name="accuracy">0.7</str>
 			<str name="spellcheckIndexDir">spellcheckerPhrase</str>
 			<str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
@@ -1154,7 +1154,7 @@
 
 		<lst name="spellchecker">
 			<str name="name">freq</str>
-			<str name="field">spellPhrase</str>
+			<str name="field">fcsp_spellPhrase</str>
 			<str name="spellcheckIndexDir">spellcheckerFreq</str>
 			<str name="comparatorClass">freq</str>
 			<str name="buildOnCommit">true</str>
@@ -1319,7 +1319,7 @@
     -->
   <searchComponent name="elevator" class="solr.QueryElevationComponent" >
     <!-- pick a fieldType to analyze queries -->
-    <str name="queryFieldType">text</str>
+    <str name="queryFieldType">cleanforelevation</str>
     <str name="config-file">elevate.xml</str>
   </searchComponent>
 

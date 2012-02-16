@@ -13,7 +13,7 @@
 	<ft:processForm action="Reset This Site">
 		<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 		<cfset oContentType.deleteBySitename(sitename = application.ApplicationName) />
-		<cfset qContentTypes = oContentType.getAllContentTypes() />
+		<cfset qContentTypes = oContentType.getAllContentTypes(bIncludeNonSearchable = true) />
 		<cfloop query="qContentTypes">
 			<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
 			<cfset stContentType.builtToDate = "" />
@@ -51,7 +51,7 @@
 <ft:processForm action="Reset All">
 	<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 	<cfset oContentType.resetIndex() />
-	<cfset qContentTypes = oContentType.getAllContentTypes() />
+	<cfset qContentTypes = oContentType.getAllContentTypes(bIncludeNonSearchable = true) />
 	<cfloop query="qContentTypes">
 		<cfset stContentType = oContentType.getData(qContentTypes.objectid[qContentTypes.currentRow]) />
 		<cfset stContentType.builtToDate = "" />

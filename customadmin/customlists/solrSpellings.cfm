@@ -15,7 +15,6 @@
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
 	<cfset application.fapi.getContentType("solrProContentType").reload() />
-	<!--- TODO: check if a reload is sufficient --->
 	<skin:bubble title="Spellings" message="Updated spellings.txt" />
 </ft:processForm>
 

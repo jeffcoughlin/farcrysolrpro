@@ -65,25 +65,27 @@
 	<cffunction name="setupInstanceDir" access="public" output="false" returntype="void" hint="Creates the instance directory">
 		<cfargument name="bReset" type="boolean" required="false" default="false" />
 		
-		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
+		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir", default = "") />
 		
-		<cfif arguments.bReset and directoryExists(instanceDir)>
-			<cfset directoryDelete(instanceDir, true) />
+		<cfif len(trim(instanceDir))>
+			
+			<cfif arguments.bReset and directoryExists(instanceDir)>
+				<cfset directoryDelete(instanceDir, true) />
+			</cfif>
+			
+			<!--- ensure instanceDir exists --->
+			<cfif not directoryExists(instanceDir)>
+				<cfdirectory action="create" directory="#instanceDir#" mode="777" />
+			</cfif>
+			
+			<!--- ensure collection directories exist --->
+			<cfif not directoryExists(instanceDir & "/conf")>
+				<cfdirectory action="create" directory="#instanceDir#/conf" mode="777" />
+			</cfif>
+			<cfif not directoryExists(instanceDir & "/data")>
+				<cfdirectory action="create" directory="#instanceDir#/data" mode="777" />
+			</cfif>
 		</cfif>
-		
-		<!--- ensure instanceDir exists --->
-		<cfif not directoryExists(instanceDir)>
-			<cfdirectory action="create" directory="#instanceDir#" mode="777" />
-		</cfif>
-		
-		<!--- ensure collection directories exist --->
-		<cfif not directoryExists(instanceDir & "/conf")>
-			<cfdirectory action="create" directory="#instanceDir#/conf" mode="777" />
-		</cfif>
-		<cfif not directoryExists(instanceDir & "/data")>
-			<cfdirectory action="create" directory="#instanceDir#/data" mode="777" />
-		</cfif>
-		
 	</cffunction>
 	
 	<cffunction name="setupSolrDefaults" access="public" output="false" returntype="void" hint="Resets the Solr.xml file, instance directory and collection configuration">

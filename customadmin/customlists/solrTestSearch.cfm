@@ -14,7 +14,7 @@
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
 <cfset oContentType = application.fapi.getContentType("solrProContentType") />
-<cfset qContentTypes = oContentType.getAllContentTypes() />
+<cfset qContentTypes = oContentType.getAllContentTypes(bIncludeNonSearchable = true) />
 
 <!--- this is here so the pagination will work --->
 <cfset form.farcryFormSubmitButtonClickedTestSearch = "Search" />
@@ -111,7 +111,7 @@
 	<ft:fieldset legend="Search by Field">
 
 		<cfset aFields = listToArray(oContentType.getFieldListForType(form.contentType)," ") />
-		<cfset aCoreFields = oContentType.getSchemaFieldMetadata(lOmitFields = "random,typename") />
+		<cfset aCoreFields = oContentType.getSchemaFieldMetadata(lOmitFields = "fcsp_random,typename") />
 		<cfloop array="#aCoreFields#" index="coreField">
 			<cfif coreField.indexed eq true>
 				<cfset arrayAppend(aFields,coreField.name) />

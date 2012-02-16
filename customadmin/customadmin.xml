@@ -22,7 +22,7 @@
 			
 			<menu mergeType="merge" sequence="40" id="farcrysolrprotestmenu" label="Test Setup" labelType="value">
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprotestmenuitem01" label="Search" link="/admin/customadmin.cfm?module=customlists/solrTestSearch.cfm&amp;plugin=farcrysolrpro" />
-				<!-- TODO: add link to the RELOAD action to reload the core -->
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprotestmenuitem02" label="Reload Solr" link="/admin/customadmin.cfm?module=customlists/solrReload.cfm&amp;plugin=farcrysolrpro" /> 
 			</menu>
 			
 			<menu mergeType="merge" sequence="50" id="farcrysolrprostatsmenu" label="Reports &amp; Stats" labelType="value">

@@ -91,7 +91,7 @@
 				<cfset params["hl"] = true />
 				<cfset params["hl.fragsize"] = arguments.hlFragSize />
 				<cfset params["hl.snippets"] = arguments.hlSnippets />
-				<cfset params["hl.fl"] = "highlight" />
+				<cfset params["hl.fl"] = "fcsp_highlight" />
 				<cfset params["hl.simple.pre"] = arguments.hlPre />
 				<cfset params["hl.simple.post"] = arguments.hlPost />
 			</cfif>

@@ -15,8 +15,6 @@
 <ft:processForm action="Save">
 	<cfset fileWrite(filePath,trim(form.contents)) />
 	<cfset application.fapi.getContentType("solrProContentType").reload() />
-	<!--- TODO: check if a reload is sufficient --->
-	<!--- TODO: add protwords filter to schema --->
 	<skin:bubble title="Protected Words" message="Updated protwords.txt" />
 </ft:processForm>
 

@@ -50,7 +50,7 @@
 	
 	<cffunction name="getContentTypes" access="public" output="false" returntype="string">
 		<cfset var oType = application.fapi.getcontenttype("solrProContentType") />
-		<cfset var q = oType.getAllContentTypes() />
+		<cfset var q = oType.getAllContentTypes(bIncludeNonSearchable = true) />
 		<cfreturn valueList(q.contentType) />
 	</cffunction>
 	

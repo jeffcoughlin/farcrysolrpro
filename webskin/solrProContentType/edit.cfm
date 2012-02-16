@@ -332,11 +332,11 @@
 				<h6>The following default fields are indexed by Solr for various reasons (explained):</h6>
 				<ul>
 					<li>typename &mdash; Matches the FarCry typename.  Used by Solr for query lookups when matching objectid and typename.</li>
-					<li>rulecontent &mdash; When you elect to store any related rule content, its associated data is indexed in both the rulecontent field and it's associated phonetic field.</li>
-					<li>rulecontent_phonetic &mdash; Used for phonetic searches on related rule content.</li>
-					<li>spell &mdash; Used by Solr for spell correction on single-word searches.</li>
-					<li>spellphrase &mdash; Used by Solr for spell correction on multi-word (phrase) searches.</li>
-					<li>highlight &mdash; Data indexed by the highlighting engine in Solr (often referred to as summary data)</li>
+					<li>fcsp_rulecontent &mdash; When you elect to store any related rule content, its associated data is indexed in both the fcsp_rulecontent field and it's associated phonetic field.</li>
+					<li>fcsp_rulecontent_phonetic &mdash; Used for phonetic searches on related rule content.</li>
+					<li>fcsp_spell &mdash; Used by Solr for spell correction on single-word searches.</li>
+					<li>fcsp_spellphrase &mdash; Used by Solr for spell correction on multi-word (phrase) searches.</li>
+					<li>fcsp_highlight &mdash; Data indexed by the highlighting engine in Solr (often referred to as summary data)</li>
 				</ul>
 				
 				<h4>Search Result Defaults</h4>

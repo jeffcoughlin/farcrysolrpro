@@ -14,7 +14,7 @@
 <cfset aFieldTypes = getSolrFieldTypes() />
 
 <!--- load the fields that are defined in the schema.xml --->
-<cfset aCoreFields = getSolrFields(lOmitFields = "random") />
+<cfset aCoreFields = getSolrFields(lOmitFields = "fcsp_random") />
 
 <cfoutput>
 <table id="tblCustomProperties" class="ui-widget ui-widget-content fcproperties">
