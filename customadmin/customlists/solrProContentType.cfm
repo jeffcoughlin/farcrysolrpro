@@ -22,24 +22,24 @@
 		<skin:bubble title="Reset This Site" message="All records for site #application.applicationName# have been reset." />
 	</ft:processForm>
 	
-	<ft:processForm action="resetCollectionBySite">
+	<ft:processForm action="resetContentTypeBySite">
 		<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 		<cfset stContentType = oContentType.getData(form.selectedObjectId) />
 		<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, bCommit = true) />
 		<cfset stContentType.builtToDate = "" />
 		<cfset oContentType.setData(stContentType) />
-		<skin:bubble title="Reset Collection" message="#stContentType.title# has been reset for site #application.applicationName#" />
+		<skin:bubble title='Reset Conect Type' message='"#stContentType.title#" has been reset for site #application.applicationName#' />
 	</ft:processForm>	
 	
 </cfif>
 
-<ft:processForm action="resetCollection">
+<ft:processForm action="resetContentType">
 	<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 	<cfset stContentType = oContentType.getData(form.selectedObjectId) />
 	<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = "", bCommit = true) />
 	<cfset stContentType.builtToDate = "" />
 	<cfset oContentType.setData(stContentType) />
-	<skin:bubble title="Reset Collection" message="#stContentType.title# has been reset" />
+	<skin:bubble title='Reset Content Type' message='"#stContentType.title#" has been reset' />
 </ft:processForm>
 
 <ft:processForm action="Optimize All">
@@ -60,12 +60,12 @@
 	<skin:bubble title="Reset All" message="Solr has been reset." />
 </ft:processForm>
 
-<ft:processForm action="indexCollection">
+<ft:processForm action="indexContentType">
 	<cfsetting requesttimeout="9999" />
 	<cfset oContentType = application.fapi.getContentType("solrProContentType") />
 	<cfset stContentType = oContentType.getData(form.selectedObjectId) />
 	<cfset stResult = oContentType.indexRecords(lContentTypeIds = stContentType.objectid) />
-	<skin:bubble title="Index Collection" message="#stContentType.title# has been indexed. #stResult.aStats[1].indexRecordCount# items were indexed in #timeFormat(application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate(stResult.processTime),'HH:mm:ss')#" />
+	<skin:bubble title='Index Content Type' message='"#stContentType.title#" has been indexed. #stResult.aStats[1].indexRecordCount# items were indexed in #timeFormat(application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate(stResult.processTime),'HH:mm:ss')#' />
 </ft:processForm>
 
 <cfscript>
@@ -91,10 +91,10 @@
 
 <cftry>
 	
-	<cfset lCustomActions = "indexCollection:Index Collection,resetCollection:Reset Content Type" />
+	<cfset lCustomActions = "indexContentType:Index Content Type,resetContentType:Reset Content Type" />
 	
 	<cfif application.applicationName neq application.fapi.getConfig(key = 'solrserver', name = 'collectionName')>
-		<cfset lCustomActions = lCustomActions & " (All Sites),resetCollectionBySite:Reset Content Type (This Site)" />
+		<cfset lCustomActions = lCustomActions & " (All Sites),resetContentTypeBySite:Reset Content Type (This Site)" />
 	</cfif>
 	
 	<ft:objectadmin 
