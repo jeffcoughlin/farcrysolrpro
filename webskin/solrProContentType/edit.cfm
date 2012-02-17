@@ -491,6 +491,7 @@
 			}
 			div.rule input {
 				float: left;
+				margin-top: 0.2em;
 			}
 			##lSummaryFields {
 				margin: 10px 0;
