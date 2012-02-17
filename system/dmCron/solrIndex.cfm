@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" requestTimeOut="9999" />
 <!--- @@displayname: Solr Index --->
-<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <!---
 	URL variable options are

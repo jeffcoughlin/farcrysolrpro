@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Stop Words --->
-<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />

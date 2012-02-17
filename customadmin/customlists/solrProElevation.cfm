@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
 
 <!--- @@displayname: Solr Pro Elevation Admin --->
-<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />

@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" requestTimeOut="9999" />
 <!--- @@displayname: Solr Optimize --->
-<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <cfset request.fc.bShowTray = false />
 

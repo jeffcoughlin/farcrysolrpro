@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Edit --->
-<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (jeff@jeffcoughlin.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 <!--- @@cacheStatus: -1 --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
