@@ -12,7 +12,7 @@ For more details and installation information, see the [wiki](https://bitbucket.
 
 ## Authors
 
-Jeff Coughlin (http://jeffcoughlin.com), Sean Coyne (http://www.n42designs.com)
+Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [http://www.n42designs.com](http://www.n42designs.com)
 
 ## Features
 * **Boosting**
