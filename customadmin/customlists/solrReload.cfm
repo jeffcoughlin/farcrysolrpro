@@ -9,6 +9,8 @@
 
 <cfset application.fapi.getContentType("solrProContentType").reload() />
 
+<!--- TODO: Are we sure these are the only files reloaded? (ie. what about stopwords).  The only info I can find in solr docs is that it reloads the Solr core --->
+
 <cfoutput>
 	<h1>Complete!</h1>
 	<p>Solr has been reloaded.  Changes to the following files have been reloaded:</p>

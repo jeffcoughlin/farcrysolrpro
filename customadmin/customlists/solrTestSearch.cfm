@@ -9,6 +9,8 @@
 <cfparam name="form.contentType" default="" />
 <cfparam name="form.searchcriteria" default="" />
 
+<!--- TODO: Fix "search by field" ---> 
+
 <admin:header title="Test Search" />
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
@@ -151,7 +153,7 @@
 </ft:form>
 
 <cfelse>
-	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
 </cfif>
 

@@ -29,7 +29,7 @@
 </cftry>
 
 <cfelse>
-	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can define any elevations.</p></cfoutput>
 </cfif>
 

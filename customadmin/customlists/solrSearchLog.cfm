@@ -16,6 +16,8 @@ $j('input.datefield').datepicker();
 </cfoutput>
 </skin:onReady>
 
+<!--- TODO: Check if search logging is disabled.  If it is, mention it here to the user --->
+
 <admin:header title="Search Log" />
 
 <cfparam name="form.queryString" default="" />
@@ -153,7 +155,7 @@ $j('input.datefield').datepicker();
 </ft:form>
 
 <cfelse>
-	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can run this report.</p></cfoutput>
 </cfif>
 

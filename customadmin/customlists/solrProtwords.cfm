@@ -21,8 +21,9 @@
 <cfset contents = fileRead(filePath) />
 
 <cfoutput>
-	<h1>Protected Words</h1> 
+	<h1>Protected Words (from being stemmed)</h1> 
 	<p>A list of words that should be protected and passed through unchanged. This protects the words from being "stemmed" (reducing two unrelated words to the same base word).</p>
+	<p><em>Example:</em> Say you have a product called "Driving Hammer".  Normally Solr is smart enough to stem the word "driving" to its root "drive" (referring possibly to a vehicle or other products you may have that are not related to the hammer). You can protect the word "driving" from being stemmed by adding it the the protected list.</p>
 </cfoutput>
 
 <ft:form>
@@ -45,7 +46,7 @@
 
 <cfelse>
 
-	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 	<cfoutput><p>Unable to locate #filepath#.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct.</p></cfoutput>
 
 </cfif>

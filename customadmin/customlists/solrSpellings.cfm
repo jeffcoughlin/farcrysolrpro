@@ -21,9 +21,9 @@
 <cfset contents = fileRead(filePath) />
 
 <cfoutput>
-	<h1>Spellings</h1> 
-	<p><em>More info soon...</em></p>
-	<!--- Spellings.txt is the dictionary file for the file based spellchecker.  if you set spellchecker.dictionary = 'file' when doing a query, the file spell checker will be used, and the spellings.txt file is used as the dictionary --->
+	<h1>Spellings (dictionary)</h1> 
+	<p>By default, this never needs to be changed (and is disabled by default).  We've implemented Solr's automatic spell checker, which uses the data already in the index to spell check against.  However, if you wanted to override this, you could use the settings in Solr to create a custom dictionary.</p>
+	<p>To Enable: You need to set spellchecker.dictionary = 'file' when doing a query.  The file spell checker will be used and the spellings.txt file will be used as the dictionary.</p>
 </cfoutput>
 
 <ft:form>
@@ -46,7 +46,7 @@
 
 <cfelse>
 
-	<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 	<cfoutput><p>Unable to locate #filepath#.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct.</p></cfoutput>
 
 </cfif>

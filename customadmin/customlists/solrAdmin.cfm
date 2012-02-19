@@ -21,7 +21,7 @@
 	<cfif bContinue>
 	<iframe src="#uri#" width="100%" height="600" />
 	<cfelse>
-		<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+		<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 		<p>Solr is not responding.  Please be sure your <a href="#linkConfig#">Solr configuration</a> is correct, and that the Solr service is running.</p>
 	</cfif>
 </cfoutput>

@@ -279,7 +279,10 @@
 	<cfoutput>
 		<div id="helpInfo" class="ui-widget-content ui-corner-all">
 			<h3 class="ui-widget-header ui-corner-all">Information &amp; Tips</h3>
-			<div>
+			<div class="showInfo">
+				<a href="##" onclick="return false;" class="showHelpInfoTrue">Show Help Information</a>
+			</div>
+			<div id="helpInfoBody">
 				<h4>Indexed Properties</h3>
 				<p>Any fields that you would like Solr to index are chosen here.</p>
 				<h5>Custom Properties</h5>
@@ -529,6 +532,23 @@
 			##helpInfo div {
 				margin: 0 1em;
 			}
+##helpInfo div##helpInfoBody {
+  display: none; /* default value overridden by jQuery show/hide */
+  margin-top: 10px;
+}
+##helpInfo div.showInfo {
+  margin-top: 10px;
+}
+##helpInfo a.showHelpInfoTrue,
+##helpInfo a.showHelpInfoTrue:hover {
+  background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-down.gif) no-repeat scroll right top;
+  padding-right: 13px;
+}
+##helpInfo a.showHelpInfoFalse,
+##helpInfo a.showHelpInfoFalse:hover {
+  background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-up.gif) no-repeat scroll right top;
+  padding-right: 13px;
+}
 			##helpInfo p {
 				margin: 0.5em 0;
 			}
@@ -553,6 +573,18 @@
 			
 			$j(document).ready(function(){
 				
+	      // Search: More Options
+	      $("a.showHelpInfoTrue").toggle(function(){
+	        $(this).html("Hide Help Information");
+	        $(this).removeClass("showHelpInfoTrue").addClass("showHelpInfoFalse");
+	        $("div##helpInfoBody").slideDown("slow");
+	      },function(){
+	        $(this).html("Show Help Information");
+	        $(this).removeClass("showHelpInfoFalse").addClass("showHelpInfoTrue");
+	        $("div##helpInfoBody").slideUp("slow");
+	      });
+
+
 				<cfif stobj.bIndexRuleData eq 0>
 				$j(".rule").closest(".ctrlHolder").hide();
 				</cfif>

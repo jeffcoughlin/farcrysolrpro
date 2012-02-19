@@ -6,7 +6,7 @@
 
 <admin:header title="Solr Pro: How To" />
 
-<cfset linkConfig = application.url.webroot & "/webtop/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 
 <cfoutput>
 	<!--- TODO: Finish these docs --->
@@ -26,16 +26,19 @@
 	<ol>
 		<li>Deploy new types in the FarCry <abbr title="Conent Object API">COAPI</abbr>.</li>
 		<li>Run the FarCry Solr config at least once.  Even if you don't plan to change any of the defaults, running it once will copy over the necessary configuration files into your project's Solr conf folder (that folder's destination is set in that config folder.  By default it is set to [project]/solr - with conf and data subfolders).</li>
-		<li>Confirm that you've setup the web mapping correctly (needed for some ajax facade calls in the webtop).  A simple way to do this is to look at the top of this very page and verify that you see the logos for Apache Solr and the FarCry Solr Pro plugin.</li>
+		<li>Confirm that you've setup the web mapping correctly in your web server (needed for some ajax facade calls in the webtop) and that it matches whatever web map setting you've configured in your <a href="#linkConfig#">config</a>.  A simple way to do this is to look at the top of this very page and verify that you see the logos for Apache Solr and the FarCry Solr Pro plugin.</li>
 	</ol>
 	
+	<h2>Detailed Installation and Setup Help</h2>
+	<p>For detailed installation and configuration assistance, please see the <a href="https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/installation_and_configuration">online wiki</a>.</p>
+
 	<h1>Performance Tips</h1>
 	<h2>64-bit and More RAM for Solr</h2>
 	<p>By default Jetty is 32-bit and 32-bit java has a RAM limitation of about 1.5GB.  If you have a lot of data to index and search or are running into heap stack errors when searching or indexing, it is suggested to give Solr more RAM which requires a 64-bit JVM.  Setting this up is not difficult, but differs by operating system and setup.  Explaining how to do that goes beyond the documentation provided in this plugin, however finding steps on how to set that up on the web are pretty easy to find.</p>
 	<h2>Storing Data</h2>
 	<p>Some larger companies prefer to store "every" field in Solr (Assuming they have the HDD space and RAM for indexing).  They find this to be better performace than relying on a CMS's caching system or extra database hits (we're talking extreme cases though - like millions of objects).  In these types of cases though, it is suggested to know how to performance-tune Solr and run it on a 64-bit JVM with more RAM dedicated to Solr.</p>
 	<h2>Result Summary</h2>
-	<p>You can always configure your displaySearchResult.cfm file to allow FarCry to lookup the content object and get a field, however storing the data in Solr often results in faster response times (depending on how you setup your object broker, this statement could be argued).</p>
+	<p>You can always configure your displaySearchResult.cfm file to allow FarCry to lookup the content object and get a field, however storing the data in Solr that you plan to display in your search results will return faster response times for your end-users (depending on how you setup your object broker and query your data, this statement could be argued).</p>
 	<br />
 </cfoutput>
 

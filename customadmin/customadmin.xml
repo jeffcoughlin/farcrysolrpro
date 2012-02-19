@@ -14,10 +14,10 @@
 			</menu>
 			
 			<menu mergeType="merge" sequence="30" id="farcrysolrprofiltersmenu" label="Filters" labelType="value">
-				<menuitem sequence="10" mergeType="merge" id="farcrysolrprofiltersmenuitem01" label="Stop Words" link="/admin/customadmin.cfm?module=customlists/solrStopwords.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="20" mergeType="merge" id="farcrysolrprofiltersmenuitem02" label="Protected Words" link="/admin/customadmin.cfm?module=customlists/solrProtwords.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="30" mergeType="merge" id="farcrysolrprofiltersmenuitem03" label="Spellings" link="/admin/customadmin.cfm?module=customlists/solrSpellings.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="40" mergeType="merge" id="farcrysolrprofiltersmenuitem04" label="Synonyms" link="/admin/customadmin.cfm?module=customlists/solrSynonyms.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="10" mergeType="merge" id="farcrysolrprofiltersmenuitem01" label="Synonyms" link="/admin/customadmin.cfm?module=customlists/solrSynonyms.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="20" mergeType="merge" id="farcrysolrprofiltersmenuitem02" label="Stop Words" link="/admin/customadmin.cfm?module=customlists/solrStopwords.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="30" mergeType="merge" id="farcrysolrprofiltersmenuitem03" label="Protected Words" link="/admin/customadmin.cfm?module=customlists/solrProtwords.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="40" mergeType="merge" id="farcrysolrprofiltersmenuitem04" label="Spellings (Dictionary)" link="/admin/customadmin.cfm?module=customlists/solrSpellings.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 			
 			<menu mergeType="merge" sequence="40" id="farcrysolrprotestmenu" label="Test Setup" labelType="value">
@@ -35,6 +35,7 @@
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprodocsmenuitem01" label="About" link="/admin/customadmin.cfm?module=documentation/solrProAbout.cfm&amp;plugin=farcrysolrpro" />
 				<menuitem sequence="20" mergeType="merge" id="farcrysolrprodocsmenuitem02" label="How To" link="/admin/customadmin.cfm?module=documentation/solrHowTo.cfm&amp;plugin=farcrysolrpro" />
 				<menuitem sequence="30" mergeType="merge" id="farcrysolrprodocsmenuitem03" label="Menu Legend" link="/admin/customadmin.cfm?module=documentation/solrMenuLegend.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="40" mergeType="merge" id="farcrysolrprodocsmenuitem04" label="Wiki" link="/admin/customadmin.cfm?module=documentation/solrWiki.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 		</subsection>
 	</section>
