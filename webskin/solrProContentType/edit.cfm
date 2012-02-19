@@ -572,18 +572,6 @@
 			var fieldTypes = [];
 			
 			$j(document).ready(function(){
-				
-	      // Search: More Options
-	      $("a.showHelpInfoTrue").toggle(function(){
-	        $(this).html("Hide Help Information");
-	        $(this).removeClass("showHelpInfoTrue").addClass("showHelpInfoFalse");
-	        $("div##helpInfoBody").slideDown("slow");
-	      },function(){
-	        $(this).html("Show Help Information");
-	        $(this).removeClass("showHelpInfoFalse").addClass("showHelpInfoTrue");
-	        $("div##helpInfoBody").slideUp("slow");
-	      });
-
 
 				<cfif stobj.bIndexRuleData eq 0>
 				$j(".rule").closest(".ctrlHolder").hide();
@@ -625,6 +613,17 @@
 					}
 				});
 				
+				// Show/Hide Helpful Information
+				$j("a.showHelpInfoTrue").toggle(function(){
+					$j(this).html("Hide Help Information");
+					$j(this).removeClass("showHelpInfoTrue").addClass("showHelpInfoFalse");
+					$j("div##helpInfoBody").slideDown("slow");
+				},function(){
+					$j(this).html("Show Help Information");
+					$j(this).removeClass("showHelpInfoFalse").addClass("showHelpInfoTrue");
+					$j("div##helpInfoBody").slideUp("slow");
+				});
+
 			});
 			
 			function createOptionTag(value, label, selected) {
