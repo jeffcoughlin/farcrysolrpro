@@ -283,6 +283,21 @@
 				<a href="##" onclick="return false;" class="showHelpInfoTrue">Show Help Information</a>
 			</div>
 			<div id="helpInfoBody">
+				<p><strong>Note:</strong> Any changes you make in this form will not take affect until a full re-index of the content type is made (that means resetting the index and then re-indexing it.  Usually very fast, but still a necessity if changes are made here).  The following fields are the only exception (these can be changed without the need to re-index):</p>
+				<ul>
+					<li>Title</li>
+					<li>Result Title</li>
+					<li>Result Summary (only if you haven't chosen to use a Solr Generated Summary)</li>
+					<li>Result Image</li>
+					<li>Enable Site Search</li>
+					<li>Index on Save</li>
+				</ul>
+				<h4>Form Options and Descriptions</h4>
+				<p>Below is a walkthough of the configurable options in this form.</p>
+				<h5>Title</h5>
+				<p>This is used for reference in a few places.  Namely: the content type listing in the webtop and the content type name show in the selection dropdown provided with the plugin's default webskin templates.</p>
+				<h5>Content Type</h5>
+				<p>This is the content type to be indexed.  This affects all options chosen throughout the rest of the form, so it is essential to choose this optoin first before continuing.</p>
 				<h4>Indexed Properties</h3>
 				<p>Any fields that you would like Solr to index are chosen here.</p>
 				<h5>Custom Properties</h5>
@@ -344,35 +359,31 @@
 				
 				<h4>Search Result Defaults</h4>
 				<h5>Result Title</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
+				<p>Out-of-the-box the plugin will reference whatever field you set here to output as the site search title.  You can only used stored string-based fields (ie. string, text, or phonetic).</p>
 
 				<h5>Result Summary</h5>
 				<h6>Option 1: Solr Generated Summary</h6>
 				<p>Using Solr's generated summary takes advantage of Solr's highlighting engine.  It's not the fact that it just highlights search terms (thats simple enough to do in CF).  What makes it unique is that the summary will be snippets of text where your search term(s) were found (similar to Google).</p>
 				<h6>Option 2: Custom/Manual Field Selection</h6>
-				<p>Using a custom field selection is suggested for times when you want, say, use a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
+				<p>Using a custom field selection is suggested for times when you want, say, to use a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
 
 				<h5>Result Image</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
+				<p>Out-of-the-box the plugin will reference whatever field you set here to output a teaser image (if available) with your search result teaser.  Using the webskin code samples provided with the plugin, you can use a string-based field here (that references the path url path to the image) or a UUID to a dmImage object which will output the thumbnail image in the search result teaser.  We didn't bother to provide sample code to lookup up UUIDs for other unknown objects because we wouldn't know what custom image fieldname you might have to output, so it is always suggested that you create your own <var>displaySolrSearchResult.cfm</var> for your type(s) in your project and use the provided sample <var>displaySolrSearchResult.cfm</var> file as an example template.</p>
 
 				<h4>Related Rules</h4>
 				<h5>Indexing Rule Data</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
+				<p>Static content in rules can be directly related to the parent content object.  Example: If you have a rule called "textarea" where you decided to have more content to appear in the right pane, you can now index that data and have it related to the page it lives on. So when someone searches for a string that matches that rule in the right pane, it will return the parent page in the search results.</p>
+				<p>There are a couple minor limitations.  Currently we are only indexing text/string fields in the rules (not arrays, etc) and we do not let you choose which text/string fields are selectable (we would index all of them).  If there is a high enough demand to have either of these features added, we'll consider it for future versions of the plugin (but will require significant code changes unfortunately).</p>
 
-				<h4>Related Rules</h4>
+				<h4>Advanced Options</h4>
 				<h5>Enabling in Site Search</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
+				<p>This is a boolean used to reference whether or not the default site search should use this content type as an index to search against.</p>
+				<p>In most cases you'd want this feature enabled.  It is offered here in case you wish to index specific content types that you don't want in the global site search pages of your site.  You may wish to only search this content type in a specific section of your site (ie. A product search page).</p>
 				<h5>Built to Date</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
+				<p>Although you have the option to modify this field, you should never have to.  This is used by the plugin when indexing a content type.  Because the plugin needs to query the content type in FarCry, it uses this to return data where the dateTimeLastUpdated field is newer than the date shown here.  This is useful for performance. When indexing a content type, the plugin will do so in batches (the default batch size is 1000 and is configurable in the plugin settings).</p>
 				<h5>Index on Save</h5>
-				<!--- TODO: Finish these docs --->
-				<p><em>More info soon...</em></p>
-				<!---<span class="ui-icon ui-icon-circle-check"></span>--->			
+				<p>The second you save a published document it is instantly available to site searches.  Due to necessary changes in FarCry core, this feature is only supported on FarCry 6.0.18+ and 6.1.3+</p>
+				<p>Note: For content types that use versioning, draft items will never be indexed.</p>
 			</div>
 		</div>
 	</cfoutput>
@@ -532,23 +543,23 @@
 			##helpInfo div {
 				margin: 0 1em;
 			}
-##helpInfo div##helpInfoBody {
-  display: none; /* default value overridden by jQuery show/hide */
-  margin-top: 10px;
-}
-##helpInfo div.showInfo {
-  margin-top: 10px;
-}
-##helpInfo a.showHelpInfoTrue,
-##helpInfo a.showHelpInfoTrue:hover {
-  background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-down.gif) no-repeat scroll right top;
-  padding-right: 13px;
-}
-##helpInfo a.showHelpInfoFalse,
-##helpInfo a.showHelpInfoFalse:hover {
-  background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-up.gif) no-repeat scroll right top;
-  padding-right: 13px;
-}
+			##helpInfo div##helpInfoBody {
+			  display: none; /* default value overridden by jQuery show/hide */
+			  margin-top: 10px;
+			}
+			##helpInfo div.showInfo {
+  				margin-top: 10px;
+			}
+			##helpInfo a.showHelpInfoTrue,
+			##helpInfo a.showHelpInfoTrue:hover {
+  				background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-down.gif) no-repeat scroll right top;
+  				padding-right: 13px;
+			}
+			##helpInfo a.showHelpInfoFalse,
+			##helpInfo a.showHelpInfoFalse:hover {
+	  			background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-up.gif) no-repeat scroll right top;
+  				padding-right: 13px;
+			}
 			##helpInfo p {
 				margin: 0.5em 0;
 			}

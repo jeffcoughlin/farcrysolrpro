@@ -34,7 +34,7 @@
 		<li><strong>Required Plugins:</strong> <cfif oManifest.lRequiredPlugins neq "">#oManifest.lRequiredPlugins#<cfelse><em>none</em></cfif></li>
 	</ul>
 	<h1>What is the FarCry Solr Pro Plugin?</h1>
-	<p>FarCry Solr Pro plugin lets you use the power of of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.</p>
+	<p>The FarCry Solr Pro plugin lets you use the power of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.</p>
 	<p>FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unique record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.</p>
 	<h1>Features</h1>
 	<ul class="features">
