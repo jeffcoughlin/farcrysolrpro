@@ -177,13 +177,14 @@
     
     <fieldType name="cleanforelevation" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
-      	<tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
        	<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \(fcsp_sitename:(.*)\)" replacement="" />
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \(typename:(.*)\)" replacement="" />
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND fcsp_benablesearch:(true|false)" replacement="" />
       </analyzer>
     </fieldType>
      
