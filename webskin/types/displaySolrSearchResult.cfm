@@ -42,8 +42,8 @@
 <cfelse>
 	<!--- use Solr generated summary --->
 	<cfset variables.teaser = "" />
-	<cfif structKeyExists(stParam.highlighting, "highlight") and isArray(stParam.highlighting["highlight"])>
-		<cfloop array="#stParam.highlighting['highlight']#" index="hl">
+	<cfif structKeyExists(stParam.highlighting, "fcsp_highlight") and isArray(stParam.highlighting["fcsp_highlight"])>
+		<cfloop array="#stParam.highlighting['fcsp_highlight']#" index="hl">
 			
 			<!--- remove leading non-alphanumeric --->
 			<cfset hl = trim(reReplaceNoCase(hl,"^[^a-z0-9]","")) />
