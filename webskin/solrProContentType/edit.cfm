@@ -10,6 +10,9 @@
 <skin:loadJs id="jquery-ui" />
 <skin:loadCss id="jquery-ui" />
 
+<!--- Load Custom Webtop Styling --->
+<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
+
 <cfset oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 
 <!--- assume success --->

@@ -52,33 +52,9 @@ One example provided is matching similar terms for <span class="code">ipod, i-po
 
 </cfif>
 
-<!--- Styling and javascript --->
-<skin:htmlhead id="solrPro-protwords">
-	<cfoutput>
-	<style type="text/css" media="all">
-		strong {
-			font-weight: bold;
-		}
-		em {
-			font-style: italic;
-		}
-		h1 {
-			margin: 1.2em 0 0;
-		}
-		p {
-			margin: .5em 0;
-		}
-		code,
-		.code {
-			color: ##555;
-			font: 1.1em monospace;
-			background-color: ##eee;
-			padding: 0.3em 0.5em;
-		}
-	</style>
-	</cfoutput>
-</skin:htmlhead>
-
 <admin:footer />
+
+<!--- Load Custom Webtop Styling (load after admin:header) --->
+<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
 
 <cfsetting enablecfoutputonly="false" />

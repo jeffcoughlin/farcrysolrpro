@@ -3,6 +3,7 @@
 <!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfset oManifest = application.stPlugins.farcrysolrpro.oManifest />
 
@@ -167,59 +168,7 @@
 
 <admin:footer />
 
-<!--- Styling and javascript --->
-<skin:htmlhead id="solrProDocumentation-HowTo">
-	<cfoutput>
-	<style type="text/css" media="all">
-		strong {
-			font-weight: bold;
-		}
-		em {
-			font-style: italic;
-		}
-		h1 {
-			margin: 1.2em 0 0;
-		}
-		p {
-			margin: .5em 0;
-		}
-		code,
-		.code {
-			color: ##555;
-			font: 1.1em monospace;
-			background-color: ##eee;
-			padding: 0.3em 0.5em;
-		}
-		ul, ol {
-			margin: .5em 0 .5em 1em;
-		}
-		ul ul,
-		ol ol {
-			margin-left: 0;
-		}
-		ul li {
-			margin-left: 1em;
-			list-style: disc outside none;
-		}
-		ol li {
-			margin-left: 1em;
-			list-style: decimal outside none;
-		}
-		ul li li {
-			list-style: square outside none;
-		}
-		ul.features li {
-			font-weight: bold;
-		}
-		ul.features li li {
-			font-weight: normal;
-		}
-		li.nolistyle {
-			margin-left: 0;
-			list-style: none;
-		}
-	</style>
-	</cfoutput>
-</skin:htmlhead>
+<!--- Load Custom Webtop Styling (load after admin:header) --->
+<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
 
 <cfsetting enablecfoutputonly="false" />
