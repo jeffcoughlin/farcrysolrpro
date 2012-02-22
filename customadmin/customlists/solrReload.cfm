@@ -2,8 +2,8 @@
 <!--- @@displayname: Solr Reload --->
 <!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
-<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <admin:header title="Solr Reload" />
 
@@ -25,5 +25,8 @@
 </cfoutput>
 
 <admin:footer />
+
+<!--- Load Custom Webtop Styling (load after admin:header) --->
+<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
 
 <cfsetting enablecfoutputonly="false" />
