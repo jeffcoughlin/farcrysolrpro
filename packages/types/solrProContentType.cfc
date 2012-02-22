@@ -427,7 +427,7 @@
 		<cfloop array="#doc#" index="i">
 			<cfif structKeyExists(stPropBoosts, i.name) and not structKeyExists(i,"boost")>
 				<cfset i.boost = stPropBoosts[i.name] />
-			<cfelse>
+			<cfelseif not structKeyExists(i,"boost")>
 				<cfset i.boost = application.fapi.getConfig(key = 'solrserver', name = 'defaultBoost', default = 5) />
 			</cfif>
 		</cfloop>
