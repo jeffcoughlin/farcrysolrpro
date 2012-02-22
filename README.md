@@ -4,7 +4,7 @@ The FarCry Solr Pro plugin lets you use the power of of Lucene (through Solr) to
 
 FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unique record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.
 
-![FarCry Solr Pro Webtop](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/farcrySolrProWebtopConfig.png "FarCry Solr Pro Webtop")
+![FarCry Solr Pro Webtop](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/searchExample.png "FarCry Solr Pro Webtop")
 
 ## Details and Installation
 
@@ -56,3 +56,10 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
 * **Reports & Stats**
     * **Search log:** Shows what people are searching for, how many results they received, and the suggestion they were given (if relevant).
     * **Searches without results:** Shows what people were searching for when they received no results.  This is helpful to see if people are searching for things on your site that do exist, but for some reason they're not finding what they want (maybe they are searching for terms that don't exist on your site, but refer to the same content).  Using things like "synonyms" can help here, as well as adding the actual terms to your content itself.
+    
+## Requirements
+
+* ColdFusion 9+
+* FarCry 6.0.18+ or 6.1.3+
+* Solr 3.5+
+    * Solr 3.5 is optionally included in this plugin.
