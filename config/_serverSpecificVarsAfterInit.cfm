@@ -16,6 +16,6 @@
 <cfset application.stPlugins.farcrysolrpro.oCustomFunctions = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.customFunctions") />
 <cfset application.stPlugins.farcrysolrpro.oManifest = createObject("component","farcry.plugins.farcrysolrpro.install.manifest") />
 
-<skin:registerCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
+<skin:registerCss id="solrPro-customWebtopStyles" media="all" baseHref="/farcry/plugins/farcrysolrpro/www/css" lFiles="customWebtopStyles.cfm" />
 
 <cfsetting enablecfoutputonly="false" />
