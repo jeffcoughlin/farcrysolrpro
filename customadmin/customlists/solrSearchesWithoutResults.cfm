@@ -35,7 +35,6 @@ $j('input.datefield').datepicker();
 	
 </ft:processForm>
 
-<!--- TODO: style this --->
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true) eq false>
 	<cfoutput><p class="error">NOTE: Search logging is currently turned OFF.</p></cfoutput>
 </cfif>

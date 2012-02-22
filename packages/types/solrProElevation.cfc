@@ -80,8 +80,6 @@
 			
 			<cfoutput>#generateElevateXmlNode(st.searchString, st.aDocumentsToInclude, st.aDocumentsToExclude)#</cfoutput>
 			
-			<!--- TODO: when setting up a new elevation specify certain content types --->
-			
 		</cfloop>
 		
 		<cfoutput>

@@ -10,7 +10,6 @@
 <cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
 
 <cfoutput>
-	<!--- TODO: Finish these docs --->
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right;" />
 	<h1>Requirements</h1>
