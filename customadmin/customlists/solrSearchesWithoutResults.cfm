@@ -16,16 +16,12 @@ $j('input.datefield').datepicker();
 </cfoutput>
 </skin:onReady>
 
-<!--- TODO: Check if search logging is disabled.  If it is, mention it here to the user --->
-
 <admin:header title="Searches Without Results" />
 
 <cfparam name="form.queryString" default="" />
 <cfparam name="form.startDate" default="#dateAdd('m',-1,now())#" />
 <cfparam name="form.endDate" default="#now()#" />
 
-<!---<cfset dateMask = "mm/dd/yyyy" />
-<cfset timeMask = "h:mm ss" />--->
 <cfset dateMask = "yyyy-mm-dd" />
 <cfset timeMask = "short" />
 
@@ -41,7 +37,7 @@ $j('input.datefield').datepicker();
 
 <!--- TODO: style this --->
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true) eq false>
-	<cfoutput><p>NOTE: Search logging is currently turned OFF.</p></cfoutput>
+	<cfoutput><p class="error">NOTE: Search logging is currently turned OFF.</p></cfoutput>
 </cfif>
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>

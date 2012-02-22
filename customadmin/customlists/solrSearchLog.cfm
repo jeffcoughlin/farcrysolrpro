@@ -16,8 +16,6 @@ $j('input.datefield').datepicker();
 </cfoutput>
 </skin:onReady>
 
-<!--- TODO: Check if search logging is disabled.  If it is, mention it here to the user --->
-
 <admin:header title="Search Log" />
 
 <cfparam name="form.queryString" default="" />
@@ -39,9 +37,8 @@ $j('input.datefield').datepicker();
 	
 </ft:processForm>
 
-<!--- TODO: style this --->
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true) eq false>
-	<cfoutput><p>NOTE: Search logging is currently turned OFF.</p></cfoutput>
+	<cfoutput><p class="error">NOTE: Search logging is currently turned OFF.</p></cfoutput>
 </cfif>
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>

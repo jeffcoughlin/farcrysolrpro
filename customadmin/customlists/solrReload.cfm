@@ -7,22 +7,30 @@
 
 <admin:header title="Solr Reload" />
 
-<cfset application.fapi.getContentType("solrProContentType").reload() />
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
-<!--- TODO: Are we sure these are the only files reloaded? (ie. what about stopwords).  The only info I can find in solr docs is that it reloads the Solr core --->
+	<cfset application.fapi.getContentType("solrProContentType").reload() />
+	
+	<cfoutput>
+		<h1>Complete!</h1>
+		<p>Solr has been reloaded.  Changes to the following files have been reloaded:</p>
+		<ul>
+			<li>solrconfig.xml</li>
+			<li>schema.xml</li>
+			<li>protwords.txt</li>
+			<li>spellings.txt</li>
+			<li>stopwords.txt</li>
+			<li>synonyms.txt</li>
+			<li>elevate.xml</li>
+		</ul>
+	</cfoutput>
 
-<cfoutput>
-	<h1>Complete!</h1>
-	<p>Solr has been reloaded.  Changes to the following files have been reloaded:</p>
-	<ul>
-		<li>solrconfig.xml</li>
-		<li>schema.xml</li>
-		<li>protwords.txt</li>
-		<li>spellings.txt</li>
-		<li>synonyms.txt</li>
-		<li>elevate.xml</li>
-	</ul>
-</cfoutput>
+<cfelse>
+	
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
+	
+</cfif>
 
 <admin:footer />
 

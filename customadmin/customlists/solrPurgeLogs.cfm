@@ -8,6 +8,8 @@
 
 <admin:header title="Purge Logs" />
 
+<cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
+
 <skin:loadJs id="jquery" />
 <skin:loadJs id="jquery-ui" />
 <skin:loadCss id="jquery-ui" />
@@ -55,6 +57,13 @@ $j(document).ready(function(){
 	</ft:buttonPanel>
 	
 </ft:form>
+
+<cfelse>
+	
+	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
+	
+</cfif>
 
 <admin:footer />
 
