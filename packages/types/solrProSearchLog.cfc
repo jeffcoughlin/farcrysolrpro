@@ -7,6 +7,19 @@
 	<cfproperty ftSeq="150" ftFieldset="Search Log" name="numResults" type="integer" ftLabel="Num. Results" ftType="integer" ftDisplayOnly="true" />
 	<cfproperty ftSeq="160" ftFieldset="Search Log" name="suggestion" type="nstring" ftLabel="Suggestion" ftType="string" ftDisplayOnly="true" />
 	
+	<cffunction name="purgeLog" access="public" output="false" returntype="void">
+		<cfargument name="purgeDate" required="false" defaul="" type="string" />
+		
+		<!--- purge the log records --->
+		<cfquery datasource="#application.dsn#">
+		delete from solrProSearchLog 
+		<cfif isDate(arguments.purgeDate)>
+		where datetimecreated < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#createDateTime(year(arguments.purgeDate),month(arguments.purgeDate),day(arguments.purgeDate),0,0,0)#" />
+		</cfif>
+		</cfquery>
+				
+	</cffunction>
+	
 	<cffunction name="getSearchLog" access="public" output="false" returntype="query">
 		<cfargument name="startDate" type="date" required="false" />
 		<cfargument name="endDate" type="date" required="false" />
