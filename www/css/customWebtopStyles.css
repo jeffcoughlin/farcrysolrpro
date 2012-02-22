@@ -46,7 +46,27 @@ li.nolistyle {
 	margin-left: 0;
 	list-style: none;
 }
-
+table.solrprotable {
+	margin: .85em 0;
+	border-collapse: collapse;
+	font-size: 1em;
+	width: 100%;
+}
+table.solrprotable caption {
+	font: bold 145% arial;
+	padding: 5px 10px;
+	text-align: left;
+}
+table.solrprotable td,
+table.solrprotable th {
+	border: 1px solid #eee;
+	padding: .6em 10px;
+	text-align: left;
+	vertical-align: top;
+}
+table.solrprotable tr:nth-child(even) {
+	background: none repeat scroll 0 0 #F1F1F1;
+}
 /***********************************************************/
 /**                styles specifically for                **/
 /**          webskin/solrProContentType/edit.cfm          **/
