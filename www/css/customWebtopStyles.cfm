@@ -157,6 +157,10 @@ table.fcproperties tr.alt  {
 	width: 55%;
 	white-space: nowrap;
 }
+ol.ui-autocomplete li,
+ul.ui-autocomplete li {
+	list-style: none;
+}
 div.rule {
 	float: left;
 	width: 269px;
