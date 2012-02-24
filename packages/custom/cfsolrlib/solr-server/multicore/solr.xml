@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <solr persistent="false">
 	<cores adminPath="/admin/cores">
-      <core name='mhs_midhosp' instanceDir='/Users/jeffcoughlin/Sites/clients/mhs/org.middlesexhospital/projects/mhs_midhosp/solr'/>
 	</cores>
 </solr>
