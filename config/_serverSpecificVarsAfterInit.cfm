@@ -19,4 +19,12 @@
 <skin:registerCss id="solrPro-customWebtopStyles" media="all" baseHref="/farcry/plugins/farcrysolrpro/www/css" lFiles="customWebtopStyles.cfm" />
 <skin:registerCss id="siteSearch-css" media="all" baseHref="/farcry/plugins/farcrysolrpro/www/css" lFiles="search.cfm" />
 
+<!--- clear all field name list caches --->
+<cftry>
+	<cfset application.fapi.getContentType("solrProContentType").clearAllFieldListCaches() />
+	<cfcatch>
+		<!--- most likely the content type has not been deployed yet, so there is nothing to do here --->
+	</cfcatch>
+</cftry>
+
 <cfsetting enablecfoutputonly="false" />
