@@ -11,5 +11,6 @@
 	} />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="0", patchVersion="18") />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="1", patchVersion="3") />
+	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
 	
 </cfcomponent>
