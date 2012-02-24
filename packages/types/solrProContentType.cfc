@@ -42,7 +42,7 @@
 		<cfif structKeyExists(arguments.stObject, "contentType") and len(trim(arguments.stObject.contentType))>
 			
 			<!--- on delete, remove all indexed records for this typename from solr --->	
-			<cfset deleteByTypename(typename = arguments.stObject.contentType, bCommit = true) />
+			<cfset deleteByTypename(typename = arguments.stObject.contentType, sitename = application.applicationName, bCommit = true) />
 			
 			<!--- delete any indexed properties for this content type --->
 			<cfset var oProperty = application.fapi.getContentType("solrProIndexedProperty") />
@@ -427,7 +427,7 @@
 		<cfloop array="#doc#" index="i">
 			<cfif structKeyExists(stPropBoosts, i.name) and not structKeyExists(i,"boost")>
 				<cfset i.boost = stPropBoosts[i.name] />
-			<cfelse>
+			<cfelseif not structKeyExists(i,"boost")>
 				<cfset i.boost = application.fapi.getConfig(key = 'solrserver', name = 'defaultBoost', default = 5) />
 			</cfif>
 		</cfloop>
@@ -503,7 +503,7 @@
 		<cfargument name="bCommit" required="false" type="boolean" default="true" />
 		<cfset var deleteQuery = "typename:" & arguments.typename />
 		<cfif len(trim(arguments.sitename))>
-			<cfset deleteQuery = "fcsp_sitename:" & arguments.sitename />
+			<cfset deleteQuery = deleteQuery & " AND fcsp_sitename:" & arguments.sitename />
 		</cfif>
 		<cfset var i = "" />
 		<cfif listLen(arguments.lObjectIds)>

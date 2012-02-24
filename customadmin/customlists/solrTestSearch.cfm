@@ -9,8 +9,6 @@
 <cfparam name="form.contentType" default="" />
 <cfparam name="form.searchcriteria" default="" />
 
-<!--- TODO: Fix "search by field" ---> 
-
 <admin:header title="Test Search" />
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
@@ -20,6 +18,10 @@
 
 <!--- this is here so the pagination will work --->
 <cfset form.farcryFormSubmitButtonClickedTestSearch = "Search" />
+
+<cfif isValid("uuid",form.contentType)>
+	<cfset stContentType = oContentType.getData(form.contentType) />
+</cfif>
 
 <ft:processForm action="Search">	
 	
@@ -51,31 +53,33 @@
 		<cfset q = "" />
 		<cfset params = {} />
 		
-		<cfif len(trim(form.searchcriteria)) or len(trim(form.contentType)) eq 0>
-			<!--- search against all fields in the content type (or all content types) --->
-			<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = form.contentType) />
+		<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stContentType.objectId) />
+
+		<cfif len(trim(form.searchcriteria))>
 			<cfset q = form.searchcriteria />
-		<cfelse>
-			<!--- build qf based on the fields being searched --->
-			<cfset params["qf"] = "" />
-			<cfloop collection="#form#" item="f">
-				<cfif left(f,len('searchField_')) eq 'searchField_'>
-					<cfif len(trim(form[f]))>
-						<cfset fieldName = lcase(right(f,len(f) - len('searchField_'))) />
-						<cfset params["qf"] = listAppend(params["qf"], fieldName, " ") />
-						<cfset q = q & " " & fieldName & ":(" & form[f] & ")" />
-					</cfif>
-				</cfif>
-			</cfloop>
-			<cfset q = trim(q) />
 		</cfif>
 		
-		<cfif len(trim(form.contentType))>
-			<cfset q = "(" & q & ") AND typename:" & form.contentType />
+		<cfloop collection="#form#" item="f">
+			<cfif left(f,len('searchField_')) eq 'searchField_'>
+				<cfif len(trim(form[f]))>
+					<cfset fieldName = lcase(right(f,len(f) - len('searchField_'))) />
+					<cfif len(trim(q))>
+						<cfset q = q & " AND " & fieldName & ":(" & form[f] & ")" />
+					<cfelse>
+						<cfset q = fieldName & ":(" & form[f] & ")" />
+					</cfif>
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+		<cfset q = trim(q) />
+		
+		<cfif isValid("uuid",form.contentType)>
+			<cfset q = "(" & q & ") AND typename:" & stContentType.contentType />
 		</cfif>
 		
 		<cfset params["fl"] = "*,score" />
-	
+		
 		<cfset results = oContentType.search(q = q, start = startRow, rows = rows, params = params) />
 		
 	</cfif>
@@ -92,7 +96,7 @@
 			<select name="contentType" id="contentType" class="selectInput" onchange="$j('.textInput').each(function(i){ $(this).val(''); }); $j('##testSearch').submit();">
 				<option value="">-- All Content Types --</option>
 				<cfloop query="qContentTypes">
-				<option value="#qContentTypes.contentType[qContentTypes.currentRow]#"<cfif form.contentType eq qContentTypes.contentType[qContentTypes.currentRow]> selected="selected"</cfif>>#qContentTypes.title[qContentTypes.currentRow]#</option>
+				<option value="#qContentTypes.objectId[qContentTypes.currentRow]#"<cfif form.contentType eq qContentTypes.objectid[qContentTypes.currentRow]> selected="selected"</cfif>>#qContentTypes.title[qContentTypes.currentRow]#</option>
 				</cfloop>
 			</select>
 			</cfoutput>
@@ -109,28 +113,29 @@
 		
 	</ft:fieldset>
 	
-	<cfif len(trim(form.contentType))>
-	<ft:fieldset legend="Search by Field">
-
-		<cfset aFields = listToArray(oContentType.getFieldListForType(form.contentType)," ") />
-		<cfset aCoreFields = oContentType.getSchemaFieldMetadata(lOmitFields = "fcsp_random,typename") />
-		<cfloop array="#aCoreFields#" index="coreField">
-			<cfif coreField.indexed eq true>
-				<cfset arrayAppend(aFields,coreField.name) />
-			</cfif>
-		</cfloop>
-		<cfset arraySort(aFields,"text") />
+	<cfif isValid("uuid",form.contentType)>
 		
-		<cfloop array="#aFields#" index="f">
-		<ft:field label="#f#:" for="searchField_#f#">
-			<cfparam name="form.searchField_#f#" default="" />
-			<cfoutput>
-			<input type="text" class="textInput" name="searchField_#f#" id="searchField_#f#" value="#form['searchField_' & f]#" />
-			</cfoutput>
-		</ft:field>
-		</cfloop>
-		
-	</ft:fieldset>
+		<ft:fieldset legend="Search by Field">
+	
+			<cfset aFields = listToArray(oContentType.getFieldListForType(stContentType.contentType)," ") />
+			<cfset aCoreFields = oContentType.getSchemaFieldMetadata(lOmitFields = "fcsp_random,typename") />
+			<cfloop array="#aCoreFields#" index="coreField">
+				<cfif coreField.indexed eq true and not arrayFindNoCase(aFields,coreField.name)>
+					<cfset arrayAppend(aFields,coreField.name) />
+				</cfif>
+			</cfloop>
+			<cfset arraySort(aFields,"text") />
+			
+			<cfloop array="#aFields#" index="f">
+			<ft:field label="#f#:" for="searchField_#f#">
+				<cfparam name="form.searchField_#f#" default="" />
+				<cfoutput>
+				<input type="text" class="textInput" name="searchField_#f#" id="searchField_#f#" value="#form['searchField_' & f]#" />
+				</cfoutput>
+			</ft:field>
+			</cfloop>
+			
+		</ft:fieldset>
 	</cfif>
 	
 	<ft:buttonPanel>

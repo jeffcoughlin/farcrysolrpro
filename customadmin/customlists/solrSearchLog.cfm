@@ -16,8 +16,6 @@ $j('input.datefield').datepicker();
 </cfoutput>
 </skin:onReady>
 
-<!--- TODO: Check if search logging is disabled.  If it is, mention it here to the user --->
-
 <admin:header title="Search Log" />
 
 <cfparam name="form.queryString" default="" />
@@ -39,9 +37,8 @@ $j('input.datefield').datepicker();
 	
 </ft:processForm>
 
-<!--- TODO: style this --->
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true) eq false>
-	<cfoutput><p>NOTE: Search logging is currently turned OFF.</p></cfoutput>
+	<cfoutput><p class="error">NOTE: Search logging is currently turned OFF.</p></cfoutput>
 </cfif>
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
@@ -80,7 +77,7 @@ $j('input.datefield').datepicker();
 	
 	<cfif stObject.bFirst>
 	<cfoutput>
-	<table class="ui-widget ui-widget-content" width="100%"><!--- class="objectadmin" --->
+	<table class="ui-widget ui-widget-content solrprotable">
 		<thead>
 			<tr class="ui-widget-header">
 				<th>Query String</th>
@@ -119,39 +116,6 @@ $j('input.datefield').datepicker();
 	
 </cfif>
 
-	<skin:htmlhead id="solrProSearchLog">
-		<cfoutput>
-		<style type="text/css" media="all">
-			strong {
-				font-weight: bold;
-			}
-			em {
-				font-style: italic;
-			}
-			table {
-				margin: .85em 0;
-				border-collapse: collapse;
-				font-size: 1em;
-			}
-			table caption {
-				font: bold 145% arial;
-				padding: 5px 10px;
-				text-align: left;
-			}
-			table td,
-			table th {
-				border: 1px solid ##eee;
-				padding: .6em 10px;
-				text-align: left;
-				vertical-align: top;
-			}
-			table tr:nth-child(even) {
-				background: none repeat scroll 0 0 ##F1F1F1;
-			}
-		</style>
-		</cfoutput>
-	</skin:htmlhead>
-
 </ft:form>
 
 <cfelse>
@@ -160,5 +124,8 @@ $j('input.datefield').datepicker();
 </cfif>
 
 <admin:footer />
+
+<!--- Load Custom Webtop Styling (load after admin:header) --->
+<skin:loadCss id="solrPro-customWebtopStyles" />
 
 <cfsetting enablecfoutputonly="false" />

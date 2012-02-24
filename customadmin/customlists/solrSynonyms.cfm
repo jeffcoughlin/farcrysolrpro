@@ -55,6 +55,6 @@ One example provided is matching similar terms for <span class="code">ipod, i-po
 <admin:footer />
 
 <!--- Load Custom Webtop Styling (load after admin:header) --->
-<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
+<skin:loadCss id="solrPro-customWebtopStyles" />
 
 <cfsetting enablecfoutputonly="false" />

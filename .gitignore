@@ -1,4 +1,4 @@
 /.settings
 /.project
 /settings.xml
-/packages/custom/cfsolrlib/solr-server/work/Jetty*/jsp/org/apache/jsp/admin/*.class
+/packages/custom/cfsolrlib/solr-server/work

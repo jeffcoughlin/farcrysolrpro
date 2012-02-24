@@ -12,7 +12,6 @@
 <cfset linkWikiInstall = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/installation_and_configuration" />
 
 <cfoutput>
-	<!--- TODO: Finish these docs --->
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right;" />
 	<h1>Detailed Installation and Setup Help</h1>
@@ -57,6 +56,6 @@
 <admin:footer />
 
 <!--- Load Custom Webtop Styling (load after admin:header) --->
-<skin:loadCss id="solrPro-customWebtopStyles" media="all" baseHref="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css" lFiles="customWebtopStyles.css" />
+<skin:loadCss id="solrPro-customWebtopStyles" />
 
 <cfsetting enablecfoutputonly="false" />

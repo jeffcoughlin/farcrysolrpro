@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="true" />
+<cfoutput>
 strong {
 	font-weight: bold;
 }
@@ -13,9 +15,9 @@ p {
 code,
 .code,
 var {
-	color: #555;
+	color: ##555;
 	font: 1.1em monospace;
-	background-color: #eee;
+	background-color: ##eee;
 	padding: 0.3em 0.5em;
 }
 ul, ol {
@@ -46,7 +48,27 @@ li.nolistyle {
 	margin-left: 0;
 	list-style: none;
 }
-
+table.solrprotable {
+	margin: .85em 0;
+	border-collapse: collapse;
+	font-size: 1em;
+	width: 100%;
+}
+table.solrprotable caption {
+	font: bold 145% arial;
+	padding: 5px 10px;
+	text-align: left;
+}
+table.solrprotable td,
+table.solrprotable th {
+	border: 1px solid ##eee;
+	padding: .6em 10px;
+	text-align: left;
+	vertical-align: top;
+}
+table.solrprotable tr:nth-child(even) {
+	background: none repeat scroll 0 0 ##F1F1F1;
+}
 /***********************************************************/
 /**                styles specifically for                **/
 /**          webskin/solrProContentType/edit.cfm          **/
@@ -94,7 +116,7 @@ li.nolistyle {
 	vertical-align: middle;
 }
 .fieldType div.buttonset label:not(.ui-state-active) span {
-	color: #888 !important;
+	color: ##888 !important;
 }
 .fieldType div.buttonset label span {
 	font-size: 0.8em;
@@ -112,28 +134,32 @@ table.fcproperties caption {
 }
 table.fcproperties td,
 table.fcproperties th {
-	border: 1px solid #eee;
+	border: 1px solid ##eee;
 	padding: .6em 10px;
 	text-align: left;
 	vertical-align: top;
 }
 table.fcproperties tr:nth-child(even),
 table.fcproperties tr.alt  {
-	background: none repeat scroll 0 0 #F1F1F1;
+	background: none repeat scroll 0 0 ##F1F1F1;
 }
-#indexedProperties {
+##indexedProperties {
 	max-width: 900px;
 	min-width: 500px;
 }
-#tblCustomProperties {
+##tblCustomProperties {
 	width: 100%;
 }
-#tblCustomProperties tbody tr td:nth-child(1) {
+##tblCustomProperties tbody tr td:nth-child(1) {
 	padding-top: .8em;
 }
-#tblCustomProperties thead tr th:nth-child(4) {
+##tblCustomProperties thead tr th:nth-child(4) {
 	width: 55%;
 	white-space: nowrap;
+}
+ol.ui-autocomplete li,
+ul.ui-autocomplete li {
+	list-style: none;
 }
 div.rule {
 	float: left;
@@ -150,74 +176,74 @@ div.rule input {
 	float: left;
 	margin-top: 0.2em;
 }
-#lSummaryFields {
+##lSummaryFields {
 	margin: 10px 0;
 	min-height: 100%;
 	height: auto;
 }
-#lSummaryFields label {
+##lSummaryFields label {
 	float: left;
 	width: 185px;
 	margin: 2px 0;
 }
-#lSummaryFields label input {
+##lSummaryFields label input {
 	margin-right: 5px;
 }
-#helpInfo {
+##helpInfo {
 	padding: 0.4em;
 	position: relative;
 	margin: 1em 0;
-	/*min-width: 500px;
-	max-width: 800px;*/
 }
-#helpInfo h3 {
+##helpInfo h3 {
 	margin: 0 0 1em 0;
 	padding: 0.4em;
 	text-align: center;
 }
-#helpInfo h4 {
+##helpInfo h4 {
 	font-size: 125%;
 }
-#helpInfo h5 {
+##helpInfo h5 {
 	font-size: 110%;
 }
-#helpInfo h6 {
+##helpInfo h6 {
 	font-size: 95%;
 }
-#helpInfo div {
+##helpInfo div {
 	margin: 0 1em;
 }
-#helpInfo div#helpInfoBody {
+##helpInfo div##helpInfoBody {
   display: none; /* default value overridden by jQuery show/hide */
   margin-top: 10px;
 }
-#helpInfo div.showInfo {
+##helpInfo div.showInfo {
 		margin-top: 10px;
 }
-#helpInfo a.showHelpInfoTrue,
-#helpInfo a.showHelpInfoTrue:hover {
-		background: transparent url(css/images/glyph-down.gif) no-repeat scroll right top;
+##helpInfo a.showHelpInfoTrue,
+##helpInfo a.showHelpInfoTrue:hover {
+		background: transparent url(#application.fapi.getConfig(key = 'solrserver',name = 'pluginWebRoot',default='/farcrysolrpro')#/css/images/glyph-down.gif) no-repeat scroll right top;
 		padding-right: 13px;
 }
-#helpInfo a.showHelpInfoFalse,
-#helpInfo a.showHelpInfoFalse:hover {
-		background: transparent url(css/images/glyph-up.gif) no-repeat scroll right top;
+##helpInfo a.showHelpInfoFalse,
+##helpInfo a.showHelpInfoFalse:hover {
+		background: transparent url(#application.fapi.getConfig(key = 'solrserver',name = 'pluginWebRoot',default='/farcrysolrpro')#/css/images/glyph-up.gif) no-repeat scroll right top;
 		padding-right: 13px;
 }
-#helpInfo p {
+##helpInfo p {
 	margin: 0.5em 0;
 }
-#helpInfo ul {
+##helpInfo ul {
 	margin-left: 1em;
 }
-#helpInfo ul ul {
+##helpInfo ul ul {
 	margin-left: 0;
 }
-#helpInfo li {
+##helpInfo li {
 	margin-left: 1em;
 	list-style: disc outside none;
 }
-#helpInfo li.nolistyle {
+##helpInfo li.nolistyle {
 	margin-left: 0;
 	list-style: none;
 }
+</cfoutput>
+<cfsetting enablecfoutputonly="false" />
