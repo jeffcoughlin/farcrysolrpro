@@ -24,21 +24,21 @@
 	<cfproperty name="bConfigured" type="boolean" ftType="hidden" default="0" required="true" hint="Flag to indicate that the user has configured the Solr server, this avoids creating folders and files using the default settings when FarCry is initialized." />
 		
 	<cffunction name="setupCollectionConfig" access="public" output="false" returntype="void" hint="Copies the collection configuration default templates to the collection conf directory.  Optionally, overwrites existing files.">
+		<cfargument name="instanceDir" type="string" default="#application.fapi.getConfig(key = 'solrserver', name = 'instanceDir', default = expandPath('/farcry/projects/' & application.applicationName & '/solr'))#" />
 		<cfargument name="bOverwrite" type="boolean" required="false" default="false" />
 		
-		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir") />
 		<cfset var aTemplateFolders = ["conf","data"] />
 		<cfset var templateFolder = "" />
 		
 		<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/conf") />
 		<cfset var qTemplateFiles = "" />
-		<cfset var destdir = instanceDir & "/conf" />
+		<cfset var destdir = arguments.instanceDir & "/conf" />
 		
 		<!--- copy schema and other config files to conf directory --->
 		<cfloop array="#aTemplateFolders#" index="templateFolder">
 			<cfset var templateDir = expandPath("/farcry/plugins/farcrysolrpro/templates/#templateFolder#") />
 			<cfset var qTemplateFiles = "" />
-			<cfset var destdir = instanceDir & "/#templateFolder#" />
+			<cfset var destdir = arguments.instanceDir & "/#templateFolder#" />
 			
 			<cfdirectory action="list" directory="#templateDir#" recurse="true" name="qTemplateFiles" type="file" />
 	
@@ -63,29 +63,26 @@
 	</cffunction>
 	
 	<cffunction name="setupInstanceDir" access="public" output="false" returntype="void" hint="Creates the instance directory">
+		<cfargument name="instanceDir" type="string" default="#application.fapi.getConfig(key = 'solrserver', name = 'instanceDir', default = expandPath('/farcry/projects/' & application.applicationName & '/solr'))#" />
 		<cfargument name="bReset" type="boolean" required="false" default="false" />
 		
-		<cfset var instanceDir = application.fapi.getConfig(key = "solrserver", name = "instanceDir", default = "") />
-		
-		<cfif len(trim(instanceDir))>
-			
-			<cfif arguments.bReset and directoryExists(instanceDir)>
-				<cfset directoryDelete(instanceDir, true) />
-			</cfif>
-			
-			<!--- ensure instanceDir exists --->
-			<cfif not directoryExists(instanceDir)>
-				<cfdirectory action="create" directory="#instanceDir#" mode="777" />
-			</cfif>
-			
-			<!--- ensure collection directories exist --->
-			<cfif not directoryExists(instanceDir & "/conf")>
-				<cfdirectory action="create" directory="#instanceDir#/conf" mode="777" />
-			</cfif>
-			<cfif not directoryExists(instanceDir & "/data")>
-				<cfdirectory action="create" directory="#instanceDir#/data" mode="777" />
-			</cfif>
+		<cfif arguments.bReset and directoryExists(arguments.instanceDir)>
+			<cfset directoryDelete(arguments.instanceDir, true) />
 		</cfif>
+		
+		<!--- ensure instanceDir exists --->
+		<cfif not directoryExists(arguments.instanceDir)>
+			<cfdirectory action="create" directory="#arguments.instanceDir#" mode="777" />
+		</cfif>
+		
+		<!--- ensure collection directories exist --->
+		<cfif not directoryExists(arguments.instanceDir & "/conf")>
+			<cfdirectory action="create" directory="#arguments.instanceDir#/conf" mode="777" />
+		</cfif>
+		<cfif not directoryExists(arguments.instanceDir & "/data")>
+			<cfdirectory action="create" directory="#arguments.instanceDir#/data" mode="777" />
+		</cfif>
+
 	</cffunction>
 	
 	<cffunction name="setupSolrDefaults" access="public" output="false" returntype="void" hint="Resets the Solr.xml file, instance directory and collection configuration">
@@ -131,10 +128,10 @@
 		</cfif>
 		
 		<!--- ensure instanceDir exists --->
-		<cfset setupInstanceDir() />
+		<cfset setupInstanceDir(directory = instanceDir) />
 		
 		<!--- copy template config files if necessary --->
-		<cfset setupCollectionConfig() />
+		<cfset setupCollectionConfig(directory = instanceDir) />
 		
 	</cffunction>
 	

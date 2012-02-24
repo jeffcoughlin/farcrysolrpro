@@ -27,9 +27,9 @@
 		<cfparam name="application.stPlugins.farcrysolrpro.corePropertyBoosts" type="struct" default="#structNew()#" />
 		<cfset structDelete(application.stPlugins.farcrysolrpro.corePropertyBoosts,stProperties.objectid) />
 		
-		<!--- cache the field list for this type (both phonetic and non-phonetic) --->
-		<cfset setFieldListCacheForType(stProperties.contentType,true) />
-		<cfset setFieldListCacheForType(stProperties.contentType,false) />
+		<!--- reset the cache for the field list for this type (both phonetic and non-phonetic) --->
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = true) />
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = false) />
 		
 		<cfreturn super.aftersave(argumentCollection = arguments) />
 		
@@ -205,34 +205,66 @@
 		
 	</cffunction>
 	
+	<cffunction name="clearAllFieldListCaches" returntype="void" access="public" output="false">
+		<cfset var keys = cacheGetAllIds() />
+		<cfset var key = "" />
+		<cfloop array="#keys#" index="key">
+			<cfif left(key,len("farcrysolrpro-fieldlist-")) eq "farcrysolrpro-fieldlist-">
+				<cfset cacheRemove(key) />
+			</cfif>
+		</cfloop>
+	</cffunction>
+	
 	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
+		<cfargument name="fieldList" type="string" required="false" default="#getFieldListForType(typename = arguments.typename, bIncludePhonetic = arguments.bIncludePhonetic)#" />
 		<cfset cacheRemove("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic) />
-		<cfset cachePut("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic,getFieldListForType(arguments.typename,arguments.bIncludePhonetic)) />
+		<cfset cachePut("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic,arguments.fieldList) />
 	</cffunction>
 	
 	<cffunction name="getFieldListCacheForType" returntype="string" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
+		<cfargument name="bFlushCache" type="boolean" required="false" default="false" />
+		
 		<cfset var cachedValue = cacheGet("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic) />
-		<cfif not isNull(cachedValue)>
-			<cfreturn cachedValue />
+		
+		<cfif isNull(cachedValue) or arguments.bFlushCache eq true>
+			
+			<!--- no cached version, generate the field list --->
+			<cfset var fieldList = getFieldListForType(arguments.typename,arguments.bIncludePhonetic) />
+			
+			<!--- cache it for later use --->
+			<cfset setFieldListCacheForType(typename = arguments.typename,bIncludePhonetic = arguments.bIncludePhonetic,fieldList = fieldList) />
+			
+			<!--- return the field list --->
+			<cfreturn fieldList />
+			
 		<cfelse>
-			<cfset setFieldListCacheForType(arguments.typename,arguments.bIncludePhonetic) />
-			<cfreturn getFieldListCacheForType(arguments.typename,arguments.bIncludePhonetic) />
+			
+			<!--- we have a cached version, just return that --->
+			<cfreturn cachedValue />
+			
 		</cfif>
+		
 	</cffunction>
 	
 	<cffunction name="getFieldListForTypes" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a all specified indexed content types.  Used for the qf (query fields) Solr parameter">
 		<cfargument name="lContentTypes" type="string" default="" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
+		<cfargument name="bUseCache" type="boolean" required="false" default="true" />
+		<cfargument name="bFlushCache" type="boolean" required="false" default="false" />
 		<cfset var q = getAllContentTypes(lContentTypes) />
 		<cfset var qf = "" />
 		
 		<!--- for each indexed content type, get the field list --->
 		<cfloop query="q">
-			<cfset qf = qf & " " & getFieldListCacheForType(q.contentType,arguments.bIncludePhonetic) />
+			<cfif arguments.bUseCache>
+				<cfset qf = qf & " " & getFieldListCacheForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bFlushCache = arguments.bFlushCache) />
+			<cfelse>
+				<cfset qf = qf & " " & getFieldListForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic) />
+			</cfif>		
 		</cfloop> 
 		
 		<!--- dedupe list --->
@@ -827,7 +859,8 @@
 			</cfif>
 			<cfif bIncludeNonSearchable eq false>
 			and bEnableSearch = 1
-			</cfif>;
+			</cfif>
+			order by lower(title);
 		</cfquery>
 		<cfreturn q />
 	</cffunction>

@@ -70,21 +70,12 @@
 			
 			<!--- get the field list for the content type(s) we are searching --->
 			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
-			<!--- <cfif listLen(stSearchForm.lContentTypes) eq 1>
-				<cfset params["qf"] = oContentType.getFieldListCacheForType(typename = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
-			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
-				<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
-			<cfelse>
-				<cfset params["qf"] = oContentType.getFieldListForTypes(bIncludePhonetic = (stSearchForm.operator neq "phrase")) />
-			</cfif> --->
-			<!--- TODO: there is a bug in the field list methods.  some field types are not returned when bIncludePhonetic is false --->
-			<cfif listLen(stSearchForm.lContentTypes) eq 1>
-				<cfset params["qf"] = oContentType.getFieldListCacheForType(typename = stSearchForm.lContentTypes, bIncludePhonetic = true) />
-			<cfelseif listLen(stSearchForm.lContentTypes) gte 1>
-				<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stSearchForm.lContentTypes, bIncludePhonetic = true) />
-			<cfelse>
-				<cfset params["qf"] = oContentType.getFieldListForTypes(bIncludePhonetic = true) />
-			</cfif>
+			<cfset params["qf"] = oContentType.getFieldListForTypes(
+				lContentTypes = stSearchForm.lContentTypes, 
+				bIncludePhonetic = (stSearchForm.operator neq "phrase"), 
+				bUseCache = true, 
+				bFlushCache = false
+			) />
 			
 			<!--- return the score --->
 			<cfset params["fl"] = "*,score" />

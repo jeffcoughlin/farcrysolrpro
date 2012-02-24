@@ -53,8 +53,12 @@
 		<cfset q = "" />
 		<cfset params = {} />
 		
-		<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stContentType.objectId) />
-
+		<cfif isValid("uuid",form.contentType)>
+			<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = stContentType.objectId, bIncludePhonetic = true, bUseCache = false, bFlushCache = false) />
+		<cfelse>
+			<cfset params["qf"] = oContentType.getFieldListForTypes(lContentTypes = "", bIncludePhonetic = true, bUseCache = false, bFlushCache = false) />
+		</cfif>
+		
 		<cfif len(trim(form.searchcriteria))>
 			<cfset q = form.searchcriteria />
 		</cfif>
@@ -117,7 +121,7 @@
 		
 		<ft:fieldset legend="Search by Field">
 	
-			<cfset aFields = listToArray(oContentType.getFieldListForType(stContentType.contentType)," ") />
+			<cfset aFields = listToArray(oContentType.getFieldListForType(typename = stContentType.contentType, bIncludePhonetic = true)," ") />
 			<cfset aCoreFields = oContentType.getSchemaFieldMetadata(lOmitFields = "fcsp_random,typename") />
 			<cfloop array="#aCoreFields#" index="coreField">
 				<cfif coreField.indexed eq true and not arrayFindNoCase(aFields,coreField.name)>
