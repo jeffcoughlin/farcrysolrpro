@@ -286,7 +286,7 @@
 				<a href="##" onclick="return false;" class="showHelpInfoTrue">Show Help Information</a>
 			</div>
 			<div id="helpInfoBody">
-				<p><strong>Note:</strong> Any changes you make in this form will not take affect until a full re-index of the content type is made (that means resetting the index and then re-indexing it.  Usually very fast, but still a necessity if changes are made here).  The following fields are the only exception (these can be changed without the need to re-index):</p>
+				<p><img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="float:right; margin: 0 0 10px 20px;" /><strong>Note:</strong> Any changes you make in this form will not take affect until a full re-index of the content type is made (that means resetting the index and then re-indexing it.  Usually very fast, but still a necessity if changes are made here).  The following fields are the only exception (these can be changed without the need to re-index):</p>
 				<ul>
 					<li>Title</li>
 					<li>Result Title</li>
@@ -298,13 +298,13 @@
 				<h4>Form Options and Descriptions</h4>
 				<p>Below is a walkthough of the configurable options in this form.</p>
 				<h5>Title</h5>
-				<p>This is used for reference in a few places.  Namely: the content type listing in the webtop and the content type name show in the selection dropdown provided with the plugin's default webskin templates.</p>
+				<p>This is used for reference in a few places.  Namely: the content type listing in the webtop and the content typename shown in the selection dropdown provided with the plugin's default webskin templates.</p>
 				<h5>Content Type</h5>
-				<p>This is the content type to be indexed.  This affects all options chosen throughout the rest of the form, so it is essential to choose this optoin first before continuing.</p>
+				<p>This is the content type to be indexed.  This affects all options chosen throughout the rest of the form, so it is essential to choose this option first before continuing.</p>
 				<h4>Indexed Properties</h3>
 				<p>Any fields that you would like Solr to index are chosen here.</p>
 				<h5>Custom Properties</h5>
-				<p>These represent the fields for your FarCry types that are not FarCry default types.  ie. These wouldn't be fields like <var>objectid</var> and <var>label</var> (ref. <a href="##defaultproperties">Default Properties</a>), but rather the other custom fields you might have in your object like <var>title</var>.</p>
+				<p>These represent the fields for your FarCry types that are not FarCry default types.  ie. These wouldn't be fields like <var>objectid</var> and <var>label</var> (ref. <a href="##helpInfo-defaultproperties">Default Properties</a> below), but rather the other custom fields you might have in your object like <var>title</var>.</p>
 				<p>Your options here are the following:</p>
 				<h6>Indexing a Field</h6>
 				<ul>
@@ -312,27 +312,27 @@
 				</ul>
 				<h6>Select Solr field types to index</h6>
 				<ul>
-					<li>When you first choose this dropdown, we will offer what we feel are the suggested Solr Field Types.  By default, these are typenames that we have created in your project's schema.xml.  If you are familiar with Solr, you can modify these yourself (just remember that Solr has to be restarted when editing the schema.xml and content types have to be re-indexed).  There are a couple requirements we added which are commented at the bottom of the file, but we tried to give you as much freedom as possible if you ever felt the need to make modifications to your schema.xml.</li>
-					<li>Since most things you'll want to index are text-based fields, we suggest using the <var>Text</var> option.  And in many cases also adding the <var>Phonetic</var> option as well (so users can match searches that are phonetically similar).  Be warned: The <var>string</var> type doesn't go through any filters and is case-sensitive.  We find it useful for storing things like image and file paths (uses a smaller footprint in the Solr database).</li>
+					<li>When you first choose this dropdown, we will offer what we feel are the suggested Solr Field Types.  By default, these are typenames that we have created in your project's schema.xml.  If you are familiar with Solr, you can modify these yourself (just remember that Solr has to be reloaded when editing the schema.xml (use the reload tool in the Solr Pro admin menus or restart Solr) and content types have to be reset and re-indexed in Solr - use the content types listing screen).  There are a couple requirements we added which are commented near the bottom of the schema.xml file, but we tried to give you as much freedom as possible if you ever felt the need to make modifications to your schema.xml.</li>
+					<li>Since most things you'll want to index are text-based fields, we suggest using either the <var>Phonetic</var> or <var>Text</var> type (you can use both if you wish).  In most cases you'll want to use the <var>Phonetic</var> type so users can match searches that are phonetically similar.  This can technically use slightly more HDD space in your collection, so for massive collection sizes you might prefer to use <var>Text</var> if HDD space is limitted.  Be warned: The <var>String</var> type doesn't go through any filters and is case-sensitive.  We find it useful for storing things like image and file paths because it uses a smaller footprint in the Solr database (less HDD space).  Some people argue to use <var>Text</var> when indexing filenames in case users might search for a string that partially matches the filename (ie. "Widget product blue.pdf").</li>
 					<li class="nolistyle"><h6>Storing a Field</h6>
 						<ul>
-							<li>You do not need to store a field in order for it to be searchable (indexed).  However, there are times where you want a field to be stored by Solr so that you don't have to do a database lookup to find the same data (Solr will already have it for you in its results).  Common examples are <var>Title</var>, <var>teaser</var>, etc.</li>
+							<li>You do not need to store a field in order for it to be searchable (indexed).  However, there are times where you want a field to be stored by Solr so that you don't have to do a database lookup to find the same data (Solr will already have it for you in its results).  Common examples are <var>Title</var>, <var>teaser</var>, and <var>teaserImage</var>.</li>
 						</ul>
 					</li>
 					<li class="nolistyle"><h6>Boost by Field</h6>
 						<ul>
 							<li>This feature allows you to give or remove weight to fields when searching.</li>
-							<li>Example:  In a simple HTML object, we suggest giving the <var>title</var> field a heavy boost value of something like 50 and maybe 10 to the <var>body</var>.  Why?  Because when a user searches for a specific term (say "<em>Community Charity Campaign</em>"), they may be referring to a very specific event.  Those words in the search term may be common words found all over the place in the <var>body</var> of many pages on the site.  However, those same words may only appear in 2 or 3 <var>titles</var> for very specific events.  Thus the scoring engine in Solr (Lucene) will give more weight to any <var>title</var> fields where the search term was found.  Otherwise every time one of those words is found in the <var>body</var>, it is added to the score for the search (as well as boosted).  If the <var>title</var> field wasn't given more weight for those terms, then the scoring would be skewed and the user would likely not find the results they were originally looking for.</li>
-							<li>Boosting can be a very powerful feature if used correctly.  You know your content better than anyone.  However, if you're not sure what you want to change them to, then don't feel required to change them.  If the fields are all the same boost value then the default values won't affect the overall score because they are weighted against each other during the search.  Meaning: If they all have the same weight, then there will be no extra leverage to any given field (compared to others) when searching.</li>
+							<li>Example:  In a simple HTML object, we suggest giving the <var>title</var> field a heavy boost value of something like 50 and maybe 10 to the <var>body</var>.  Why?  Because when a user searches for a specific term (say "<em>Community Charity Campaign</em>"), they may be referring to a very specific event.  Those words in the search term may be common words found all over the place in the <var>body</var> of many pages on the site.  However, those same words may only appear in 2 or 3 <var>titles</var> for very specific events.  Thus the scoring engine in Solr (Lucene) will give more weight to any <var>title</var> fields where the search term was found.  Otherwise every time one of those words is found in the <var>body</var>, it is added to the score for the search.  If the <var>title</var> field wasn't given more weight for those terms, then the scoring would be skewed and the user would likely not find the results they were originally looking for.</li>
+							<li>Boosting can be a very powerful feature if used correctly.  You know your content better than anyone.  However, if you're not sure what you want to change them to, then don't feel required to change them at all.  If the fields are all the same boost value then the default values won't affect the overall score because they are weighted against each other during the search.  Meaning: If they all have the same boost then there will be no extra leverage to any given field (compared to others) when searching.  You can always go back later and change the boost options on a field once you see how your results are working (just remember that you'll need to reset and re-index your data for that type in order to see the change on existing data in the index).</li>
 							<li>Out-of-the-box the defaults for each field will be 5 (unless changed in the Solr configuration).  Why default boost 5?  We did this so that if you have any speicifc fields to index that should have lower weight (compared to other fields), then you could set that here.</li>
 							<li>The default setting for all fields can be changed in the Solr Config.</li>
 						</ul>
 					</li>
 				</ul>
 
-				<h5 id="defaultproperties">Default Properties</h5>
+				<h5 id="helpInfo-defaultproperties">Default Properties</h5>
 				<p>Default properties are fields that are always indexed (and many stored) for all types.  Some of them are from FarCry core, while others are additional fields used to help with extra data.  For most people, these fields and their settings can be left alone including their boost settings, however their boost values can be adjusted here if desired.</p>
-				<p>The reason that the first seven items are stored in Solr is to enhance performance on seaches.  When a user searches your site, Solr is already returning back data.  Much of the teaser data needed to be displayed to the user can be returned from Solr and there is no need to do an extra query lookup per item on the search result page.  This is another reason that we suggest storing a search result <var>title</var> and <var>teaser</var> (and any other fields you want displayed on the search results page - like a <var>teaser image</var>).</p>
+				<p>The reason that the first seven items are stored in Solr is to enhance performance on seaches.  When a user searches your site, Solr is already returning back data that you'll likely need in your view/webskin.  Much of the teaser data needed to be displayed to the user can be returned from Solr and in most cases there is no need to do an extra query lookup per item on the search result page.  This is another reason that we suggest storing a search result <var>title</var> and <var>teaser</var> (and any other fields you want displayed on the search results page - like a <var>teaser image</var>).</p>
 				<h6>Stored and indexed FarCry core fieldnames:</h6>
 				<ul>
 					<li>objectid &mdash; Used as the unique ID field for Solr records and matches the associated FarCry objectid.</li>
@@ -353,7 +353,7 @@
 				<h6>The following default fields are indexed by Solr for various reasons (explained):</h6>
 				<ul>
 					<li>typename &mdash; Matches the FarCry typename.  Used by Solr for query lookups when matching objectid and typename.</li>
-					<li>fcsp_rulecontent &mdash; When you elect to store any related rule content, its associated data is indexed in both the fcsp_rulecontent field and it's associated phonetic field.</li>
+					<li>fcsp_rulecontent &mdash; When you elect to store any related rule content, its associated data is indexed in both the fcsp_rulecontent field and its associated phonetic field.</li>
 					<li>fcsp_rulecontent_phonetic &mdash; Used for phonetic searches on related rule content.</li>
 					<li>fcsp_spell &mdash; Used by Solr for spell correction on single-word searches.</li>
 					<li>fcsp_spellphrase &mdash; Used by Solr for spell correction on multi-word (phrase) searches.</li>
@@ -362,16 +362,16 @@
 				
 				<h4>Search Result Defaults</h4>
 				<h5>Result Title</h5>
-				<p>Out-of-the-box the plugin will reference whatever field you set here to output as the site search title.  You can only used stored string-based fields (ie. string, text, or phonetic).</p>
+				<p>Out-of-the-box the plugin will reference whatever field you set here to output as the site search title.  You can only used stored string-based fields (ie. string, text, or phonetic).  By default Solr will set this to <var>label</var> since label is always available in FarCry types.</p>
 
 				<h5>Result Summary</h5>
 				<h6>Option 1: Solr Generated Summary</h6>
 				<p>Using Solr's generated summary takes advantage of Solr's highlighting engine.  It's not the fact that it just highlights search terms (thats simple enough to do in CF).  What makes it unique is that the summary will be snippets of text where your search term(s) were found (similar to Google).</p>
 				<h6>Option 2: Custom/Manual Field Selection</h6>
-				<p>Using a custom field selection is suggested for times when you want, say, to use a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term)</p>
+				<p>Using a custom field selection is suggested for times when you want, say, to use a specified teaser field to always be used no matter where the search terms were found. Example: Say you have a product with a very specified teaser that you want to always be shown in your search results (not a snippet of the search term).</p>
 
 				<h5>Result Image</h5>
-				<p>Out-of-the-box the plugin will reference whatever field you set here to output a teaser image (if available) with your search result teaser.  Using the webskin code samples provided with the plugin, you can use a string-based field here (that references the path url path to the image) or a UUID to a dmImage object which will output the thumbnail image in the search result teaser.  We didn't bother to provide sample code to lookup up UUIDs for other unknown objects because we wouldn't know what custom image fieldname you might have to output, so it is always suggested that you create your own <var>displaySolrSearchResult.cfm</var> for your type(s) in your project and use the provided sample <var>displaySolrSearchResult.cfm</var> file as an example template.</p>
+				<p>Out-of-the-box the plugin will reference whatever field you set here to output a teaser image (if available) with your search result teaser.  Using the webskin code samples provided with the plugin, you can use a string-based field here (that references the url path to the image) or a UUID to a dmImage object which will output the thumbnail image in the search result teaser.  We didn't bother to provide sample code to lookup up UUIDs for other unknown objects because we wouldn't know what custom image fieldname you might have to output, so it is always suggested that you create your own <var>displaySolrSearchResult.cfm</var> for your type(s) in your project and use the provided sample <var>displaySolrSearchResult.cfm</var> file as an example template.</p>
 
 				<h4>Related Rules</h4>
 				<h5>Indexing Rule Data</h5>
@@ -379,13 +379,13 @@
 				<p>There are a couple minor limitations.  Currently we are only indexing text/string fields in the rules (not arrays, etc) and we do not let you choose which text/string fields are selectable (we would index all of them).  If there is a high enough demand to have either of these features added, we'll consider it for future versions of the plugin (but will require significant code changes unfortunately).</p>
 
 				<h4>Advanced Options</h4>
-				<h5>Enabling in Site Search</h5>
+				<h5>Enable Site Search</h5>
 				<p>This is a boolean used to reference whether or not the default site search should use this content type as an index to search against.</p>
-				<p>In most cases you'd want this feature enabled.  It is offered here in case you wish to index specific content types that you don't want in the global site search pages of your site.  You may wish to only search this content type in a specific section of your site (ie. A product search page).</p>
+				<p>In most cases you'd want this feature enabled.  It is offered here in case you wish to index specific content types that you don't want in the global site search pages of your site.  You may, however, wish to only search this content type in a specific section of your site (ie. A product search page).</p>
 				<h5>Built to Date</h5>
-				<p>Although you have the option to modify this field, you should never have to.  This is used by the plugin when indexing a content type.  Because the plugin needs to query the content type in FarCry, it uses this to return data where the dateTimeLastUpdated field is newer than the date shown here.  This is useful for performance. When indexing a content type, the plugin will do so in batches (the default batch size is 1000 and is configurable in the plugin settings).</p>
+				<p>Although you have the option to modify this field, you will likely never need to.  This is used by the plugin when indexing a content type.  Because the plugin needs to query the content type in FarCry, it uses this to return data where the dateTimeLastUpdated field is newer than the date shown here.  This is useful for performance. When indexing a content type, the plugin will do so in batches (the default batch size is 1000 and is configurable in the plugin settings).</p>
 				<h5>Index on Save</h5>
-				<p>The second you save a published document it is instantly available to site searches.  Due to necessary changes in FarCry core, this feature is only supported on FarCry 6.0.18+ and 6.1.3+</p>
+				<p>The second you save a published document it is instantly available to site searches.  Due to necessary changes in FarCry core, this feature is only supported on FarCry 6.2+.  However if using FarCry 6.0.18+ and 6.1.3+, you can manually add the ability to your copy of FarCry core (see the <a href="https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/Commit_on_Save_Support_with_Older_Versions_of_FarCry" target="_new">wiki</a> for more details).</p>
 				<p>Note: For content types that use versioning, draft items will never be indexed.</p>
 			</div>
 		</div>

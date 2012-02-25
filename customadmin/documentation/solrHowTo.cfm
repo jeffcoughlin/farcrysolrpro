@@ -33,7 +33,7 @@
 		</li>
 	</ul>
 	<h2>Older FarCry Support</h2>
-	<p>It is possible to run this plugin with a minimum of either FarCry 6.0.18 or 6.1.3, but you will not have the ability to ""commit on save" which just means that you'll have to setup a scheduled task (provided with plugin) to index your data on a regular basis.  If you'd still prefer to use one of the versions of FarCry mentioned here and add the support for "commit on save" to your copy of core manually, see the <a href="#linkWikiInstall#">wiki</a> on how to do this.</p>
+	<p>It is possible to run this plugin with a minimum of either FarCry 6.0.18 or 6.1.3, but you will not have the ability to "commit on save" which just means that you'll have to setup a scheduled task (provided with plugin) to index your data on a regular basis.  If you'd still prefer to use one of the versions of FarCry mentioned here and add the support for "commit on save" to your copy of core manually, see the <a href="#linkWikiInstall#">wiki</a> on how to do this.</p>
 	<h1>Setup</h1>
 	<h2>First Time Setup</h2>
 	<p>If you've just installed this plugin, below is a checklist of things you'll need to do to get yourself on your way</p>
