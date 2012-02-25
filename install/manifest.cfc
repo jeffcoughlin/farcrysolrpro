@@ -4,7 +4,7 @@
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
 	<cfset this.version = "0.0.1" />
-	<cfset this.buildState = "alpha" />
+	<cfset this.buildState = "private beta" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
 		link = "http://www.apache.org/licenses/LICENSE-2.0"
