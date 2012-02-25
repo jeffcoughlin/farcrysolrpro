@@ -101,8 +101,117 @@ Purpose:    Utlitity class for loading Java Classes
 	<cfreturn instance.classLoadPaths />
 </cffunction>
 
+	
+<cffunction name="switchThreadContextClassLoader" hint="Sometimes you will need to switch out the ThreadContextClassLoader with the classloader used by JavaLoader.<br/>
+			It has :
+			switchThreadContextClassLoader(function object, [classLoader=getURLClassLoader()], [struct function arguments])
+			switchThreadContextClassLoader(function name, [classLoader=getURLClassLoader()], [struct function arguments])
+			switchThreadContextClassLoader(object, function name, [classLoader=getURLClassLoader()], [struct function arguments])
+			This method can be used in 3 different ways:
+			<ol>
+				<li>Pass it the UDF itself</li>
+				<li>Pass it the current object and method name that you wish to have called</li>
+				<li>Inject it into your CFC/Page that you want to use, and call it from there, telling it what function to call (you will need to pass in the URLClassLoader)</li>
+			</ol>"
+			access="public" returntype="any" output="false">
+	<cfscript>
+		var local = {};
+		var System = createObject("java", "java.lang.System");
+		var Thread = createObject("java", "java.lang.Thread");
+		var currentClassloader = Thread.currentThread().getContextClassLoader();
+		var classLoader = "";
+		
+		if (structCount(arguments) == 4) 
+		{	
+			// the last 2 arguments are the classloader and function arguments
+			classLoader = arguments[3];
+			local.funcArgs = arguments[4];	
+		} 
+		else if (structCount(arguments) == 3) 
+		{	
+			// 2nd argument could be classloader or function arguments
+			if (isInstanceOf(arguments[2],"java.lang.ClassLoader")) 
+			{
+				classLoader = arguments[2];
+			}
+			else if (isStruct(arguments[2])) 
+			{
+				local.funcArgs = arguments[2];	
+			}
+			
+			// 3rd argument could be classloader or function arguments
+			if (isInstanceOf(arguments[3],"java.lang.ClassLoader")) 
+			{
+				classLoader = arguments[3];
+			} 
+			else if (isStruct(arguments[3])) 
+			{
+				local.funcArgs = arguments[3];	
+			}
+		} 
+		else if (structCount(arguments) == 2) 
+		{	
+			// the 2nd argument could be a class loader or function arguments
+			if (isInstanceOf(arguments[2],"java.lang.ClassLoader")) 
+			{
+				classLoader = arguments[2];	
+			} 
+			else if (isStruct(arguments[2])) 
+			{
+				local.funcArgs = arguments[2];	
+			}
+		}
+		
+		if (!structKeyExists(local,"funcArgs")) 
+		{
+			local.funcArgs = {};	
+		}
+		
+		if (isSimpleValue(classLoader)) 
+		{
+			classLoader = getURLClassLoader();	
+		}
+	</cfscript>
+
+	<cftry>
+		<cfscript>
+			Thread.currentThread().setContextClassLoader(classloader);
+		</cfscript>
+
+		<cfif isSimpleValue(arguments[1])>
+			<cfinvoke method="#arguments[1]#" returnvariable="local.return" argumentCollection="#local.funcArgs#" />
+		<cfelseif isCustomFunction(arguments[1])>
+			<cfscript>
+				local.func = arguments[1];
+				local.return = local.func(argumentCollection = funcArgs);
+			</cfscript>
+		<cfelseif isObject(arguments[1]) AND isSimpleValue(arguments[2])>
+			<cfinvoke component="#arguments[1]#" method="#arguments[2]#" returnvariable="local.return" argumentCollection="#local.funcArgs#" />
+		<cfelse>
+			<cfthrow type="javaloader.InvalidInvocationException" message="Unable to determine what method to invoke" detail="Please check the documentation for switchThreadContextClassLoader."/>
+		</cfif>
+
+		<cfcatch>
+			<cfscript>
+				Thread.currentThread().setContextClassLoader(currentClassloader);
+			</cfscript>
+			<cfrethrow>
+		</cfcatch>
+	</cftry>
+
+	<cfscript>
+		//need to do this twice, as cf8 has no finally.
+		Thread.currentThread().setContextClassLoader(currentClassloader);
+
+		if(structKeyExists(local, "return"))
+		{
+			return local.return;
+		}
+	</cfscript>
+</cffunction>
+	
 <cffunction name="getVersion" hint="Retrieves the version of the loader you are using" access="public" returntype="string" output="false">
-	<cfreturn "1.0.2">
+	<cfreturn "1.1">
 </cffunction>
 
 <!------------------------------------------- PACKAGE ------------------------------------------->

@@ -951,63 +951,59 @@
 		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
 		<cfset var aFileContents = [] />
 		
+		<cfscript>
+		// grab a handle on javaloader
+		var javaloader = application.stPlugins["farcrysolrpro"].javaloader;
+	
+		// grab the cached instance of tika
+		var tika = application.stPlugins["farcrysolrpro"].tika;	
+		</cfscript>
+		
 		<cfloop array="#doc#" index="prop">
-			
-			<!--- determine if this property is a "file" or "image" field, if so, send to Tika for extraction --->
-			<cfif len(prop.farcryField)>
-				
-				<cfset ftType = getFTTypeForProperty(arguments.typename,prop.farcryField) />
-				
-				<cfif listFindNoCase("image,file", ftType)>
-					
-					<cfif ftType eq "image">
-						<cfset filePath = application.fapi.getImageWebroot() & prop.value />
-					<cfelse>
-						<cfset filePath = application.fapi.getFileWebroot() & prop.value />
-					</cfif>
-					
-					<cfset filePath = expandPath(filePath) />
-					
-					<cfif fileExists(filePath)>
 
-						<!--- TODO: test performance with LOTS of Open XML format documents --->
+			<cfscript>
+			// determine if this property is a "file" or "image" field, if so, send to tika for extraction
+			if (structKeyExists(prop,"farcryField") and len(prop.farcryField)) {	
+				
+				ftType = getFTTypeForProperty(arguments.typename,prop.farcryField);
+				
+				if (listFindNoCase("image,file", ftType)) {
+					
+					if (ftType eq "image") {
+						filePath = application.fapi.getImageWebroot() & prop.value;
+					} else {
+						filePath = application.fapi.getFileWebroot() & prop.value;	
+					}
+					
+					filePath = expandPath(filePath);
+					
+					if (fileExists(filePath)) {
+					
+						// build a struct to hold the value for this file
+						var tmp = {
+							"name" = lcase(prop.farcryField & "_contents" & right(prop.name,len(prop.name)-len(prop.farcryField))),
+							"value" = "",
+							"boost" = prop.boost
+						};
 						
-						<cfscript>
-							
-							// grab a handle on javaloader
-							var javaloader = application.stPlugins["farcrysolrpro"].javaloader;
-							
-							if (listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))) {
-								// swap out the class loader so that dom4j does not throw an error
-								var _thread = createObject("java", "java.lang.Thread");
-					       		var currentClassloader = _thread.currentThread().getContextClassLoader();
-								_thread.currentThread().setContextClassLoader(javaloader.getURLClassLoader());
-							}
-							
-							// grab an instance of tika and parse the file
-							var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
-							
-							// save the results to an array for later
-							arrayAppend(aFileContents, {
-								name = lcase(prop.farcryField & "_contents" & right(prop.name,len(prop.name)-len(prop.farcryField))),
-								value = tika.parseToString(createObject("java","java.io.File").init(filePath)),
-								boost = prop.boost
-							});
-							
-							if (listFindNoCase(".docx,.xlsx,.pptx",right(filePath,5))) {
-								// set the classloader back	
-								_thread.currentThread().setContextClassLoader(currentClassloader);
-							}
-						</cfscript>
-
-					</cfif>
+						// parse and save value
+						if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(filePath,5))) {
+							tmp["value"] = javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = filePath });
+						} else {
+							tmp["value"] = tika.parseToString(createObject("java","java.io.File").init(filePath));
+						}
+						
+						// save the values to the struct
+						arrayAppend(aFileContents, duplicate(tmp));
+						
+					}
 					
-				</cfif>
-				
-			</cfif>
+				}
+			}
 			
-			<!--- remove farcryField key from all structs in the doc array --->
-			<cfset structDelete(prop,"farcryField") />
+			// remove farcryField key from all structs in the doc array
+			structDelete(prop,"farcryField");
+			</cfscript>
 			
 		</cfloop>
 		
@@ -1043,6 +1039,31 @@
 	</cffunction>
 	
 	<!--- helper --->
+	
+	<cffunction name="parseOpenXmlFile" access="private" output="false" returntype="string">
+		<cfargument name="filePath" required="true" type="string" />
+		
+		<!--- 
+			Note this method must be run within the context of Javaloader having switched out the context class loader 
+			(see https://github.com/markmandel/JavaLoader/wiki/Switching-the-ThreadContextClassLoader) 
+			
+			call it as follows:
+				javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = '/path/to/file.txt' })
+		--->
+		
+		<cfscript>	
+		// grab a new instance of tika
+		var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
+		
+		// parse the file
+		var returnValue = tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
+		
+		// return the parsed string
+		return returnValue;
+		</cfscript>
+		
+	</cffunction>
+	
 	<cffunction name="listCompare" output="false" returnType="string">
 	   <cfargument name="list1" type="string" required="true" />
 	   <cfargument name="list2" type="string" required="true" />
