@@ -136,7 +136,7 @@
 		
 		<!--- create/update the core --->
 		<cfif coreExists(config = arguments.config)>
-			<cfset application.fapi.getContentType("solrProContentType").reload() />
+			<cfset application.fapi.getContentType("solrProContentType").reload(config = arguments.config) />
 		<cfelse>
 			<cfset createCore(config = arguments.config) />
 		</cfif>
