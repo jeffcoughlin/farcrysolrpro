@@ -28,29 +28,19 @@
 		</cfif>
 	</cfloop>		
 	
-	
 	<!--- Check for an ftJoinMethod (farcrysolrpro) --->
-	<cfif structKeyExists(stMetadata, "ftJoinMethod") and len(trim(stMetadata.ftJoinMethod))>
-		<cfparam name="stMetadata.ftJoinMethodTypename" default="#stobj.typename#" />
-		<cfif not len(trim(stMetadata.ftJoinMethodTypename))>
-			<cfset stMetadata.ftJoinMethodTypename = stobj.typename />
-		</cfif>
-		<cfinvoke 
-			component="#application.fapi.getContentType(stMetadata.ftJoinMethodTypename)#" 
-			method="#stMetadata.ftJoinMethod#" 
-			returnvariable="stMetadata.ftJoin" />
-	</cfif>
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepFTJoin(typename = stobj.typename, stMetadata = stMetadata) />
 	<!--- (farcrysolrpro) --->
-
+	
 	<!--- FILTERING SETUP --->
 	<cfif not len(url.filterTypename)>		
 		<cfset url.filterTypename = listFirst(stMetadata.ftJoin) />
 	</cfif>
-
+	
 	<cfif structKeyExists(form, "filterTypename")>
 		<cfset url.filterTypename = form.filterTypename />
 	</cfif>
-
+	
 	<cfparam name="form.searchTypename" default="" />
 	
 	<cfif len(form.searchTypename)>

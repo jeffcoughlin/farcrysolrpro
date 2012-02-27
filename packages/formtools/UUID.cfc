@@ -3,7 +3,7 @@
 	<cfproperty name="ftJoinMethod" required="false" default="" hint="A method that returns a list of content types to join"/>
 	<cfproperty name="ftJoinMethodTypename" required="false" default="" hint="The content type to use to run the ftJoinMethod.  Defaults to the calling content type."/>
 	
-	<cffunction name="prepFtJoin" access="private" output="false" returntype="struct">
+	<cffunction name="prepFtJoin" access="public" output="false" returntype="struct">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		

@@ -33,16 +33,7 @@
 	</cfloop>
 	
 	<!--- Check for an ftJoinMethod (farcrysolrpro) --->
-	<cfif structKeyExists(stMetadata, "ftJoinMethod") and len(trim(stMetadata.ftJoinMethod))>
-		<cfparam name="stMetadata.ftJoinMethodTypename" default="#stobj.typename#" />
-		<cfif not len(trim(stMetadata.ftJoinMethodTypename))>
-			<cfset stMetadata.ftJoinMethodTypename = stobj.typename />
-		</cfif>
-		<cfinvoke 
-			component="#application.fapi.getContentType(stMetadata.ftJoinMethodTypename)#" 
-			method="#stMetadata.ftJoinMethod#" 
-			returnvariable="stMetadata.ftJoin" />
-	</cfif>
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepFTJoin(typename = stobj.typename, stMetadata = stMetadata) />
 	<!--- (farcrysolrpro) --->
 	
 	<admin:header title="Library Selector" style="width:100%;height:100%">		
