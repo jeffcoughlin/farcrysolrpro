@@ -121,7 +121,6 @@
 			<cfsavecontent variable="solrXml"><cfoutput><?xml version='1.0' encoding='UTF-8'?>
 				<solr persistent='true'>
 					<cores adminPath='/admin/cores'>
-						<core name='#collectionName#' instanceDir='#instanceDir#'/>
 					</cores>
 				</solr>
 				</cfoutput>
