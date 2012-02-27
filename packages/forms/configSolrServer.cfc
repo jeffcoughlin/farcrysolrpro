@@ -37,17 +37,26 @@
 		<cfdirectory action="list" directory="#templateDir#" recurse="true" name="qTemplateFiles" type="file" />
 		
 		<cfloop query="qTemplateFiles">
-			<cfset subdir = replace(qTemplateFiles.directory, templateDir, "", "one") />
+			
+			<cfset subdir = replace(qTemplateFiles.directory[qTemplateFiles.currentRow], templateDir, "", "one") />
+			
+			<cfif subdir eq qTemplateFiles.directory[qTemplateFiles.currentRow]>
+				<cfset subdir = "" />
+			</cfif>
+		
 			<cfset sourcedir = templateDir & "/" & subdir />
 			<cfset destdir = arguments.instanceDir & "/" & subdir />
+			
 			<!--- create the dest directory if it doesn't exist --->
 			<cfif not directoryExists(destdir)>
 				<cfdirectory action="create" directory="#destdir#" mode="777" />
 			</cfif>
+			
 			<!--- Copy the config file if applicable --->
-			<cfif arguments.bOverwrite or not fileExists("#destdir#/#name#")>
-				<cffile action="copy" source="#qTemplateFiles.directory#/#qTemplateFiles.name#" destination="#destdir#/#name#" mode="777" />
+			<cfif arguments.bOverwrite or not fileExists("#destdir#/#qTemplateFiles.name[qTemplateFiles.currentRow]#")>
+				<cffile action="copy" source="#qTemplateFiles.directory[qTemplateFiles.currentRow]#/#qTemplateFiles.name[qTemplateFiles.currentRow]#" destination="#destdir#/#qTemplateFiles.name[qTemplateFiles.currentRow]#" mode="777" />
 			</cfif>
+		
 		</cfloop>
 
 	</cffunction>
@@ -75,6 +84,30 @@
 
 	</cffunction>
 	
+	<cffunction name="createCore" access="private" returntype="void" output="false">
+		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
+		<cfset var host = arguments.config.host />
+		<cfset var port = arguments.config.port />
+		<cfset var collectionName = arguments.config.collectionName />
+		<cfset var instanceDir = arguments.config.instanceDir />
+		<cfset var uri = "http://" & host & ":" & port & "/solr/admin/cores?action=CREATE&name=" & collectionName & "&instanceDir=" & instanceDir & "&persist=true" />
+		<cfhttp url="#uri#" method="get" />
+	</cffunction>
+	
+	<cffunction name="coreExists" access="private" returntype="boolean" output="false">
+		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
+		<cfset var host = arguments.config.host />
+		<cfset var port = arguments.config.port />
+		<cfset var collectionName = arguments.config.collectionName />
+		<cfset var instanceDir = arguments.config.instanceDir />
+		<cfset var uri = "http://" & host & ":" & port & "/solr/admin/cores?action=STATUS&core=" & collectionName />
+		<cfset var httpResult = "" />
+		<cfhttp url="#uri#" method="get" result="httpResult" />
+		<cfset var xml = xmlParse(httpResult.fileContent) />
+		<cfset var matches = xmlSearch(xml,"/response/lst[@name='status']/lst[@name='#collectionName#']/str[@name='name']") />
+		<cfreturn arrayLen(matches) />
+	</cffunction>
+	
 	<cffunction name="setupSolrDefaults" access="public" output="false" returntype="void" hint="Resets the Solr.xml file, instance directory and collection configuration">
 		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
 		
@@ -94,27 +127,6 @@
 				</cfoutput>
 			</cfsavecontent>
 			<cfset fileWrite(solrXmlLocation, trim(solrXml)) />
-		<cfelse>
-			
-			<!--- ensure collection is defined in solr.xml --->
-			<cfset var solrXml = fileRead(solrXmlLocation) />
-			
-			<cfset var results = xmlSearch(xmlParse(solrXml),"//core[@name='#collectionName#']") />
-			
-			<cfif arrayLen(results) eq 0>
-				
-				<!--- collection is NOT in solr.xml, add it --->
-					
-				<cfset var insertPos = findNoCase("</cores>",solrXml) - 1 />
-				<cfset var startXml = left(solrXml, insertPos) />
-				<cfset var newXml = "<core name='#collectionName#' instanceDir='#instanceDir#'/>" />
-				<cfset var endXml = mid(solrXml,insertPos,len(solrXml) - len(startXml) + 1) />
-				<cfset solrXml = indentXml(trim(startXml & newXml & endXml)) />
-				
-				<cfset fileWrite(solrXmlLocation, solrXml) />
-				
-			</cfif>
-			
 		</cfif>
 		
 		<!--- ensure instanceDir exists --->
@@ -122,6 +134,13 @@
 		
 		<!--- copy template config files if necessary --->
 		<cfset setupCollectionConfig(directory = instanceDir) />
+		
+		<!--- create/update the core --->
+		<cfif coreExists(config = arguments.config)>
+			<cfset application.fapi.getContentType("solrProContentType").reload() />
+		<cfelse>
+			<cfset createCore(config = arguments.config) />
+		</cfif>
 		
 	</cffunction>
 	
