@@ -206,21 +206,15 @@
 	</cffunction>
 	
 	<cffunction name="clearAllFieldListCaches" returntype="void" access="public" output="false">
-		<cfset var keys = cacheGetAllIds() />
-		<cfset var key = "" />
-		<cfloop array="#keys#" index="key">
-			<cfif left(key,len("farcrysolrpro-fieldlist-")) eq "farcrysolrpro-fieldlist-">
-				<cfset cacheRemove(key) />
-			</cfif>
-		</cfloop>
+		<cfset application.stPlugins["farcrysolrpro"].fieldLists = {} />
 	</cffunction>
 	
 	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
 		<cfargument name="fieldList" type="string" required="false" default="#getFieldListForType(typename = arguments.typename, bIncludePhonetic = arguments.bIncludePhonetic)#" />
-		<cfset cacheRemove("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic) />
-		<cfset cachePut("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic,arguments.fieldList) />
+		<cfparam name="application.stPlugins['farcrysolrpro'].fieldLists" default="#structNew()#" />
+		<cfset application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic] = arguments.fieldList />
 	</cffunction>
 	
 	<cffunction name="getFieldListCacheForType" returntype="string" access="public" output="false">
@@ -228,9 +222,15 @@
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
 		<cfargument name="bFlushCache" type="boolean" required="false" default="false" />
 		
-		<cfset var cachedValue = cacheGet("farcrysolrpro-fieldlist-" & arguments.typename & "-" & arguments.bIncludePhonetic) />
+		<!--- try to load the cached value --->
+		<cfparam name="application.stPlugins['farcrysolrpro'].fieldLists" default="#structNew()#" />
+		<cfif structKeyExists(application.stPlugins["farcrysolrpro"].fieldLists, arguments.typename & "-" & arguments.bIncludePhonetic)>
+			<cfset var cachedValue = application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic] />
+		<cfelse>
+			<cfset var cachedValue = "" />	
+		</cfif>
 		
-		<cfif isNull(cachedValue) or arguments.bFlushCache eq true>
+		<cfif len(trim(cachedValue)) eq 0 or arguments.bFlushCache eq true>
 			
 			<!--- no cached version, generate the field list --->
 			<cfset var fieldList = getFieldListForType(arguments.typename,arguments.bIncludePhonetic) />
