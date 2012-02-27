@@ -32,6 +32,7 @@
 		<cfset var subdir = "" />
 		<cfset var sourcedir = "" />
 		<cfset var destdir = "" />
+		<cfset var qTemplateFiles = "" />
 		
 		<cfdirectory action="list" directory="#templateDir#" recurse="true" name="qTemplateFiles" type="file" />
 		
@@ -46,9 +47,6 @@
 			<!--- Copy the config file if applicable --->
 			<cfif arguments.bOverwrite or not fileExists("#destdir#/#name#")>
 				<cffile action="copy" source="#qTemplateFiles.directory#/#qTemplateFiles.name#" destination="#destdir#/#name#" mode="777" />
-				<cflog application="true" file="configSolrServer" type="information" text="copying file to #destdir#/#name#" />
-			<cfelse>
-				<cflog application="true" file="configSolrServer" type="information" text="skipping file #destdir#/#name#" />
 			</cfif>
 		</cfloop>
 

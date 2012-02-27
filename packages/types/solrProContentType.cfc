@@ -872,6 +872,8 @@
 		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" />
 		
+		<cfset var type = "" />
+		
 		<cfif arguments.bCleanString>
 			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
 			<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />

@@ -55,9 +55,9 @@
 				<cfset params["spellcheck.count"] = 1 />
 				<cfset params["spellcheck.q"] = stSearchForm.q />
 				<cfif listLen(stSearchForm.q, " ") gt 1>
-					<cfset stParams["spellcheck.dictionary"] = "phrase" />
+					<cfset params["spellcheck.dictionary"] = "phrase" />
 				<cfelse>
-					<cfset stParams["spellcheck.dictionary"] = "default" />
+					<cfset params["spellcheck.dictionary"] = "default" />
 				</cfif>
 				<cfset params["spellcheck.build"] = false />
 				<cfset params["spellcheck.onlyMorePopular"] = true />
@@ -117,8 +117,8 @@
 			<!--- ensure log is enabled, only log search for page 1 --->
 			<cfif arguments.bLogSearch and arguments.page eq 1>
 				<!--- log the search and result stats --->
-				<cfset oLog = application.fapi.getContentType("solrProSearchLog") />
-				<cfset stLog = {
+				<cfset var oLog = application.fapi.getContentType("solrProSearchLog") />
+				<cfset var stLog = {
 					numResults = stResult.totalResults,
 					q = stSearchForm.q,
 					lContentTypes = stSearchForm.lContentTypes,
