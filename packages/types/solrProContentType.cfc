@@ -411,6 +411,38 @@
 							farcryField = field
 						}) />
 						
+						<cfscript>
+							// if this field is an image or file field, parse the contents
+							var ftType = getFTTypeForProperty(arguments.typename,field);
+							if (listFindNoCase("image,file",ftType)) {
+							
+								if (ftType eq "image") {
+									var filePath = application.fapi.getImageWebroot() & stRecord[field];
+								} else {
+									var filePath = application.fapi.getFileWebroot() & stRecord[field];	
+								}
+								
+								filePath = expandPath(filePath);
+								
+								if (fileExists(filePath)) {
+								
+									// parse and save the value
+									var parsedValue = parseFile(filePath = filePath);
+									arrayAppend(doc, {
+										"name" = lcase(field) & "_contents_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										"value" = parsedValue,
+										"boost" = typeSetup.boostValue,
+										"farcryField" = field
+									});
+									
+									// save parsed value to stRecord so we can use it to build the "highlight" summary
+									stRecord[field & "_contents"] = parsedValue;
+									
+								}
+								
+							}
+						</cfscript>
+						
 					</cfloop>
 					
 				</cfif>
@@ -442,6 +474,14 @@
 				<cfset arrayAppend(doc, {
 					name = "fcsp_highlight",
 					value = application.stPlugins.farcrysolrpro.oCustomFunctions.tagStripper(stRecord[f]),
+					farcryField = ""
+				}) />
+			</cfif>
+			<cfif structKeyExists(stRecord, f & "_contents")>
+				<!--- we have file contents for this field, index it as well --->
+				<cfset arrayAppend(doc, {
+					name = "fcsp_highlight",
+					value = application.stPlugins.farcrysolrpro.oCustomFunctions.tagStripper(stRecord[f & "_contents"]),
 					farcryField = ""
 				}) />
 			</cfif>
@@ -946,73 +986,15 @@
 		<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
 		
 		<cfset var prop = "" />
-		<cfset var httpresult = "" />
-		<cfset var ftType = "" />
-		<cfset var filePath = "" />
-		<cfset var xml = "" />
-		<cfset var solrUrl = "http://" & application.fapi.getConfig(key = 'solrserver', name = 'host') & ":" & application.fapi.getConfig(key = 'solrserver', name = 'port') & application.fapi.getConfig(key = 'solrserver', name = 'path') & "/update/extract" />
-		<cfset var aFileContents = [] />
-		
-		<cfscript>
-		// grab a handle on javaloader
-		var javaloader = application.stPlugins["farcrysolrpro"].javaloader;
-	
-		// grab the cached instance of tika
-		var tika = application.stPlugins["farcrysolrpro"].tika;	
-		</cfscript>
 		
 		<cfloop array="#doc#" index="prop">
 
 			<cfscript>
-			// determine if this property is a "file" or "image" field, if so, send to tika for extraction
-			if (structKeyExists(prop,"farcryField") and len(prop.farcryField)) {	
-				
-				ftType = getFTTypeForProperty(arguments.typename,prop.farcryField);
-				
-				if (listFindNoCase("image,file", ftType)) {
-					
-					if (ftType eq "image") {
-						filePath = application.fapi.getImageWebroot() & prop.value;
-					} else {
-						filePath = application.fapi.getFileWebroot() & prop.value;	
-					}
-					
-					filePath = expandPath(filePath);
-					
-					if (fileExists(filePath)) {
-					
-						// build a struct to hold the value for this file
-						var tmp = {
-							"name" = lcase(prop.farcryField & "_contents" & right(prop.name,len(prop.name)-len(prop.farcryField))),
-							"value" = "",
-							"boost" = prop.boost
-						};
-						
-						// parse and save value
-						if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(filePath,5))) {
-							tmp["value"] = javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = filePath });
-						} else {
-							tmp["value"] = tika.parseToString(createObject("java","java.io.File").init(filePath));
-						}
-						
-						// save the values to the struct
-						arrayAppend(aFileContents, duplicate(tmp));
-						
-					}
-					
-				}
-			}
-			
 			// remove farcryField key from all structs in the doc array
 			structDelete(prop,"farcryField");
 			</cfscript>
 			
 		</cfloop>
-		
-		<!--- append any file content values to the document --->
-		<cfif arrayLen(aFileContents)>
-			<cfset doc.addAll(aFileContents) />
-		</cfif>
 		
 		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.add(argumentCollection = arguments) />
 		
@@ -1062,6 +1044,21 @@
 		
 		// return the parsed string
 		return returnValue;
+		</cfscript>
+		
+	</cffunction>
+	
+	<cffunction name="parseFile" access="public" output="false" returntype="string" hint="Parses a file using Tika and returns the file contents as a string">
+		<cfargument name="filePath" required="true" type="string" />
+		
+		<cfscript>
+			if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(arguments.filePath,5))) {
+				// parsing OpenXML files must be done using a different context class loader
+				return application.stPlugins["farcrysolrpro"].javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = arguments.filePath });
+			} else {
+				// use our cached copy of tika and parse the file
+				return application.stPlugins["farcrysolrpro"].tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
+			}
 		</cfscript>
 		
 	</cffunction>
