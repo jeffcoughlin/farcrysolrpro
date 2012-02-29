@@ -157,21 +157,12 @@
 			// setup javaloader
 			var solrjLibPath = "/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solrj-lib/";
 			application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(
-				loadPaths = [
-					expandPath(solrjLibPath & "commons-io-1.4.jar"),
-					expandPath(solrjLibPath & "commons-codec-1.5.jar"),
-					expandPath(solrjLibPath & "slf4j-api-1.6.1.jar"),
-					expandPath(solrjLibPath & "slf4j-jdk14-1.6.1.jar"),
-					expandPath(solrjLibPath & "commons-httpclient-3.1.jar"),
+				loadPaths = [	
 					expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"),
-					expandPath(solrjLibPath & "geronimo-stax-api_1.0_spec-1.0.1.jar"),
-					expandPath(solrjLibPath & "wstx-asl-3.2.7.jar"),
-					expandPath(solrjLibPath & "jcl-over-slf4j-1.6.1.jar"),
 					expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.0.jar")
 				],
 				loadColdFusionClassPath = true
-			);
-			
+			);	
 			// setup tika (note do not use this copy of tika for OpenXML files (http://en.wikipedia.org/wiki/Office_Open_XML), you must switch out the class loader, see https://github.com/markmandel/JavaLoader/wiki/Switching-the-ThreadContextClassLoader)
 			application.stPlugins["farcrysolrpro"].tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
 			
