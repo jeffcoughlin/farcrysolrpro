@@ -1,7 +1,9 @@
 <cfsetting enablecfoutputonly="true" />
 
+<cfset actionUrl = application.fapi.getLink(objectid = request.navid) />
+
 <cfoutput>
-	<form action="#application.fapi.getLink(objectid = request.navid)#" method="get">
+	<form action="#actionUrl#" method="get">
 		
 		<fieldset>
 			
@@ -34,6 +36,17 @@
 				<option value="rank"<cfif stobj.orderby eq 'rank'> selected="selected"</cfif>>Relevance</option>
 				<option value="date"<cfif stobj.orderby eq 'date'> selected="selected"</cfif>>Date</option>
 			</select>
+			
+			<!--- handle non friendly urls --->
+			<cfif actionUrl contains "?">
+				<cfset queryString = listLast(actionUrl,"?") />
+				<cfset queryString = listToArray(queryString,"&") />
+				<cfloop array="#queryString#" index="param">
+				<cfif listLen(param,"=") eq 2>
+				<input type="hidden" name="#listFirst(param,'=')#" value="#listLast(param,'=')#" />
+				</cfif>
+				</cfloop>
+			</cfif>
 			
 			<button type="submit">Search</button>
 			
