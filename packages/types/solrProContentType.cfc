@@ -81,7 +81,7 @@
 		
 		<!--- check for duplicates --->
 		<cfquery name="qDupeCheck" datasource="#application.dsn#">
-			select objectid from solrProContentType where contentType = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.stFieldPost.value)#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
+			select objectid from solrProContentType where lower(contentType) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(lcase(arguments.stFieldPost.value))#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
 		</cfquery>
 		
 		<cfif qDupeCheck.recordCount gt 0>
@@ -450,7 +450,7 @@
 			</cfif>
 			
 		</cfloop>
-		
+
 		<!--- grab any related rule records and index those as well (if we are indexing rules for this content type) --->
 		<cfif listLen(arguments.stContentType.lIndexedRules)>
 			<cfset var ruleContent = getRuleContent(objectid = arguments.objectid, lRuleTypes = arguments.stContentType.lIndexedRules) />
@@ -605,7 +605,7 @@
 		<cfargument name="contentType" type="string" required="true" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#" cachedwithin="#createTimeSpan(0,0,0,60)#">
-			select objectid from solrProContentType where contenttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentType#" /> 
+			select objectid from solrProContentType where lower(contenttype) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.contentType)#" /> 
 		</cfquery>
 		<cfif q.recordCount>
 			<cfreturn getData(q.objectid[1]) />
@@ -629,8 +629,8 @@
 				container c 
 				join container_aRules cxr on c.objectID = cxr.parentid
 			where 
-				cxr.typename in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lRuleTypes#" />) 
-				and c.label like <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#%" />
+				lower(cxr.typename) in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#lcase(arguments.lRuleTypes)#" />) 
+				and lower(c.label) like <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.objectid)#%" />
 		</cfquery>
 		
 		<cfloop query="qRulesToIndex">
@@ -668,7 +668,7 @@
 			select p.objectid 
 			from solrProIndexedProperty p 
 			join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data 
-			where p.fieldName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.fieldName#" />
+			where lower(p.fieldName) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.fieldName)#" />
 			and cxp.parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		<cfreturn q.recordCount />

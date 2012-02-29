@@ -38,7 +38,7 @@
 			1=1
 			
 			<cfif len(trim(arguments.queryString))>
-			and q like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#trim(arguments.queryString)#%" />
+			and lower(q) like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#trim(lcase(arguments.queryString))#%" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments,"startDate")>
@@ -75,7 +75,7 @@
 			numResults = 0
 			
 			<cfif len(trim(arguments.queryString))>
-			and q like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#trim(arguments.queryString)#%" />
+			and lower(q) like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#trim(lcase(arguments.queryString))#%" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments,"startDate")>

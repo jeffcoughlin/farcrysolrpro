@@ -47,7 +47,7 @@
 		<cfquery datasource="#application.dsn#" name="qFiltered">
 			SELECT objectid as [key]
 			FROM #url.filterTypename#
-			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#form.searchTypename#%" />
+			WHERE lower(label) like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(form.searchTypename)#%" />
 		</cfquery>
 	</cfif>
 			

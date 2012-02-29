@@ -37,7 +37,7 @@
 		
 		<!--- check for duplicates --->
 		<cfquery name="qDupeCheck" datasource="#application.dsn#">
-			select objectid from solrProElevation where searchString = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.stFieldPost.value)#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
+			select objectid from solrProElevation where lower(searchString) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(lcase(arguments.stFieldPost.value))#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
 		</cfquery>
 		
 		<cfif qDupeCheck.recordCount gt 0>

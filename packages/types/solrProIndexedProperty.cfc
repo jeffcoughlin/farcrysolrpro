@@ -12,7 +12,7 @@
 		<cfquery name="q" datasource="#application.dsn#">
 			select p.objectid from solrProIndexedProperty p join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data
 			where cxp.parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentTypeId#" />
-			and p.fieldName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.fieldName#" />
+			and lower(p.fieldName) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.fieldName)#" />
 		</cfquery>
 		
 		<cfif q.recordCount>
