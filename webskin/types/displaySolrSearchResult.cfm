@@ -6,7 +6,7 @@
 
 <!--- load the solr content type configuration information --->
 <cfparam name="stParam.oContentType" default="#application.fapi.getContentType('solrProContentType')#" />
-<cfset stContentType = stParam.oContentType.getByContentType(contentType = stobj.typename) />
+<cfset stContentType = stParam.oContentType.getByContentType(contentType = stobj["typename"]) />
 
 <cfparam name="stParam.highlighting" default="#structNew()#" />
 
@@ -119,7 +119,5 @@
         </div>
       </div>
     </cfoutput>
-
-
 
 <cfsetting enablecfoutputonly="false" />

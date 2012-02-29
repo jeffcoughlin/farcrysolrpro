@@ -13,7 +13,7 @@
 
 <cfset aObjectIds = [] />
 <cfloop array="#stParam.results#" index="i">
-	<cfset arrayAppend(aObjectIds, i.objectid) />
+	<cfset arrayAppend(aObjectIds, i["objectid"]) />
 </cfloop>
 
 <cfset addValues = { 'q' = stobj.q, 'operator' = stobj.operator, 'orderby' = stobj.orderby } />
@@ -32,15 +32,19 @@
 	submissionType="url" 
 	currentPage="#stParam.currentPage#" 
 	recordsPerPage="#stParam.rows#" 
-	pageLinks="#stParam.pageLinks#">
-	
-	<cfif structKeyExists(stParam.highlighting, stParam.results[stObject.currentRow].objectid)>
-		<cfset highlighting = stParam.highlighting[stParam.results[stObject.currentRow].objectid] />
+	pageLinks="#stParam.pageLinks#" r_stObject="st">
+	<cfif structKeyExists(stParam.highlighting, stParam.results[st.currentRow]["objectid"])>
+		<cfset highlighting = stParam.highlighting[stParam.results[st.currentRow]["objectid"]] />
 	<cfelse>
 		<cfset highlighting = {} />
 	</cfif>
 	
-	<skin:view webskin="displaySolrSearchResult" stObject="#stParam.results[stObject.currentRow]#" oContentType="#oContentType#" highlighting="#highlighting#" />
+	<cfset thisObj = {} />
+	<cfloop collection="#stParam.results[st.currentRow]#" item="f">
+		<cfset thisObj[f] = stParam.results[st.currentRow][lcase(f)] />
+	</cfloop>
+	
+	<skin:view webskin="displaySolrSearchResult" stObject="#thisObj#" oContentType="#oContentType#" highlighting="#highlighting#" />
 
 </skin:pagination>
 			
