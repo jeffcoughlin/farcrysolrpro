@@ -43,6 +43,8 @@ $j('input.datefield').datepicker();
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
+<cfoutput><h1>Search Log</h1></cfoutput>
+
 <ft:form name="SearchLog">
 	
 	<ft:fieldset legend="Filter">
