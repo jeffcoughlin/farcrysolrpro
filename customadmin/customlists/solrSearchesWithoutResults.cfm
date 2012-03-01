@@ -82,10 +82,7 @@ $j('input.datefield').datepicker();
 			<tr class="ui-widget-header">
 				<th>Query String</th>
 				<th>Content Types</th>
-				<th>Operator</th>
-				<th>Order By</th>
-				<th>Suggestion</th>
-				<th>Date</th>
+				<th>Times Searched</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -96,10 +93,7 @@ $j('input.datefield').datepicker();
 			<tr>
 				<td>#qResults.q[stObject.recordsetRow]#</td>
 				<td>#qResults.lContentTypes[stObject.recordsetRow]#</td>
-				<td>#qResults.operator[stObject.recordsetRow]#</td>
-				<td>#qResults.orderby[stObject.recordsetRow]#</td>
-				<td>#qResults.suggestion[stObject.recordsetRow]#</td>
-				<td><span title="#dateFormat(qResults.datetimecreated[stObject.recordsetRow],dateMask)# #timeFormat(qResults.datetimecreated[stObject.recordsetRow],timeMask)#">#application.fapi.prettyDate(qResults.datetimecreated[stObject.recordsetRow])#</span></td>
+				<td>#qResults.timesSearched[stObject.recordsetRow]#</td>
 			</tr>
 			</cfoutput>
 			

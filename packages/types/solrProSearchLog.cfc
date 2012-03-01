@@ -68,7 +68,7 @@
 		<cfset arguments.endDate = createDateTime(year(arguments.endDate),month(arguments.endDate),day(arguments.endDate),23,59,59) />
 		
 		<cfquery name="q" datasource="#application.dsn#">
-			select q, operator, lcontenttypes, orderby, numResults, suggestion, datetimecreated from solrProSearchLog
+			select q, lcontenttypes, count(q) as timesSearched from solrProSearchLog
 			
 			where 
 			
@@ -85,8 +85,10 @@
 			<cfif structKeyExists(arguments,"endDate")>
 			and datetimecreated <= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.endDate#" />
 			</cfif>
+
+			group by q, lcontenttypes
 			
-			order by datetimecreated desc
+			order by timesSearched desc, lcontentTypes, q
 
 		</cfquery>
 		
