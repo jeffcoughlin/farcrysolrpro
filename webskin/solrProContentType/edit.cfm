@@ -1110,7 +1110,7 @@
 				$j.ajax({
 					cache: false,
 					type: "GET",
-					url: "#application.fapi.getwebroot()#/?contentType=" + typename + "&view=indexedPropertyTable&objectid=" + objectid,
+					url: "#application.fapi.getwebroot()#/index.cfm?contentType=" + typename + "&view=indexedPropertyTable&objectid=" + objectid,
 					datatype: "html",
 					success: function(data, status, req) {
 						
