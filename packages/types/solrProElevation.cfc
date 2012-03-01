@@ -35,15 +35,23 @@
 			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="This is a required field.") />
 		</cfif>
 		
-		<!--- check for duplicates --->
+		<!--- check for duplicates in the database --->
 		<cfquery name="qDupeCheck" datasource="#application.dsn#">
 			select objectid from solrProElevation where lower(searchString) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(lcase(arguments.stFieldPost.value))#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
 		</cfquery>
-		
+
 		<cfif qDupeCheck.recordCount gt 0>
 			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="The search term #trim(arguments.stFieldPost.value)# has already been used.  Solr does not allow duplicate search terms.") />
 		</cfif>
 
+		<!--- check for duplicates in the XML (in cases where this plugin is used in a multi site setup) --->
+		<cfset var xmlFilePath = application.fapi.getConfig(key = "solrserver", name = "instanceDir") & "/data" & "/elevate.xml" />
+		<cfset var xml = xmlParse(fileRead(xmlFilePath)) />
+		<cfset var matches = xmlSearch(xml,"//elevate/query[@text='#xmlFormat(arguments.stFieldPost.value)#']") />
+		<cfif arrayLen(matches)>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="The search term #trim(arguments.stFieldPost.value)# has already been used.  Solr does not allow duplicate search terms.") />
+		</cfif>
+		
 		<cfreturn stResult />
 		
 	</cffunction>	
