@@ -92,7 +92,7 @@
 
 <!--- Get Abbreviated Link --->
 <cfsavecontent variable="abbrLink">
-  <cfoutput>http://#cgi.server_name##itemUri#</cfoutput>
+  <cfoutput>http://#cgi.server_name#<cfif cgi.server_port neq 80>:#cgi.server_port#</cfif>#itemUri#</cfoutput>
 </cfsavecontent>
 <cfif len(abbrLink) gt 83>
   <cfsavecontent variable="abbrLink">
