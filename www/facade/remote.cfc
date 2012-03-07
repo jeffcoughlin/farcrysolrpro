@@ -1,5 +1,7 @@
 <cfcomponent output="false">
-	
+
+	<cfset request.mode.ajax = true />
+
 	<cffunction name="getTextPropertiesByType" access="remote" output="false" returntype="array" returnformat="json">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="applicationName" type="string" required="true" />
