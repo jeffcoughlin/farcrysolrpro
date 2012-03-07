@@ -4,13 +4,16 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<!--- load the solr content type configuration information --->
+<!--- Attributes that should be passed in by the search page --->
+<cfparam name="stParam.highlighting" default="#structNew()#" />
 <cfparam name="stParam.oContentType" default="#application.fapi.getContentType('solrProContentType')#" />
+
+<!--- load the solr content type configuration information --->
 <cfset stContentType = stParam.oContentType.getByContentType(contentType = stobj["typename"]) />
 
-<cfparam name="stParam.highlighting" default="#structNew()#" />
-
+<!--- Variable declarations --->
 <cfset oCustomFunctions = application.stPlugins.farcrysolrpro.oCustomFunctions />
+<cfset variables.teaserLen = 450 />
 
 <!--- Trim all stObj fields --->
 <cfloop collection="#stObj#" item="i">
@@ -38,7 +41,7 @@
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />
 	</cfif>
 	<!--- abbreviate teaser --->
-	<cfset teaser = oCustomFunctions.abbreviate(teaser, 450) />
+	<cfset variables.teaser = oCustomFunctions.abbreviate(teaser, variables.teaserLen) />
 <cfelse>
 	<!--- use Solr generated summary --->
 	<cfset variables.teaser = "" />
@@ -113,7 +116,7 @@
           <p>#variables.teaser#<cfif right(variables.teaser,3) EQ "..."> <a href="#itemUri#" title="#variables.resultTitle#">more</a></cfif></p>
         </div>
         <div class="searchResultMeta">
-          <div class="searchResultLocation"><skin:buildLink objectid="#stObj.objectId#" linkText="#abbrLink#" /></div>
+          <div class="searchResultLocation"><a href="#itemUri#">#abbrLink#</a></div>
           <div class="searchResultFileType">#application.stCoapi[stobj.typename].displayName#</div>
           <div class="searchResultDate divider">#dateFormat(variables.resultDate, "mmm d, yyyy")#<!--- #timeFormat(variables.resultDate, "h:mm tt")# ---></div>
         </div>
