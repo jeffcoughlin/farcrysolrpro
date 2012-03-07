@@ -846,22 +846,26 @@
 				activateBoostDropdowns();
 				
 				// setup stored/not stored toggle
-				$j( ".fieldType div.buttonset" ).buttonset();
+				try {
+					$j( ".fieldType div.buttonset" ).buttonset();
+				} catch (err) {}
 				
 			}
 			
 			function activateFieldTypeRemoveButtons() {
-				
-				$j("button.btnRemoveFieldType").button({
-					text: false,
-					icons: { 
-						primary: "ui-icon-close" 
-					}
-				}).css({
-					"width": "1.4em",
-					"height": "1.4em",
-					"vertical-align": "middle"
-				});
+
+				try {
+					$j("button.btnRemoveFieldType").button({
+						text: false,
+						icons: {
+							primary: "ui-icon-close"
+						}
+					}).css({
+						"width": "1.4em",
+						"height": "1.4em",
+						"vertical-align": "middle"
+					});
+				} catch (err) {}
 				
 				$j("button.btnRemoveFieldType").click(function(event){
 					
@@ -977,17 +981,24 @@
 					loadResultFieldDropdowns();
 					
 				});
-				
-				$j("button.btnAddFieldType").button({
-					text: false,
-					icons: { 
-						primary: "ui-icon-plus" 
-					}
-				}).css({
-					"width": "1.4em",
-					"height": "1.4em",
-					"vertical-align": "middle"
-				});
+
+				try {
+					$j("button.btnAddFieldType").button({
+						text: false,
+						icons: {
+							primary: "ui-icon-plus"
+						}
+					}).css({
+						"width": "1.4em",
+						"height": "1.4em",
+						"vertical-align": "middle"
+					});
+				} catch (err) {
+					$j("button.btnAddFieldType").css({
+						"vertical-align": "middle"
+					});
+				}
+
 			}
 			
 			function handleBoostChange(target) {
@@ -1029,16 +1040,24 @@
 					options.sort(function (a,b) {
 						return a - b;
 					});
-					
-					$j(this).autocomplete({
-						source: options,
-						minLength: 0,
-						change: function (event) {
+
+					try {
+						$j(this).autocomplete({
+							source: options,
+							minLength: 0,
+							change: function (event) {
+								handleBoostChange(this);
+							},
+						}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
+							"vertical-align": "middle"
+						});
+					} catch (err) {
+						$j(this).change(function (event) {
 							handleBoostChange(this);
-						},
-					}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
-						"vertical-align": "middle"
-					});
+						}).addClass( "ui-widget ui-widget-content ui-corner-left" ).css({
+							"vertical-align": "middle"
+						});
+					}
 					
 				});
 				
@@ -1067,21 +1086,23 @@
 					input.change(function(event){
 						handleBoostChange(this);
 					});
-					
-					button.button({
-						text: false,
-						icons: {
-							primary: "ui-icon-triangle-1-s"
-						}
-					}).removeClass( "ui-corner-all" ).addClass( "ui-corner-right ui-button-icon" ).css({
-						"width": "1.4em",
-						"height": "1.4em",
-						"vertical-align": "middle"
-					}).click(function (event) {
+
+					try {
+						button.button({
+							text: false,
+							icons: {
+								primary: "ui-icon-triangle-1-s"
+							}
+						}).removeClass( "ui-corner-all" ).addClass( "ui-corner-right ui-button-icon" ).css({
+							"width": "1.4em",
+							"height": "1.4em",
+							"vertical-align": "middle"
+						}).click(function (event) {
 							openCombobox(input);
-					});
-					
-					input.after(button);
+						});
+
+						input.after(button);
+					} catch(err) {}
 					
 				});
 				
@@ -1090,15 +1111,17 @@
 			function openCombobox(target) {
 				
 				// if its open, close it
-				if (target.autocomplete("widget").is(":visible")) {
-					target.autocomplete("close");
-					return;
-				}
+				try {
+					if (target.autocomplete("widget").is(":visible")) {
+						target.autocomplete("close");
+						return;
+					}
 
-				// open the combobox
-				$j(this).blur();
-				target.autocomplete("search","");
-				target.focus();
+					// open the combobox
+					$j(this).blur();
+					target.autocomplete("search","");
+					target.focus();
+				} catch(err) {}
 				
 			}
 			
