@@ -66,7 +66,7 @@
 	</cfif>
 	<cfset stSearchResult = oSearchService.getSearchResults(objectid = stobj.objectid, typename = stobj.typename, page = form.page, rows = rows, bCleanString = bCleanString, bFilterBySite = true) />
 
-	<cfif stSearchResult.bSearchPerformed>
+	<cfif stSearchResult.bSearchPerformed is true and trim(url.q) neq "">
 		
 		<!--- display results --->
 		
@@ -96,6 +96,8 @@
 				rows="#rows#" />
 		</cfif>
 
+	<cfelse>
+		<skin:view stObject="#stobj#" webskin="displaySearchNoCriteria" stParam="#stSearchResult#" />
 	</cfif>
 	
 <cfoutput>
