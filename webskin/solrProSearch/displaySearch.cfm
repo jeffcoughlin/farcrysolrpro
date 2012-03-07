@@ -76,7 +76,7 @@
 			totalResults="#stSearchResult.totalResults#"
 			qTime="#stSearchResult.qTime#" />
 		
-		<cfif structKeyExists(stSearchResult,"spellcheck") and arrayLen(stSearchResult.spellcheck)>
+		<cfif structKeyExists(stSearchResult,"spellcheck") and arrayLen(stSearchResult.spellcheck) gt 0 and stSearchResult.totalResults lt suggestionThreshold>
 			<skin:view  
 				stObject="#stobj#" 
 				webskin="displaySearchSuggestions" 
