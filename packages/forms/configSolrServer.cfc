@@ -102,10 +102,14 @@
 		<cfset var instanceDir = arguments.config.instanceDir />
 		<cfset var uri = "http://" & host & ":" & port & "/solr/admin/cores?action=STATUS&core=" & collectionName />
 		<cfset var httpResult = "" />
-		<cfhttp url="#uri#" method="get" result="httpResult" />
-		<cfset var xml = xmlParse(httpResult.fileContent) />
-		<cfset var matches = xmlSearch(xml,"/response/lst[@name='status']/lst[@name='#collectionName#']/str[@name='name']") />
-		<cfreturn arrayLen(matches) />
+		<cfhttp url="#uri#" method="get" result="httpResult" timeout="4" />
+		<cfif httpResult.statusCode contains "200">
+			<cfset var xml = xmlParse(httpResult.fileContent) />
+			<cfset var matches = xmlSearch(xml,"/response/lst[@name='status']/lst[@name='#collectionName#']/str[@name='name']") />
+			<cfreturn arrayLen(matches) />
+		<cfelse>
+			<cfreturn false />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="setupSolrDefaults" access="public" output="false" returntype="void" hint="Resets the Solr.xml file, instance directory and collection configuration">
