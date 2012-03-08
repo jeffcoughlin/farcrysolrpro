@@ -148,7 +148,7 @@
 		<cfelse>
 			<!--- warn the user that the Solr server is not responding. --->
 			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-			<skin:bubble title='Solr Server not responding' sticky='true' message='http://#arguments.config.host#:#arguments.config.port##arguments.config.path#  Be sure that Solr is running and you have specified the configuration correctly.  You will need to update the configuration again.' />
+			<skin:bubble title='Solr Server not responding' sticky='true' message='http://#arguments.config.host#:#arguments.config.port# #arguments.config.path#<br />Be sure that Solr is running and you have specified the configuration correctly.  You will need to update the configuration again.' />
 		</cfif>
 		
 	</cffunction>
