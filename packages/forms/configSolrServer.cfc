@@ -102,7 +102,7 @@
 		<cfset var instanceDir = arguments.config.instanceDir />
 		<cfset var uri = "http://" & host & ":" & port & "/solr/admin/cores?action=STATUS&core=" & collectionName />
 		<cfset var httpResult = "" />
-		<cfhttp url="#uri#" method="get" result="httpResult" timeout="4" />
+		<cfhttp url="#uri#" method="get" result="httpResult" timeout="10" />
 		<cfif httpResult.statusCode contains "200">
 			<cfset var xml = xmlParse(httpResult.fileContent) />
 			<cfset var matches = xmlSearch(xml,"/response/lst[@name='status']/lst[@name='#collectionName#']/str[@name='name']") />
@@ -139,10 +139,16 @@
 		<cfset setupCollectionConfig(directory = instanceDir) />
 		
 		<!--- create/update the core --->
-		<cfif coreExists(config = arguments.config)>
-			<cfset application.fapi.getContentType("solrProContentType").reload(config = arguments.config) />
+		<cfif application.fapi.getContentType("solrProContentType").isSolrRunning(config = arguments.config)>
+			<cfif coreExists(config = arguments.config)>
+				<cfset application.fapi.getContentType("solrProContentType").reload(config = arguments.config) />
+			<cfelse>
+				<cfset createCore(config = arguments.config) />
+			</cfif>
 		<cfelse>
-			<cfset createCore(config = arguments.config) />
+			<!--- warn the user that the Solr server is not responding. --->
+			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+			<skin:bubble title='Solr Server not responding' sticky='true' message='http://#arguments.config.host#:#arguments.config.port##arguments.config.path#  Be sure that Solr is running and you have specified the configuration correctly.  You will need to update the configuration again.' />
 		</cfif>
 		
 	</cffunction>

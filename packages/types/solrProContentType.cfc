@@ -1093,24 +1093,20 @@
 	</cffunction>
 	
 	<cffunction name="isSolrRunning" access="public" returntype="boolean" output="false">
+		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
 		<cftry>
-			
-			<cfset var host = application.fapi.getConfig(key = 'solrserver', name = 'host') />
-			<cfset var port = application.fapi.getConfig(key = 'solrserver', name = 'port') />
-			<cfset var path = application.fapi.getConfig(key = 'solrserver', name = 'path') /> 
-			<cfset var uri = "http://" & host & ":" & port & path & "/admin/ping" />
+
+			<cfset var uri = "http://" & arguments.config.host & ":" & arguments.config.port & "/solr/admin/cores?action=STATUS" />
 			<cfset var httpResult = {} />
 			
 			<!--- check that Solr is responding --->
-			<cfhttp url="#uri#" method="get" result="httpResult" />
+			<cfhttp url="#uri#" method="get" result="httpResult" timeout="10" />
 			
 			<cfif not isXml(httpResult.FileContent)>
 				<cfreturn false />
 			<cfelse>
-				<cfset var xml = xmlParse(httpResult.fileContent) />
-				<cfset var matches = XmlSearch(xml,"//response/str[@name='status']") />
-				<cfif arrayLen(matches)>
-					<cfreturn matches[1].xmlText eq "OK" />
+				<cfif arrayLen(XmlSearch(xmlParse(httpResult.fileContent),"//response/lst[@name='status']"))>
+					<cfreturn true />
 				<cfelse>
 					<cfreturn false />
 				</cfif>
