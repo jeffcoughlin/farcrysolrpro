@@ -96,6 +96,10 @@
 				<cfset bContinueSave = false />
 			</cfif>
 		</cfif>
+
+		<!--- document size fields --->
+		<cfparam name="form.lDocumentSizeFields" default="" />
+		<cfset stProperties["lDocumentSizeFields"] = form.lDocumentSizeFields />
 		
 	</ft:processFormObjects>
 		
@@ -235,6 +239,12 @@
 		<ft:field label="Result Image" hint="The field that will be used for the search result teaser image.  If you have an image you would like to display in the search results choose the Solr field that will contain the image's path.  It is recommended you use a ""string"" field type.  You must store this value in Solr's index.">
 			<cfoutput>
 				<select name="resultImageField" id="resultImageField"></select>
+			</cfoutput>
+		</ft:field>
+
+		<ft:field label="Document Size" bMultiField="true" hint="The fields that will be used for to build the calculated document size.  Documents and Image properties will use the file size, string fields will use the length of the string.">
+			<cfoutput>
+				<div id="lDocumentSizeFields"></div>
 			</cfoutput>
 		</ft:field>
 		
@@ -510,17 +520,17 @@
 				float: left;
 				margin-top: 0.2em;
 			}
-			##lSummaryFields {
+			##lSummaryFields, ##lDocumentSizeFields {
 				margin: 10px 0;
 				min-height: 100%;
 				height: auto;
 			}
-			##lSummaryFields label {
+			##lSummaryFields label, ##lDocumentSizeFields label {
 				float: left;
 				width: 185px;
 				margin: 2px 0;
 			}
-			##lSummaryFields label input {
+			##lSummaryFields label input, ##lDocumentSizeFields label input {
 				margin-right: 5px;
 			}
 			code,
@@ -603,14 +613,18 @@
 					// load the HTML for the table of indexed properties
 					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
 					// load the FarCry fields for the lSummaryFields list box
-					loadContentTypeFields($j('###generalPrefix#contentType').val());
+					loadContentTypeFields($j('###generalPrefix#contentType').val(),"lSummaryFields","lSummaryFields",("#lcase(stobj.lSummaryFields)#").split(","));
+					// load the FarCry fields for the lDocumentSizeFields list box
+					loadContentTypeFields($j('###generalPrefix#contentType').val(),"lDocumentSizeFields","lDocumentSizeFields",("#lcase(stobj.lDocumentSizeFields)#").split(","));
 				}
 				
 				$j('###generalPrefix#contentType').change(function(event){
 					// load the HTML for the table of indexed properties
-					loadIndexedPropertyHTML("#stobj.objectid#",$j('###generalPrefix#contentType').val());
+					loadIndexedPropertyHTML("#stobj.objectid#",$j(this).val());
 					// load the FarCry fields for the lSummaryFields list box
-					loadContentTypeFields($j('###generalPrefix#contentType').val());
+					loadContentTypeFields($j(this).val(),"lSummaryFields","lSummaryFields",("#lcase(stobj.lSummaryFields)#").split(","));
+					// load the FarCry fields for the lDocumentSizeFields list box
+					loadContentTypeFields($j(this).val(),"lDocumentSizeFields","lDocumentSizeFields",("#lcase(stobj.lDocumentSizeFields)#").split(","));
 				});
 				
 				<!--- hide the "summary fields" checkboxes if we have a specific summary field --->
@@ -685,19 +699,19 @@
 			}
 			
 			function buildResultSummaryDropdownOptions() {
-				
+
 				var selectedValue = '#stobj.resultSummaryField#';
 				var dropdown = $j("##resultSummaryField");
 				var options = buildResultFieldOptions(selectedValue);
-				
+
 				// add the "none" option
 				options.push(createOptionTag("","-- Use Solr Generated Summary --",false));
 				options.sort();
-				
+
 				addOptionsToDropdown(dropdown, options);
 
 			}
-			
+
 			function buildResultImageDropdownOptions() {
 				
 				var selectedValue = '#stobj.resultImageField#';
@@ -1156,23 +1170,21 @@
 				});
 				
 			}
-			function loadContentTypeFields(contentType) {
+
+			function loadContentTypeFields(contentType, targetId, name, currentValueArray) {
 				
-				var lSummaryFields = $j("##lSummaryFields");
-				
-				lSummaryFields.empty();
+				var lFields = $j("##" + targetId);
+				lFields.empty();
 				
 				$j.ajax({
 					url: "#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/facade/remote.cfc?method=getTextPropertiesByType&applicationName=#application.applicationName#&returnformat=json&typename=" + contentType,
 					type: "GET",
 					datatype: "json",
 					success: function(data,status,req){
-						
-						var currentValueArray = ("#lcase(stobj.lSummaryFields)#").split(",");
-						
+
 						for (var x = 0; x < data.length; x++) {
 							
-							var html = '<label><input type="checkbox" name="lSummaryFields" value="' + data[x].toLowerCase() + '"';
+							var html = '<label><input type="checkbox" name="' + name + '" value="' + data[x].toLowerCase() + '"';
 							
 							if (currentValueArray.indexOf(data[x].toLowerCase()) > -1) {
 								html = html + ' checked="checked"';
@@ -1180,7 +1192,7 @@
 							
 							html = html + ' />' + data[x] + '</label>';
 							
-							lSummaryFields.append(html);
+							lFields.append(html);
 						}
 						
 					},

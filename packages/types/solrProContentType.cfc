@@ -7,6 +7,7 @@
 	<cfproperty ftSeq="140" ftFieldset="Solr Content Type" ftLabel="Result Summary" name="resultSummaryField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result summary." />
 	<cfproperty ftSeq="142" ftFieldset="Solr Content Type" ftLabel="Summary Fields" name="lSummaryFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to build the summary" />
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Result Image" name="resultImageField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result teaser image." />
+	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Document Size Fields" name="lDocumentSizeFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to calculate the document size" />
 	
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Site Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
 	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Built to Date" name="builtToDate" ftType="datetime" type="date" required="false" ftHint="For system use.  Updated by the system.  Used as a reference date of the last indexed item.  Used for batching when indexing items.  Default is blank (no date)." />
@@ -493,6 +494,36 @@
 			value = javacast("boolean",stContentType.bEnableSearch),
 			farcryField = ""
 		}) />
+
+		<!--- calculate the document size (fcsp_documentsize) --->
+		<cfset var docSize = 0 />
+		<cfif len(trim(arguments.stContentType.lDocumentSizeFields))>
+			<cfset var docSizeField = "" />
+			<cfloop list="#arguments.stContentType.lDocumentSizeFields#" index="docSizeField">
+				<cfset var docSizeFtType = getFtTypeForProperty(typename = stRecord.typename, propertyName = docSizeField) />
+				<cfswitch expression="#docSizeFtType#">
+					<cfcase value="file,image">
+						<!--- get the size of the file --->
+						<cfif docSizeFtType eq "file">
+							<cfset var fp = expandPath(application.fapi.getFileWebroot() & stRecord[docSizeField]) />
+						<cfelse>
+							<cfset var fp = expandPath(application.fapi.getImageWebroot() & stRecord[docSizeField]) />
+						</cfif>
+						<cfif fileExists(fp)>
+							<cfset docSize+= createObject("java","java.io.File").init(fp).length() />
+						</cfif>
+					</cfcase>
+					<cfdefaultcase>
+						<cfset docSize+= len(stRecord[docSizeField]) />
+					</cfdefaultcase>
+				</cfswitch>
+			</cfloop>
+		</cfif>
+		<cfset arrayAppend(doc, {
+			name = "fcsp_documentsize",
+			value = javacast("int",docSize),
+			farcryField = ""
+		}) />
 		
 		<!--- add core boost values to document --->
 		<cfset var i = "" />
@@ -785,7 +816,7 @@
 		
 		<cfif isStruct(properties)>
 			<cfloop collection="#properties#" item="prop">
-				<cfif listFindNoCase("nstring,string,longchar",properties[prop].metadata.type)>
+				<cfif listFindNoCase("string,nstring,varchar,longchar,text,variablename,color,email",properties[prop].metadata.type)>
 					<cfset l = listAppend(l, prop) />
 				</cfif>
 			</cfloop>
@@ -1023,7 +1054,7 @@
 	</cffunction>
 	
 	<!--- helper --->
-	
+
 	<cffunction name="parseOpenXmlFile" access="private" output="false" returntype="string">
 		<cfargument name="filePath" required="true" type="string" />
 		

@@ -227,7 +227,10 @@
 		<field name="fcsp_spellphrase" type="textspellphrase" indexed="true" stored="false" required="false" multiValued="true" />
 		
 		<field name="fcsp_highlight" type="text" indexed="false" stored="true" required="false" multiValued="true" />
-		
+
+        <!-- field to store document size -->
+        <field name="fcsp_documentsize" type="long" indexed="true" stored="true" required="false" />
+
 		<!-- field to store the site this record came from. (used when multiple sites share a common solr core) -->
 		<field name="fcsp_sitename" type="text" indexed="true" stored="true" required="true" multiValued="false" />
 		<field name="fcsp_benablesearch" type="boolean" indexed="true" stored="true" required="true" multiValued="false" />
