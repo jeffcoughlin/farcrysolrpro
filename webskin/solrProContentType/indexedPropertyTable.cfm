@@ -4,6 +4,7 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cfset request.mode.ajax = true />
 <cfset request.fc.bShowTray = false />
 <cfset oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 
