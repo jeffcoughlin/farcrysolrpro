@@ -102,7 +102,6 @@
     <cfoutput>http://#listFirst(cgi.server_name,'.')#<cfif listLen(cgi.server_name,'.') gte 2>.#listGetAt(cgi.server_name,2,'.')#</cfif>...#right(abbrLink, 60)#</cfoutput>
   </cfsavecontent>
 </cfif>
-
     <cfoutput>
       <div class="searchResult">
         <div class="searchResultTitle">
@@ -117,8 +116,9 @@
         </div>
         <div class="searchResultMeta">
           <div class="searchResultLocation"><a href="#itemUri#">#abbrLink#</a></div>
-          <div class="searchResultFileType">#application.stCoapi[stobj.typename].displayName#</div>
+          <div class="searchResultFileType">#application.stCoapi[stObj.typename].displayName#</div>
           <div class="searchResultDate divider">#dateFormat(variables.resultDate, "mmm d, yyyy")#<!--- #timeFormat(variables.resultDate, "h:mm tt")# ---></div>
+          <cfif stObj.fcsp_documentsize gt 0><div class="searchResultSize divider">#oCustomFunctions.byteConvert(stObj.fcsp_documentsize)#</div></cfif>
         </div>
       </div>
     </cfoutput>

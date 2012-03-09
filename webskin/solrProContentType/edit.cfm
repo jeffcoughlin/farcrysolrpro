@@ -242,7 +242,7 @@
 			</cfoutput>
 		</ft:field>
 
-		<ft:field label="Document Size" bMultiField="true" hint="The fields that will be used for to build the calculated document size.  Documents and Image properties will use the file size, string fields will use the length of the string.">
+		<ft:field label="Document Size" bMultiField="true" hint="The fields that will be used to build the calculated document size.<br />&##x2022 String fields will use the length of the string.<br />&##x2022 File and image fields will parse the filesize of the corresponding file.">
 			<cfoutput>
 				<div id="lDocumentSizeFields"></div>
 			</cfoutput>

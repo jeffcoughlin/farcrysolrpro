@@ -59,21 +59,21 @@
   list-style-type: none;
 }
 ##searchPage div.searchResult div.searchResultFileType,
-##searchPage div.searchResult div.searchResultDate {
+##searchPage div.searchResult div.divider {
   display: block;
   font-size: 1.1em;
   padding: 0;
-  margin: 0;
+  margin: 0.2em 0 0;
   color: ##666666;
 }
 ##searchPage div.searchResult div.searchResultFileType {
   float: left;
-  margin-right: 10px;
 }
 ##searchPage div.searchResult div.divider {
   float: left;
-  background: transparent url(#application.fapi.getConfig(key = 'solrserver',name = 'pluginWebRoot',default='/farcrysolrpro')#/css/images/listDivider.png) no-repeat scroll 0 0;
-  padding-left: 10px; 
+  background: url(#application.fapi.getConfig(key = 'solrserver',name = 'pluginWebRoot',default='/farcrysolrpro')#/css/images/listDivider.png) no-repeat scroll 0 0.3em transparent;
+  margin-left: 10px;
+  padding-left: 10px;
 }
 ##searchPage div.searchResultContent {
   margin-top: -10px;

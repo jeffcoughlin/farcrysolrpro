@@ -185,4 +185,64 @@
 
 	</cffunction>
 
+	<cffunction name="byteConvert" access="public" output="false" returnType="string" hint="Pass in a value in bytes, and this function converts it to a human-readable format of bytes, KB, MB, or GB.">
+		<cfargument name="size" type="numeric" required="true" />
+		<cfargument name="unit" type="string" required="false" default="" />
+
+		<cfscript>
+			var result = 0;
+			var newunit = "";
+			var num = arguments.size;
+
+			// Set unit variables for convenience
+			var bytes = 1; //byte
+			var kb = 1024; //Kilobyte
+			var mb = 1024^2; //Megabyte
+			var gb = 1024^3; //Gigabyte
+			var tb = 1024^4; //Terabyte
+			var pb = 1024^5; //Petabyte
+			var eb = 1024^6; //Exabyte
+			var zb = 1024^7; //Zettabyte
+
+			// Check to see if unit was passed in, and if it is valid
+			if (arguments.unit neq '' AND "bytes,KB,MB,GB" contains arguments.unit) {
+				newunit = arguments.unit;
+			// If not, set unit depending on the size of num
+			} else {
+				if (num lt kb){
+					newunit ="bytes";
+				}else if (num lt mb){
+					newunit ="KB";
+				}else if (num lt gb){
+					newunit ="MB";
+				}else if (num lt tb){
+					newunit ="GB";
+				}else if (num lt pb){
+					newunit ="TB";
+				}else if (num lt eb){
+					newunit ="PB";
+				}else if (num lt zb){
+					newunit ="EB";
+				}else{
+					newunit ="ZB";
+				}
+			}
+
+			// Find the result by dividing num by the number represented by the unit
+			result = num / evaluate(newunit);
+
+			// Format the result
+			if (result lt 10){
+				result = NumberFormat(Round(result * 100) / 100,"0.00");
+			}else if (result lt 100){
+				result = NumberFormat(Round(result * 10) / 10,"90.0");
+			}else{
+				result = Round(result);
+			}
+		</cfscript>
+
+		<!--- Concatenate result and unit together for the return value --->
+		<cfreturn (result & " " & newunit) />
+	</cffunction>
+
 </cfcomponent>
