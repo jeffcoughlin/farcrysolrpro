@@ -23,7 +23,7 @@
 	</cffunction>
 	
 	<cffunction name="getSearchResults" access="public" output="false" returntype="struct" hint="Returns a structure containing extensive information of the search results">
-		<cfargument name="objectid" required="true" hint="The objectid of the farsolrSearch object containing the details of the search" />
+		<cfargument name="objectid" required="true" hint="The objectid of the solrProSearch object containing the details of the search" />
 		<cfargument name="typename" required="false" default="solrProSearch" hint="The solr search form type used to control the search." />
 		<cfargument name="bSpellcheck" required="false" default="true" hint="enable/disable spellchecker" />
 		<cfargument name="rows" required="false" default="10" />
