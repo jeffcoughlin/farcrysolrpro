@@ -20,6 +20,8 @@
 <cfif len(supportedFarCryVersions)>
 	<!--- Remove trailing comma --->
 	<cfset supportedFarCryVersions = left(supportedFarCryVersions, len(supportedFarCryVersions)-1) />
+	<!--- Replace dashes with periods --->
+	<cfset supportedFarCryVersions = replace(supportedFarCryVersions, "-", ".", "all") />
 </cfif>
 
 <admin:header title="Solr Pro: About" />
@@ -100,6 +102,20 @@
 			<ul>
 				<li>Now search result summary/teasers have the ability to highlight search terms in your search results exactly where they were found.</li>
 				<li>Plus, if the term(s) were found in multiple spots, we show them together in the same search result summary/teaser separated by ellipses.</li>
+			</ul>
+		</li>
+		<li>Document Size
+			<ul>
+				<li>Optionally return the document size with each result.
+					<ul>
+						<li>You can choose which fields total up the size (options are text-based fields, files, and images).
+							<ul>
+								<li>For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).</li>
+								<li>Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you’re indexing refers to a file (like a PDF).</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
 			</ul>
 		</li>
 		<li>Custom search forms

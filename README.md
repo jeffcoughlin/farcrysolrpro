@@ -1,6 +1,6 @@
 # FarCry Solr Pro Plugin
 
-The FarCry Solr Pro plugin lets you use the power of of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.
+The FarCry Solr Pro plugin lets you use the power of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.
 
 FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unique record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.
 
@@ -42,6 +42,11 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
 * **Search result highlighting**
     * Now search result summary/teasers have the ability to highlight search terms in your search results exactly where they were found.
     * Plus, if the term(s) were found in multiple spots, we show them together in the same search result summary/teaser separated by ellipses.
+* ** Document Size **
+    * Optionally return the document size with each result.
+        * You can choose which fields total up the size (options are text-based fields, files, and images).
+            * For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).
+            * Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you’re indexing refers to a file (like a PDF).
 * **Custom search forms**
     * Having a general site search is great, but what about another search form on the site that searches something like products? Because we can index and store as many fields as we like now, we can also search by those fields just like you would any other database. So, if you have a product search page and you wanted your visitors to search by 15 different filter options, you can now create a custom search form and use Solr to search all of those fields. The end result: A fast user experience even on some of the most complicated search requests.
 * **Filters**
