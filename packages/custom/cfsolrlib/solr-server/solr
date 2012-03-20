@@ -10,8 +10,9 @@
 XMS="256M"
 XMX="512M"
 
-# Folder location for solr-server (do not end in a slash)
-SOLRDIR="."
+# Folder location for solr-server
+#SOLRDIR="/bin/solr-server"
+SOLRDIR=$(dirname $0)
 
 # Set unique port and stop key
 DTSOPPORT="8079"
@@ -22,11 +23,11 @@ DSTOPKEY="farcrysolrpro"
 
 # methods
 solrstart() {
-	cd $(dirname $0)
+	cd $SOLRDIR
 	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -Xms$XMS  -Xmx$XMX -jar $SOLRDIR/start.jar
 }
 solrstop() {
-	cd $(dirname $0)
+	cd $SOLRDIR
 	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -jar $SOLRDIR/start.jar --stop
 }
 
