@@ -1,0 +1,69 @@
+#!/bin/bash
+# description: starts, stops, and restarts the Solr server for the FarCry Solr Pro plugin
+# author: Jeff Coughlin (www.jeffcoughlin.com), Sean Coyne (www.n42designs.com)
+
+# Suggestions: 
+#  1. ./solr start|stop|restart
+#  2. Edit XMS and XMX at the top of this file to set the min and max memory.  It's suggested to give them the same memory settings in production.
+
+# Set min and max memory
+XMS="256M"
+XMX="512M"
+
+# Folder location for solr-server (do not end in a slash)
+SOLRDIR="."
+
+# Set unique port and stop key
+DTSOPPORT="8079"
+DSTOPKEY="farcrysolrpro"
+
+###
+# Edit settings/variables above this line as needed
+
+# methods
+solrstart() {
+	cd $(dirname $0)
+	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -Xms$XMS  -Xmx$XMX -jar $SOLRDIR/start.jar
+}
+solrstop() {
+	cd $(dirname $0)
+	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -jar $SOLRDIR/start.jar --stop
+}
+
+# Run code
+echo ""
+echo "======================="
+echo "FarCry Solr Pro plugin"
+echo "======================="
+ARG=$1
+[ -z "$ARG" ] && ARG=usage
+
+case $ARG in
+	start)
+		echo "Starting Solr Server..."
+		echo ""
+		solrstart
+	;;
+	stop)
+		echo "Stopping Solr Server..."
+		echo ""
+		solrstop
+	;;
+	restart)
+		echo "Restarting Solr Server..."
+		echo ""
+		solrstop
+		sleep 2
+		solrstart
+	;;
+	*)
+		echo ""
+		echo "Usage:$0 (start|stop|restart)"
+		echo "(default: start)"
+		echo ""
+		solrstart
+	;;
+
+esac
+
+exit 0
