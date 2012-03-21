@@ -59,7 +59,7 @@ case $ARG in
 	;;
 	*)
 		echo ""
-		echo "Usage:$0 (start|stop|restart)"
+		echo "Usage:$SOLRDIR (start|stop|restart)"
 		echo "(default: start)"
 		echo ""
 		solrstart
