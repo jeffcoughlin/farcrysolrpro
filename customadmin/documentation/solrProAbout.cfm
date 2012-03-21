@@ -7,22 +7,12 @@
 
 <cfset oManifest = application.stPlugins.farcrysolrpro.oManifest />
 
-<cfsavecontent variable="supportedFarCryVersions">
-	<cfoutput>	
-		<cfloop collection="#oManifest.stSupportedCores#" item="core">
-			<cfloop collection="#oManifest.stSupportedCores[core]#" item="patchversion">
-				#core#-#oManifest.stSupportedCores[core][patchversion]#,
-			</cfloop>
-		</cfloop>
-	</cfoutput> 
-</cfsavecontent>
-<cfset supportedFarCryVersions = trim(supportedFarCryVersions) />
-<cfif len(supportedFarCryVersions)>
-	<!--- Remove trailing comma --->
-	<cfset supportedFarCryVersions = left(supportedFarCryVersions, len(supportedFarCryVersions)-1) />
-	<!--- Replace dashes with periods --->
-	<cfset supportedFarCryVersions = replace(supportedFarCryVersions, "-", ".", "all") />
-</cfif>
+<cfset supportedFarCryVersions = "" />
+<cfloop collection="#oManifest.stSupportedCores#" item="core">
+	<cfloop collection="#oManifest.stSupportedCores[core]#" item="patchversion">
+		<cfset supportedFarCryVersions = listPrepend(supportedFarCryVersions, replace(" #core#.#oManifest.stSupportedCores[core][patchversion]#", "-", ".", "all")) />
+	</cfloop>
+</cfloop>
 
 <admin:header title="Solr Pro: About" />
 

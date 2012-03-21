@@ -1,3 +1,5 @@
+![FarCry Solr Pro](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/logo-farcrySolrPro-admin.png "FarCry Solr Pro")
+
 # FarCry Solr Pro Plugin
 
 The FarCry Solr Pro plugin lets you use the power of Lucene (through Solr) to index and search your site.  It goes above and beyond ColdFusion's native implementation of Solr.
@@ -42,7 +44,7 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
 * **Search result highlighting**
     * Now search result summary/teasers have the ability to highlight search terms in your search results exactly where they were found.
     * Plus, if the term(s) were found in multiple spots, we show them together in the same search result summary/teaser separated by ellipses.
-* ** Document Size **
+* **Document Size**
     * Optionally return the document size with each result.
         * You can choose which fields total up the size (options are text-based fields, files, and images).
             * For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).
@@ -62,9 +64,10 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
     * **Search log:** Shows what people are searching for, how many results they received, and the suggestion they were given (if relevant).
     * **Searches without results:** Shows what people were searching for when they received no results.  This is helpful to see if people are searching for things on your site that do exist, but for some reason they're not finding what they want (maybe they are searching for terms that don't exist on your site, but refer to the same content).  Using things like "synonyms" can help here, as well as adding the actual terms to your content itself.
     
-## Requirements
+## Minimum Requirements
 
-* ColdFusion 9+
-* FarCry 6.0.18+ or 6.1.3+
-* Solr 3.5+
+* ColdFusion 9
+* FarCry 6.2, 6.1.4, 6.0.19
+* Solr 3.5
     * Solr 3.5 is optionally included in this plugin.
+    * To date, we have only tested this on Solr 3.5
