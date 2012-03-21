@@ -24,7 +24,7 @@ DSTOPKEY="farcrysolrpro"
 # methods
 solrstart() {
 	cd $SOLRDIR
-	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -Xms$XMS  -Xmx$XMX -jar $SOLRDIR/start.jar
+	java -Dsolr.solr.home=multicore -DSTOP.PORT=$DTSOPPORT -DSTOP.KEY=$DSTOPKEY -Xms$XMS -Xmx$XMX -jar $SOLRDIR/start.jar
 }
 solrstop() {
 	cd $SOLRDIR
