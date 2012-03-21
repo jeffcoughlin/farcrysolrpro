@@ -3,7 +3,7 @@
 	<cfset this.name = "FarCry Solr Pro" />
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
-	<cfset this.version = "0.0.2" />
+	<cfset this.version = "0.0.3" />
 	<cfset this.buildState = "private beta" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
