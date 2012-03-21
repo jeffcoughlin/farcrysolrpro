@@ -383,6 +383,14 @@
 				<h5>Result Image</h5>
 				<p>Out-of-the-box the plugin will reference whatever field you set here to output a teaser image (if available) with your search result teaser.  Using the webskin code samples provided with the plugin, you can use a string-based field here (that references the url path to the image) or a UUID to a dmImage object which will output the thumbnail image in the search result teaser.  We didn't bother to provide sample code to lookup up UUIDs for other unknown objects because we wouldn't know what custom image fieldname you might have to output, so it is always suggested that you create your own <var>displaySolrSearchResult.cfm</var> for your type(s) in your project and use the provided sample <var>displaySolrSearchResult.cfm</var> file as an example template.</p>
 
+				<h5>Document Size</h5>
+				<p>Optionally return the document size with each result.</p>
+				<p>You can choose which fields total up the size (options are text-based fields, files, and images):</p>
+				<ul>
+					<li>For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).</li>
+					<li>Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you're indexing refers to a file (like a PDF).</li>
+				</ul>
+
 				<h4>Related Rules</h4>
 				<h5>Indexing Rule Data</h5>
 				<p>Static content in rules can be directly related to the parent content object.  Example: If you have a rule called "textarea" where you decided to have more content to appear in the right pane, you can now index that data and have it related to the page it lives on. So when someone searches for a string that matches that rule in the right pane, it will return the parent page in the search results.</p>
@@ -395,7 +403,7 @@
 				<h5>Built to Date</h5>
 				<p>Although you have the option to modify this field, you will likely never need to.  This is used by the plugin when indexing a content type.  Because the plugin needs to query the content type in FarCry, it uses this to return data where the dateTimeLastUpdated field is newer than the date shown here.  This is useful for performance. When indexing a content type, the plugin will do so in batches (the default batch size is 1000 and is configurable in the plugin settings).</p>
 				<h5>Index on Save</h5>
-				<p>The second you save a published document it is instantly available to site searches.  Due to necessary changes in FarCry core, this feature is only supported on FarCry 6.2+.  However if using FarCry 6.0.18+ and 6.1.3+, you can manually add the ability to your copy of FarCry core (see the <a href="https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/Commit_on_Save_Support_with_Older_Versions_of_FarCry" target="_new">wiki</a> for more details).</p>
+				<p>The second you save a published document it is instantly available to site searches.</p>
 				<p>Note: For content types that use versioning, draft items will never be indexed.</p>
 			</div>
 		</div>
