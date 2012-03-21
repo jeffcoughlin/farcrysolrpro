@@ -1,48 +1,87 @@
 <cfcomponent output="false">
 
+	<cffunction name="getPageIdForContainer" access="private" output="false" returntype="string">
+		<cfargument name="containerId" type="uuid" required="true" />
+		<cfset var stContainer = application.fapi.getContentType("container").getData(arguments.containerId) />
+		<cfset var pageId = left(stContainer.label,35) />
+		<cfif isValid("uuid",pageId)>
+			<cfreturn pageId />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="isIndexable" access="private" output="false" returntype="boolean">
+		<cfargument name="stObject" type="struct" required="false" />
+		<cfset var oType = application.fapi.getContentType(arguments.stObject.typename) />
+		<cfif structKeyExists(oType,"contentToIndex")>
+			<!--- make sure this record is in the indexable records reported by the content type --->
+			<cfset var qIndexableRecords = oType.contentToIndex(objectid = arguments.stObject.objectId) />
+			<cfif qIndexableRecords.recordCount>
+				<cfif listFindNoCase(valueList(qIndexableRecords.objectid),arguments.stObject.objectId)>
+					<cfreturn true />
+				</cfif>
+			</cfif>
+		<cfelse>
+			<!--- make sure it is "approved" --->
+			<cfif (structKeyExists(arguments.stObject,"status") and arguments.stObject.status eq "approved") or (not structKeyExists(arguments.stObject,"status"))>
+				<cfreturn true />
+			</cfif>
+		</cfif>
+		<!--- if we get this far, its not indexable --->
+		<cfreturn false />
+	</cffunction>
+
 	<cffunction name="afterSave" access="public" output="false" returntype="struct">
 		<cfargument name="stProperties" type="struct" required="true" />
 
 		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset var stRecordToIndex = {} />
+		<cfset var stContentType = {} />
 
 		<!--- handle rules and types separately --->
 		<cfif left(stProperties.typename,4) eq "rule">
 			<!--- determine containing page --->
-			<cfset var oRule = application.fapi.getContentType(stProperties.typename) />
-			<cfset var containerId = oRule.getRuleContainerID(objectid = stProperties.objectid) />
+			<cfset var containerId = application.fapi.getContentType(stProperties.typename).getRuleContainerID(objectid = stProperties.objectid) />
 			<cfif isValid("uuid",containerId)>
-				<cfset var stContainer = application.fapi.getContentType("container").getData(containerId) />
-				<cfset var pageId = left(stContainer.label,35) />
+				<cfset var pageId = getPageIdForContainer(containerId) />
 				<!--- determine if this page is being indexed --->
 				<cfif isValid("uuid",pageId)>
 					<cfset var pageType = application.fapi.findType(pageId) />
-					<cfset var stContentType = oContentType.getByContentType(pageType) />
+					<cfset stContentType = oContentType.getByContentType(pageType) />
 					<!--- make sure this content type is being indexed, has the index on save flag, and is indexing this rule --->
 					<cfif structCount(stContentType) and stContentType.bIndexOnSave is true and listFindNoCase(stContentType.lIndexedRules,stProperties.typename)>
-						<cfset oContentType.addRecordToIndex(objectid = pageId) />
+						<!--- get the page --->
+						<cfset stRecordToindex = application.fapi.getContentType(pageType).getData(pageId) />
 					</cfif>
 				</cfif>
 			</cfif>
 		<cfelseif stProperties.typename eq "container">
 			<!--- determine the containing page --->
-			<cfset var stContainer = application.fapi.getContentType("container").getData(stProperties.objectid) />
-			<cfset var pageId = left(stContainer.label,35) />
+			<cfset var pageId = getPageIdForContainer(stProperties.objectId) />
 			<!--- determine if this page is being indexed --->
 			<cfif isValid("uuid",pageId)>
 				<cfset var pageType = application.fapi.findType(pageId) />
-				<cfset var stContentType = oContentType.getByContentType(pageType) />
+				<cfset stContentType = oContentType.getByContentType(pageType) />
 				<!--- make sure this content type is being indexed, has the index on save flag --->
 				<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-					<cfset oContentType.addRecordToIndex(objectid = pageId) />
+					<!--- get the page --->
+					<cfset stRecordToindex = application.fapi.getContentType(pageType).getData(pageId) />
 				</cfif>
 			</cfif>
 		<cfelse>
-			<cfset var stContentType = oContentType.getByContentType(stProperties.typename) />
+			<cfset stContentType = oContentType.getByContentType(stProperties.typename) />
 			<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-				<cfif (structKeyExists(stProperties,"status") and stProperties.status eq "approved") or (not structKeyExists(stProperties,"status"))>
-					<cfset oContentType.addRecordToIndex(objectid = stProperties.objectid) />
-				</cfif>
+				<cfset stRecordToindex = stProperties />
 			</cfif>
+		</cfif>
+
+		<!--- if we have a record to index, check that it is "indexable" and index it --->
+		<cfif structCount(stRecordToIndex) and isIndexable(stObject = stRecordToIndex)>
+			<cfset oContentType.addRecordToIndex(objectid = stRecordToIndex.objectId, typename = stRecordToIndex.typename, stContentType = stContentType, bCommit = true) />
+		<cfelseif structCount(stRecordToIndex)>
+			<!--- this record is NOT indexable, delete it from the index --->
+			<cfset oContentType.deleteById(id = stRecordToIndex.objectid, bCommit = true) />
 		</cfif>
 
 		<cfreturn arguments.stProperties />
