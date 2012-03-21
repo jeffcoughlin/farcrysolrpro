@@ -37,10 +37,10 @@
 				</cfif>
 			</cfif>
 		<cfelse>
-			<cfset var stContentType = application.fapi.getContentType("solrProContentType").getByContentType(stProperties.typename) />
+			<cfset var stContentType = oContentType.getByContentType(stProperties.typename) />
 			<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
 				<cfif (structKeyExists(stProperties,"status") and stProperties.status eq "approved") or (not structKeyExists(stProperties,"status"))>
-					<cfset application.fapi.getContentType("solrProContentType").addRecordToIndex(objectid = stProperties.objectid) />
+					<cfset oContentType.addRecordToIndex(objectid = stProperties.objectid) />
 				</cfif>
 			</cfif>
 		</cfif>
@@ -52,9 +52,10 @@
 	<cffunction name="onDelete" access="public" output="false" returntype="void">
 		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
 		<cfargument name="stObject" type="struct" required="true" hint="The object" />
-		<cfset var stContentType = application.fapi.getContentType("solrProContentType").getByContentType(arguments.typename) />
+		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset var stContentType = oContentType.getByContentType(arguments.typename) />
 		<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-			<cfset application.fapi.getContentType("solrProContentType").deleteById(id = arguments.stObject.objectid, bCommit = true) />
+			<cfset oContentType.deleteById(id = arguments.stObject.objectid, bCommit = true) />
 		</cfif>
 	</cffunction>
 
