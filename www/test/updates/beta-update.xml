@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<versions>
+	<version>
+		<version>private-beta</version>
+		<downloadurl>https://bitbucket.org/jeffcoughlin/farcrysolrpro/get/private-beta.zip</downloadurl>
+		<description><![CDATA[
+		This is the private beta release
+		]]></description>
+		<releasedate>March 6, 2012</releasedate>
+	</version>
+	<version>
+		<version>alpha</version>
+		<downloadurl>https://bitbucket.org/jeffcoughlin/farcrysolrpro/get/alpha.zip</downloadurl>
+		<description><![CDATA[
+		This is the alpha release.
+		]]></description>
+		<releasedate>February 24, 2012</releasedate>
+	</version>
+</versions>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <solr persistent="true">
-	<cores adminPath="/admin/cores">
-	</cores>
+  <cores adminPath="/admin/cores">
+    <core name="newtonauto" instanceDir="/Users/sean/Sites/newtonsautomotive.com/farcry/projects/newtonauto/solr/"/>
+    <core name="mhs_midhosp" instanceDir="/Users/sean/Sites/org.middlesexhospital/farcry/projects/mhs_midhosp/solr/"/>
+    <core name="lgh_lowellgeneral" instanceDir="/Users/sean/Sites/org.lowellgeneral/farcry/projects/lgh_lowellgeneral/solr/"/>
+    <core name="test" instanceDir="/Users/sean/Sites/com.test.farcry60/farcry/projects/test/solr/"/>
+    <core name="test62" instanceDir="/Users/sean/Sites/com.test.farcry62/farcry/projects/test62/solr/"/>
+    <core name="lghintranet" instanceDir="/Users/sean/Sites/org.lowellgeneral.wire/farcry/projects/main/solr/"/>
+  </cores>
 </solr>
