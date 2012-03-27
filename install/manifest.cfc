@@ -9,8 +9,8 @@
 		name = "Apache License 2.0",
 		link = "http://www.apache.org/licenses/LICENSE-2.0"
 	} />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="0", patchVersion="18") />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="1", patchVersion="3") />
+	<cfset addSupportedCore(majorVersion="6", minorVersion="0", patchVersion="19") />
+	<cfset addSupportedCore(majorVersion="6", minorVersion="1", patchVersion="4") />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
 	
 </cfcomponent>
