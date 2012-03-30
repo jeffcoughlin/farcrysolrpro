@@ -9,7 +9,6 @@
 	<cfproperty ftSeq="150" ftFieldset="Server Settings" name="threadCount" type="integer" default="5" required="true" ftDefault="5" ftType="integer" ftValidation="required,digits" ftLabel="Thread Count" ftHint="The number of background threads used to empty the queue (default: 5)" />
 	<cfproperty ftSeq="160" ftFieldset="Server Settings" name="binaryEnabled" type="boolean" default="1" required="true" ftDefault="1" ftType="boolean" ftLabel="Binary Enabled?" ftHint="Should we use the faster binary data transfer format? (default: true)" /> 
 	<cfproperty ftSeq="170" ftFieldset="Server Settings" name="instanceDir" type="nstring" default="" ftDefault="expandPath('/farcry/projects/' & application.applicationName & '/solr')" ftDefaultType="evaluate" ftType="string" required="true" ftLabel="Solr Collection Instance Dir." ftHint="Choose a location with sufficient disk space for the collection." />
-	<cfproperty ftSeq="180" ftFieldset="Server Settings" name="solrXmlLocation" type="nstring" default="" ftDefault="expandPath('/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solr-server/multicore/solr.xml')" ftDefaultType="evaluate" required="true" ftLabel="Solr.xml File Location" ftHint="This must be in the Solr Home directory." />
 	
 	<cfproperty ftSeq="210" ftFieldset="Performace Settings" name="batchSize" type="integer" default="1000" required="true" ftDefault="1000" ftType="integer" ftValidation="required" ftLabel="Index Batch Size" ftHint="The number of records that will be processed for each content type during the scheduled task. Default: 1000" />
 	<cfproperty ftSeq="220" ftFieldset="Performace Settings" name="bLogSearches" type="boolean" default="1" required="true" ftDefault="1" ftType="boolean" ftLabel="Log Searches?" ftHint="Should searches be logged? Default: true" />
@@ -116,22 +115,7 @@
 		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
 		
 		<cfset var instanceDir = arguments.config.instanceDir />
-		<cfset var solrXmlLocation = arguments.config.solrXmlLocation />
-		<cfset var collectionName = arguments.config.collectionName />
-		<cfset var solrXml = "" />
-		
-		<!--- ensure solr.xml exists --->
-		<cfif not fileExists(solrXmlLocation)>
-			<cfsavecontent variable="solrXml"><cfoutput><?xml version='1.0' encoding='UTF-8'?>
-				<solr persistent='true'>
-					<cores adminPath='/admin/cores'>
-					</cores>
-				</solr>
-				</cfoutput>
-			</cfsavecontent>
-			<cfset fileWrite(solrXmlLocation, trim(solrXml)) />
-		</cfif>
-		
+
 		<!--- ensure instanceDir exists --->
 		<cfset setupInstanceDir(directory = instanceDir) />
 		
