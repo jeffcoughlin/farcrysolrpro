@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<versions>
+  <version>
+    <version>0.0.2</version>
+    <downloadurl>https://github.com/jeffcoughlin/farcrysolrpro/zipball/0.0.2</downloadurl>
+    <description><![CDATA[
+    This is the 0.0.2 release.  The upgrade instructions would go here.
+    ]]></description>
+    <releasedate>March 12, 2012</releasedate>
+  </version>
+</versions>
