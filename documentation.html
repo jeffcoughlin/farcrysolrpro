@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Documentation // FarCry Solr Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="assets/css/application.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body data-spy="scroll" data-target=".subnav" data-offset="50">
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="index.html">FarCry Solr Pro plugin</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="features.html">Features</a></li>
+              <li class="active"><a href="documentation.html">Documentation</a></li>
+              <li class="divider-vertical"></li>
+              <li><a href="demos.html">Demos</a></li>
+              <li><a href="showcase.html">Showcase</a></li>
+            </ul>
+            <div class="pull-right">
+              <ul class="nav" style="margin-right: 50px;">
+                <li class="dropdown" style="background-color: #222;">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Downloads
+                    <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li class="nav-header">Current Stable Release</li>
+                    <li><a href="#"><i class="icon-download-alt"></i> Download v1.0.0 w/ Solr 3.5 [85MB]</a></li>
+                    <li><a href="#"><i class="icon-download-alt"></i> Download v1.0.0 w/o Solr [385KB]</a></li>
+                      <li class="divider"></li>
+                    <li><a href="downloads.html"><i class="icon-download"></i> All Downloads</a></li>
+                  </ul>
+                </li><!--/.dropdown -->
+              </ul>
+              <div class="farcryplugins"><a href="http://plugins.farcrycore.org">FarCry Plugins</a></div>
+            </div>
+            <a href="https://github.com/jeffcoughlin/farcrysolrpro"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1031; position: fixed;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <header class="jumbotron subhead" id="overview">
+        <h1>Documentation</h1>
+        <p class="lead">Download and install in minutes. Out of the box, the plugin is ready to go.  But we didn't stop there.  You can tweak and enhance Solr to your heart's content.</p>
+        <div class="subnav">
+          <ul class="nav nav-pills">
+            <li><a href="#download">Download and Install</a></li>
+            <li><a href="#solr">Solr</a></li>
+            <li><a href="#configuretheplugin">Configure the Plugin</a></li>
+            <li><a href="#indexing">Indexing</a></li>
+            <li><a href="#searchexample">Search Example</a></li>
+            <li><a href="#filtercontent">Filter Content</a></li>
+            <li><a href="#performancetips">Performance Tips</a></li>
+            <li><a href="#moredocumentation">More Documentation</a></li>
+          </ul>
+        </div>
+      </header>
+
+      <section id="download">
+        <div class="page-header">
+          <h1>Download and Installation</h1>
+        </div>
+
+        <h2>Download <small>Download as zip or clone from git</small></h2>
+        <div class="row">
+          <div class="span4">
+            <h3>Download as Zip File</h3>
+            <p>Get the latest release as well as archived versions in the download area.</p>
+            <p><a class="btn" href="downloads.html">Downloads Page &raquo;</a></p>
+          </div>
+          <div class="span4">
+            <h3>Clone from Git</h3>
+            <p>The plugin repository can be found in <a href="https://github.com/jeffcoughlin/farcrysolrpro">github</a>.
+            <p><code>git clone git://github.com/jeffcoughlin/farcrysolrpro.git</code></p>
+          </div>
+          <div class="span4">
+            <h3>Minimum Requirements</h3>
+            <ul>
+              <li>ColdFusion 9+</li>
+              <li>FarCry 6.2, 6.1.4, 6.0.19</li>
+              <li>Solr 3.5
+                <ul>
+                  <li>Solr 3.5 is optionally included in this plugin.</li>
+                  <li>To date, we have only tested this on Solr 3.5</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Install</h2>
+        <p>To install, copy the plugin files to <code>/farcry/plugins/farcrysolrpro</code> and add "farcrysolrpro" to your "this.plugins" setting in your FarCry constructor.  Deploy the content types in the COAPI manager and restart the application.</p>
+        <p>You will need a copy of <a href="http://lucene.apache.org/solr/">Solr 3.5</a> or better.  One is provided in the git repository or optionally as part of the plugin distro.  Solr does not have to run from within the plugin folders.  By default our git repository has a copy of Solr under <code>/farcrysolrpro/packages/custom/cfsolrlib/solr-server</code> for convenience and because it was just easier for us to manage the files this way and offer a complete packaged solution.  However Solr can be run from anywhere (on the same server or remotely with a couple restrictions - see <a href="#solr">Running Solr</a> below) and you are not required to use the version of Solr we provide as a convenience (Solr is a pretty large download, so feel free to grab it elsewhere if desired).  The <a href="downloads.html"></a>downloads</a> page lists the version of Solr that has been tested with each corresponding plugin version.  Using a different version of Solr with the plugin is at your own risk.  If you choose to run Solr from a different location, make sure to note that in your webtop config for the plugin (and be aware of the possible speed implications that can happen from running Solr on a separate machine).</p>
+      </section><!-- /#download -->
+
+      <section id="solr">
+        <div class="page-header">
+          <h1>Solr <small>Running, configuring, and setting up as a service</small></h1>
+        </div>
+        <h2 id="runningsolr">Running Solr</h2>
+        <div class="row" style="margin-bottom: 18px;">
+          <div class="span4">
+            <h3>Multicore is Required</h3>
+            <p>For this plugin, Solr is <strong>required</strong> to run in multicore mode.  We chose this requirement because it allows people to use the same solr installation for multiple FarCry projects (each project having their own collection).  It also allows us to use Solr's reload command when changes are made to most configuration areas without the need to restart Solr.</p>
+            <p>There are examples in the /solr-server/README.txt folder on how to execute Solr in multicore mode.  At the time of writing this documentation, the example they give (which you run from the /solr-server/ folder) is:</p>
+            <p><code>java -Dsolr.solr.home=multicore -jar start.jar</code></p>
+          </div>
+          <div class="span4">
+            <h3>Configure RAM</h3>
+            <p>To configure min/max RAM, add the -Xms and-Xmx switches.</p>
+            <p><code>java -Dsolr.solr.home=multicore -Xms256M -Xmx512M -jar start.jar</code></p>
+            <p>See <a href="#performancetips">performance tips</a> below for some suggestions on RAM configuration.</p> 
+          </div>
+          <div class="span4">
+            <h3>Startup Scripts</h3>
+            <p>Sample startup scripts have been provided with the plugin and can be found in the /solr-server/ folder (assuming you've downloaded our copy of Solr server).  You can adjust the min/max memory as variables at the top of the script(s).</p>
+            <p>For Windows users, there are <strong>start.bat</strong> and <strong>stop.bat</strong> files.</p>
+            <p>For *nix/Mac users there is a bash script called <strong>solr</strong> (example: <code>solr (start|stop|restart)</code>. Default is start).</p>
+          </div>
+        </div><!-- /.row -->
+        <div class="alert alert-block">
+          <h4 class="alert-heading"><i class="icon-info-sign"></i> For *nix/Mac users</h4>
+          <p>We've found that running Solr as sudo gives undesirable ownership results.  We suggest just running Solr normally.</p>
+        </div>
+
+        <h2>Where to Run Solr From</h2>
+            <p>Solr can run from any server as long as CF has HTTP access to it.  By default the plugin will assume you are running it on the same box as CF (and for most people this will work just fine).  To configure where the plugin can find your Solr server, see the plugin config (<a href="#configuretheplugin">the plugin config is discussed below</a>).</p>
+            <h3>Consider Network Speeds</h3>
+            <p>Please keep in mind that if you plan to run Solr on a separate box, there is a possibility of it appearing slow if you have any network/bottleneck issues or network lag.  This is because a lot of data is being sent over HTTP.  One advantage we have over Solr's normal interaction with file parsing is that we interact with Tika directly from ColdFusion, so we don't ahve to send a huge binary file to Solr - which then sends the data to Tika.  So this helps tremendously with network speed issues if you plan to run Solr on a separate box.  But if you notice that your searches and indexes appear to be slow, consider the network speed and maybe verify it by testing/running Solr on the same box to see if the performance improves.</p>
+        <div class="row">
+          <div class="span8">
+            <h3>Use our copy of Solr or Your Own</h3>
+            <p>We have optionally provided a copy of Solr server with our plugin.  You do not need to use our copy in order to use this plugin.  However, if you choose to run your own copy you'll need to make the following changes in your solr.xml file (see example code to the right):</p>
+            <ul>
+              <li>Add persistent="true" to the &lt;solr&gt; tag.</li>
+              <li>Add adminPath="/admin/cores" to the &lt;cores&gt; tag.</li>
+            </ul>
+          </div>
+          <div class="span4">
+<pre class="prettyprint linenums">
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;solr persistent="true"&gt;
+  &lt;cores adminPath="/admin/cores"&gt;
+  &lt;/cores&gt;
+&lt;/solr&gt;
+</pre>
+          </div>
+        </div>
+
+        <!--
+        <p>In order for the plugin to work out-of-the-box, Solr needs to either be running from the same machine as CF, or have a networkable mapped path (set in the <a href="#configuretheplugin">config discussed below</a>) so that when saving the config settings for a project, FarCry can modify the /solr-server/multicore/solr.xml file.</p>
+        <p>If you've decided to download our copy of Solr which lies within the plugin folder structure, you can choose to move it or run it from there.  Just note that if you run it from there, the solr.xml file will be modified by the plugin.  If in the future you decide to overwrite your plugin with a new copy, you might inadvertently overwrite your solr.xml file and your Solr indexes will cease to respond.  If this happens, don't fret.  Just edit your config in the webtop.  Each time you save your config the plugin will make sure that your settings are updated in the solr.xml file.</p>
+	      <p>If you need to run Solr from another server and can't share the Solr files with CF (through a mapped drive), you can still get by, but you'll need to manage your solr.xml file manually rather than having the config update it when you click save.  One trick is to keep a copy of the solr.xml file on the local machine and allow the plugin config (<a href="#configuretheplugin">see below</a>) to use that, then copy the solr.xml file on to the actual Solr server (Make sure you reload server so that it sees the new file).  This method is not supported by us, so you're on your own (but in theory it should work).</p>
+        -->
+
+        <h2>Running Solr as a Service</h2>
+        <p>Setting up a program to run as a service for different operating systems is a bit beyond these instructions, but it's not difficult to do for those who are not familiar.</p>
+        <p>So as not to leave you completely on your own, here are some suggestions:</p>
+        <ul>
+          <li>Linux
+            <ul>
+              <li>Lucid (experts on Solr) has a good tutorial for using <a href="http://www.lucidimagination.com/blog/2011/08/10/running-solr-as-a-service-on-linux/">runit with Solr</a> </li>
+            </ul>
+          </li>
+          <li>Windows
+            <ul>
+              <li>Using Jetty (which comes with Solr).  Jetty comes packaged with its own Windows service installer which is better explained in this <a href="http://technologyenablingbusiness.blogspot.com/2010/12/solr-on-jetty-as-windows-service.html">blog post by Yash Ranadive</a>.</li>
+              <li><a href="http://wiki.apache.org/solr/SolrTomcat">Using Tomcat</a> makes it easy to run as a Windows service (32-bit or 64-bit).</li>
+              <li>Using third-party tools to create custom Windows services.  I've used both of these in the past for setting up custom Windows services and have had great success with both. <a href="http://nssm.cc/usage">NSSM</a> (free), and <a href="http://www.firedaemon.com/">FireDaemon</a> (not free, but more features and official support).</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section id="configuretheplugin">
+        <div class="page-header">
+          <h1>Configure the Plugin</h1>
+        </div>
+
+        <div class="row">
+          <div class="span5">
+            <h3>Run the Config from the Webtop</h3>
+            <p>Once you've completed the above steps, you'll need to login as an admin and configure the plugin in the webtop.<br><code>Webtop --&gt; Admin --&gt; Configuration --&gt; Edit Config --&gt; Solr Pro Plugin</code></p>
+            <h3>Template Files</h3>
+            <p>When you save the config, one of the things it will do is copy over the necessary template files from the <code>/farcrysolrpro/templates/</code> folder to your <code>[project]/solr/</code> folder (it will create <em>solr</em> the folder if needed).  Don't worry, if the files already exist, it will not overwrite them.</p>
+            <p>Each configurable item in the form has a hint that helps explain it, so I wont repeat them here. However, I'll point out that most people will likely run fine with all the default settings.</p>
+            <div class="alert alert-block">
+              <h4 class="alert-heading"><i class="icon-info-sign"></i> Required: Edit Config at Least Once</h4>
+              <p>Running the config at least once (even if not changing any settings) is required.</p>
+            </div>
+          </div>
+          <div class="span7">
+            <p><img src="assets/images/webtopConfig.jpg" alt="Webtop Config" title="Webtop Config" /></p>
+          </div>
+        </div><!-- /.row -->
+
+        <h2>Web Mapping</h2>
+        <p>A web mapping is required for several of the ajax functions and css/js we use in the webtop (configured in your webserver: Apache/IIS).  We also provide sample styling for your search pages (should you choose to use our sample webskins) which refer to the web mapping.  This web mapping needs to point to the plugin's www folder (ie. /farcry/plugins/farcrysolrpro/www).</p>
+        <p>We advise using <code>/farcrysolrpro</code> (default) as the web mapping, however if you wish to use something else, make sure to update the plugin config and tell it what the web mapping is.</p>
+        <p>If you are not able to create a web mapping you can instead create a folder in your project's webroot (ie. <code>[project]/www/farcrysolrpro</code> and copy the files from the plugin's <code>/farcrysolrpro/www</code> folder into it.</p>
+
+        <h2>Content Types</h2>
+        <div class="row">
+          <div class="span7">
+            <h3>Content Type Edit Form</h3>
+            <p>You need to setup your collections in order for them to get indexed.</p>
+            <p><code>Webtop --&gt; Admin --&gt; Solr Pro (dropdown) --&gt; Setup --&gt; Content Types</code></p>
+            <p><img src="assets/images/farcrySolrProWebtopConfig.jpg" alt="FarCry Solr Pro Webtop Config" title="FarCry Solr Pro Webtop Config" /></p>
+            <p>There is more detailed information at the bottom of the edit form (scroll to the bottom of the form when creating/editing a content type).</p>
+          </div>
+          <div class="span5">
+            <h3>Sample Content Type Config</h3>
+            <p>Below is a simple example of setting up an HTML page here.  For detailed information on all your options, scroll to the bottom of the edit form when creating/editing a content type for Solr.</p>
+            <ol>
+              <li>Create a new content type</li>
+              <li>Title: HTML Pages</li>
+              <li>Content Type: HTML Page (dmHTML)</li>
+              <li>Indexed Properties:
+                <ul>
+                  <li>Body
+                    <ul>
+                      <li>Text (not stored)</li>
+                      <li>Phonetic (stored)</li>
+                    </ul>
+                  </li>
+                  <li>Teaser
+                    <ul>
+                      <li>Text (not stored)</li>
+                      <li>Phonetic (stored)</li>
+                    </ul>
+                  </li>
+                  <li>teaserImage
+                    <ul>
+                      <li>String (stored)</li>
+                    </ul>
+                  </li>
+                  <li>Title
+                    <ul>
+                      <li>Text (not stored)</li>
+                      <li>Phonetic (stored), boost: 10</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>Result Title: Title (text)</li>
+              <li>Result Summary: Use Solr Generated Summary
+                <ul>
+                  <li>Check: body, teaser</li>
+                </ul>
+              </li>
+              <li>Result Image: teaserimage (string)</li>
+              <li>Index Rule Data?: No</li>
+              <li>Enable Site Search?: Yes</li>
+              <li>Built To Date: (leave as default - should be blank by default)</li>
+              <li>Index on Save?: Yes</li>
+              <li>Default Document Boost: (whatever the default is)</li>
+            </ol>
+            <div class="alert alert-block">
+              <h4 class="alert-heading"><i class="icon-info-sign"></i> Why Both Phonetic and Text?</h4>
+              <p>If you plan to offer searching <strong>words as a phrase</strong>, then note that it will not work with the phonetic Solr field type.  This is why I have both text and phonetic in the examples above.</p>
+            </div>
+          </div>
+        </div><!-- /.row -->
+      </section><!-- /#solr -->
+
+      <section id="indexing">
+        <div class="page-header">
+          <h1>Indexing</h1>
+        </div>
+
+        <div class="row">
+          <div class="span8">
+            <h2>Manual Options</h2>
+            <p>You can manually index, optimize, and reset any/all types from the Solr Content Types listing screen.  If you've made a configuration change for a Solr type and need to re-index it, choose the reset option for that type, then "Index Content Type".</p>
+            <h2>Indexing Scheduled Task</h2>
+            <p>Although this plugin will automatically commit each record to Solr's index when you save it in FarCry you can also setup a scheduled task for indexing (provided with plugin).  By default the script also optimizes the collection from here when its done indexing.  Optimizing can be disabled through a url paramter by adding optimize=false.</p>
+            <h2>Optimize Scheduled Task</h2>
+            <p>The plugin does not optimize the collection when you do a "commit on save" due to performance reasons, so we strongly advise setting up an optimization scheduled task (provided with plugin).  Whether you do it nightly, weekly, or monthly it will still help keep your collection at peak performance.</p>
+            <div class="alert alert-block">
+              <h4 class="alert-heading"><i class="icon-exclamation-sign"></i> Important: Optimize Scheduled Task</h4>
+              <p>It is important to setup a scheduled task to optimize your collection (provided with plugin) otherwise the performance could degrade over time.</p>
+            </div>
+          </div>
+          <div class="span4">
+            <div class="well">
+              <h2>One Collection per Project</h2>
+              <p>FarCry Solr Pro uses one collection per FarCry project.  This is a different approach from the previous FarCry Solr plugin which used one collection per content type.</p>
+              <p>We chose this route because using multiple collections is much slower than using a single collection (even when dealing with millions of records).</p>
+              <p>Through all our studies, not only did we find no need for multiple collections per project, but by placing all the types in a single collection (and adding the fieldname "typename" as the identifier to differentiate between the content types), we found that we could do more complex queries against Solr (and it is still extremely fast).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="searchexample">
+        <div class="page-header">
+          <h1>Search Example</h1>
+        </div>
+
+        <p>To setup a search page, feel free to use the sample webskins we've provided.</p>
+        <ol>
+          <li>Login to webtop and go to the Site tab</li>
+          <li>Create or Find a <strong>search</strong> nav node (a vanilla install of FarCry usually sets it up under the Utilities node with the friendly url of /search)</li>
+          <li>Create an include (if one doesn't already exist) and use Option 1 to choose the content type for <strong>Solr Pro Search</strong> and content view </strong>Search Result</strong></li>
+          <li>After saving the include, click on preview and you should be brought to your page.  Use a search string you know was indexed from your content.</li>
+        </ol>
+      </section>
+
+      <section id="filtercontent">
+        <div class="page-header">
+          <h1>Filter Content</h1>
+        </div>
+
+        <div class="row">
+          <div class="span6">
+            <h2>How Do I Determine What Content Gets Indexed?</h2>
+            <p>By default the plugin will index all items and only filter those that follow the FarCry publishing model (meaning, if a status field exists, only index a record that is 'approved').</p>
+            <p>You may, however, wish to apply your own filters for a specific content type.  Every time the plugin attempts to update the index for a content item, it will look to see if the content type has a "contentToIndex" function.  All you need to do is add the function to your type and allow it to filter by any desired rules <em>(see example)</em>.</p>
+            <p>In the example seen here I have the following conditions I want to validate on my custom type (myProduct.cfc) before allowing the content item to be indexed:</p>
+            <ul>
+              <li>I am using the FarCry publishing model (versioning) - I only want to index published items (approved items).</li>
+              <li>I have a publishDate field - publishDate needs to be either before now() or a blank/null value.</li>
+              <li>I have a checkbox field that signifies that the record is active/inactive (boolean) - I only want to index records that are set to Active.</li>
+            </ul>
+            <p>To filter by the above rules when indexing on my custom type, I need to add a function called "contentToIndex" to my type (myProduct.cfc).  The following rules apply for the function:</p>
+            <ul>
+              <li>objectId is not required, but should be allowed as a filter for performance reasons.</li>
+              <li>The function needs to return a query with the fields objectId, datetimelastupdated.</li>
+            </ul>
+          </div>
+          <div class="span6">
+<pre class="prettyprint linenums">
+&lt;cffunction name="contentToIndex" access="public" output="false" returntype="query"&gt;
+  &lt;cffunction name="objectId" type="uuid" required="false" /&gt;
+  &lt;cfset var qData = "" /&gt;
+  &lt;cfquery name="qData" datasource="#application.dsn#"&gt;
+    select objectID, datetimelastupdated
+    from #application.dbowner#myProduct
+    where status = 'approved'
+      and (publishDate = ''
+            or publishDate is null
+            or (publishDate != ''
+                 and not publishDate is null
+                 and publishDate &lt;= getdate()
+               )
+          )
+      and bActive = 1
+      &lt;cfif structKeyExists(arguments, "objectId")&gt;
+        and objectId = &lt;cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectId#" /&gt;
+      &lt;/cfif&gt;
+  &lt;/cfquery&gt;
+  &lt;cfreturn qData /&gt;
+&lt;/cffunction&gt;
+</pre>
+          </div>
+        </div>
+        <p>The plugin will also detect when one of these values have changed.  Meaning, if you had previously set a content item to <strong>active</strong> (which was then indexed) and then later decided to set the same content item to <strong>inactive</strong>, the plugin will remove the content item from the index when you save the content item within the webtop.</p>
+      </section><!-- /#filtercontent -->
+
+      <section id="performancetips">
+        <div class="page-header">
+          <h1>Performance Tips</h1>
+        </div>
+
+        <h2>Configure RAM</h2>
+        <p>Although fine-tuning and tweaking the JVM (especially for RAM) can get very detailed, most servers are fine with just setting a min/max for Solr's RAM. For production use it is usually suggested to set both the min and max memory settings to the same values. If you plan to use the sample startup scripts provided with the plugin, you'll see variables at the top of the file(s) for setting the min/max memory for Solr. The default settings are 256/512 respectively. For sites with a lot of content, you'll likely want to increase those values. Please note that if you are using a 32-bit JVM then you will be limited to about 1.5GB of RAM as a cap (a limitation of 32-bit java) and will want to consider moving to a 64-bit JVM (see the next section for more info).</p>
+        <p>If you're getting heap stack errors when searching or indexing, this likely means that Solr doesn't have enough memory to work with your data. Increasing the RAM and restarting Solr will fix this error in most cases. If you're only getting the error while indexing large datasets, you may need to set your <strong>index batch size</strong> to a lower number in the plugin configuration. Reducing the batch size will likely get you on you way (note: Even though you received the heap stack errors during the indexing process, your data is safe. Solr will still need to commit the information before it becomes available, but the next commit or index will take care of that).</p>
+        <h2>64-bit Support</h2>
+        <p>32-bit JVMs have a RAM limitation of about 1.5GB. If you want to use more than this limitation you will want to load Solr using a 64-bit JVM (requires 64-bit hardware and a 64-bit OS).</p>
+        <p>Although setting this up goes beyond our documentation, it is not difficult. In fact, your server may already have a 64-bit JVM in place. For instructions on how to set this up, search the web on how to configure your JAVA_HOME environment variable for your server's operating system and where to download a 64-bit JVM (since ColdFusion requires an SDK version, we personally use an SDK for Solr instead of a JRE). You can also start a discussion in the <a href="https://groups.google.com/forum/#!forum/farcry-dev">FarCry developer mailing list</a> for any tips/questions on this plugin or FarCry questions in general.</p>
+        <h2>Storing Data</h2>
+        <p>Some larger companies prefer to store "every" field in Solr (Assuming they have the HDD space and RAM for indexing). They find this to be better performace than relying on a CMS's caching system or extra database hits (we're talking extreme cases though - like millions of objects). In these types of cases though, it is suggested to know how to performance-tune Solr and run it on a 64-bit JVM with more RAM dedicated to Solr.</p>
+        <h2>Result Summary</h2>
+        <p>You can always configure your displaySearchResult.cfm file to allow FarCry to lookup the content object and get a field from the database, however storing the data in Solr that you plan to display in your search results (or result teasers) will return faster response times for your end-users (depending on how you setup your object broker and query your data, this statement could be argued).</p>
+      </section>
+
+      <section id="moredocumentation">
+        <div class="page-header">
+          <h1>More Documentation</h1>
+        </div>
+        <p>There is more documentation found within the webtop for the plugin.  Also, when creating or editing a content type for the Solr Pro plugin you'll find detailed help and tips at the bottom of the edit form.</p>
+      </section>
+
+      <footer class="footer">
+        <div class="pull-right">
+          <p><a href="http://farcrycore.org">FarCry Core</a> is an open source product by <a href="http://daemon.com.au">Daemon Pty Limited</a></p>
+          <p>Documentation Design and logic by <a href="http://twitter.github.com/bootstrap/">Twiiter Bootstrap</a></p>
+        </div>
+        <div class="pull-left">
+          <p><a href="index.html">FarCry Solr Pro plugin</a> &copy; 2012</p>
+          <p>Jeff Coughlin (<a href="http://jeffcoughlin.com">http://jeffcoughlin.com</a>)</p>
+          <p>Sean Coyne (<a href="http://www.n42designs.com">http://www.n42designs.com</a>)</p>
+          <p>Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        </div>
+      </footer>
+
+    </div><!-- /.container -->
+
+    <!-- javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+    <script src="assets/google-code-prettify/prettify.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/application.js"></script>
+  </body>
+</html>
