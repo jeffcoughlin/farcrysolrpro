@@ -31,7 +31,7 @@
 			<cfoutput>
 				<div class="version">
 					<h2>#version.version#</h2>
-					<p>#application.stPlugins["farcrysolrpro"].oCustomFunctions.XHTMLParagraphFormat(version.description)#</p>
+					<div>#version.description#</div>
 					<p><a href="#version.downloadUrl#">Download</a></p>
 					<p>Released: #dateFormat(version.releasedate,"mm/dd/yyyy")#</p>
 				</div>
