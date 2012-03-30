@@ -4,7 +4,13 @@
     <version>0.0.2</version>
     <downloadurl>https://github.com/jeffcoughlin/farcrysolrpro/zipball/0.0.2</downloadurl>
     <description><![CDATA[
-    This is the 0.0.2 release.  The upgrade instructions would go here.
+      <p>This is a sample description for the the 0.0.2 release.</p>
+      <h3>Changelog</h3>
+      <ul>
+        <li>Feature XYZ was added</li>
+        <li>Tika was upgraded from v1.0 to v1.1</li>
+        <li>bug fixes</li>
+     </ul>
     ]]></description>
     <releasedate>March 12, 2012</releasedate>
   </version>
