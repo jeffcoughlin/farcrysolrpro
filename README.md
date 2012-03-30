@@ -1,4 +1,4 @@
-![FarCry Solr Pro](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/logo-farcrySolrPro-admin.png "FarCry Solr Pro")
+![FarCry Solr Pro](http://jeffcoughlin.github.com/farcrysolrpro/assets/images/logo-farcrySolrPro-admin.png "FarCry Solr Pro")
 
 # FarCry Solr Pro Plugin
 
@@ -6,11 +6,11 @@ The FarCry Solr Pro plugin lets you use the power of Lucene (through Solr) to in
 
 FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unique record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.
 
-![FarCry Solr Pro Webtop](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/searchExample.png "FarCry Solr Pro Webtop")
+![FarCry Solr Pro Webtop](http://jeffcoughlin.github.com/farcrysolrpro/assets/images/searchExample.png "FarCry Solr Pro Webtop")
 
 ## Details and Installation
 
-For more details and installation information, see the [wiki](https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/Home "FarCry Solr Pro Wiki").
+For more details and installation information, see the [documentation pages](http://jeffcoughlin.github.com/farcrysolrpro "FarCry Solr Pro").
 
 ## Authors
 
@@ -44,11 +44,29 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
 * **Search result highlighting**
     * Now search result summary/teasers have the ability to highlight search terms in your search results exactly where they were found.
     * Plus, if the term(s) were found in multiple spots, we show them together in the same search result summary/teaser separated by ellipses.
-* **Document Size**
+* **File Indexing**
+    * File format parsing is automatically handled by the plugin using a content analysis toolkit called <a href="http://tika.apache.org/">Tika</a>.  Not only will it the parse text of documents, but it will also get metadata from documents like author and company.
+    * The parser doesn't just handle PDFs and Word docs.  Below is a list of many of the <a href="http://tika.apache.org/1.1/formats.html">formats</a> that Tika supports for metadata extraction:
+        * HyperText Markup Language (<abbr title="HyperText Markup Language">HTML</abbr>)
+        * <abbr title="Extensible Markup Language">XML</abbr> and derived formats
+        * Microsoft Office document formats
+        * OpenDocument Format
+        * Portable Document Format (<abbr title="Portable Document Format">PDF</abbr>)
+        * Electronic Publication Format (<abbr title="Electronic Publication Format">Epub</abbr>)
+        * Rich Text Format (<abbr title="Rich Text Format">RTF</abbr>)
+        * Compression and packaging formats (zip, gzip, tar, etc)
+        * Text formats
+        * Audio formats (<abbr title="MPEG-2 Audio Layer III">MP3</abbr>, etc)
+        * Image formats (simple metadata from images)
+        * Video formats (<abbr title="Flash Video">FLV</abbr> parser)
+        * Java class files and archives
+        * The mbox format (extracting email messages from mailbox formats)
+    * For more details on what formats Tika supports, see <a href="tika.apache.org/1.1/formats.html">Tika's Supported Document Formats</a> page.
+* **Document size**
     * Optionally return the document size with each result.
         * You can choose which fields total up the size (options are text-based fields, files, and images).
             * For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).
-            * Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you’re indexing refers to a file (like a PDF).
+            * Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you're indexing refers to a file (like a PDF).
 * **Custom search forms**
     * Having a general site search is great, but what about another search form on the site that searches something like products? Because we can index and store as many fields as we like now, we can also search by those fields just like you would any other database. So, if you have a product search page and you wanted your visitors to search by 15 different filter options, you can now create a custom search form and use Solr to search all of those fields. The end result: A fast user experience even on some of the most complicated search requests.
 * **Filters**

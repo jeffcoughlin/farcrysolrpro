@@ -94,14 +94,38 @@
 				<li>Plus, if the term(s) were found in multiple spots, we show them together in the same search result summary/teaser separated by ellipses.</li>
 			</ul>
 		</li>
-		<li>Document Size
+    <li>File Indexing
+      <ul>
+        <li>File format parsing is automatically handled by the plugin using a content analysis toolkit called <a href="http://tika.apache.org/">Tika</a>.  Not only will it the parse text of documents, but it will also get metadata from documents like author and company.</li>
+        <li>The parser doesn't just handle PDFs and Word docs.  Below is a list of many of the <a href="http://tika.apache.org/1.1/formats.html">formats</a> that Tika supports for metadata extraction:</li>
+          <ul>
+            <li>HyperText Markup Language (<abbr title="HyperText Markup Language">HTML</abbr>)</li>
+            <li><abbr title="Extensible Markup Language">XML</abbr> and derived formats</li>
+            <li>Microsoft Office document formats</li>
+            <li>OpenDocument Format</li>
+            <li>Portable Document Format (<abbr title="Portable Document Format">PDF</abbr>)</li>
+            <li>Electronic Publication Format (<abbr title="Electronic Publication Format">Epub</abbr>)</li>
+            <li>Rich Text Format (<abbr title="Rich Text Format">RTF</abbr>)</li>
+            <li>Compression and packaging formats (zip, gzip, tar, etc)</li>
+            <li>Text formats</li>
+            <li>Audio formats (<abbr title="MPEG-2 Audio Layer III">MP3</abbr>, etc)</li>
+            <li>Image formats (simple metadata from images)</li>
+            <li>Video formats (<abbr title="Flash Video">FLV</abbr> parser)</li>
+            <li>Java class files and archives</li>
+            <li>The mbox format (extracting email messages from mailbox formats)</li>
+          </ul>
+        </li>
+        <li>For more details on what formats Tika supports, see <a href="tika.apache.org/1.1/formats.html">Tika's Supported Document Formats</a> page.</li>
+      </ul>
+    </li>
+		<li>Document size
 			<ul>
 				<li>Optionally return the document size with each result.
 					<ul>
 						<li>You can choose which fields total up the size (options are text-based fields, files, and images).
 							<ul>
 								<li>For content pages, it is suggested to select only those fields relevant to the landing/target page itself (ie. A title and body field are likely relevant to the landing page where a teaser field is not).</li>
-								<li>Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you’re indexing refers to a file (like a PDF).</li>
+								<li>Any file or image fields selected will get the file size of each referenced item.  Although there are plenty of uses for this option, it is likely most useful in cases where the record itself that you're indexing refers to a file (like a PDF).</li>
 							</ul>
 						</li>
 					</ul>
