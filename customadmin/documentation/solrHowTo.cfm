@@ -8,14 +8,14 @@
 <admin:header title="Solr Pro: How To" />
 
 <cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
-<cfset linkWikiHome = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki" />
-<cfset linkWikiInstall = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/wiki/installation_and_configuration" />
+<cfset linkPluginHome = "http://jeffcoughlin.github.com/farcrysolrpro/" />
+<cfset linkPluginInstall = "http://jeffcoughlin.github.com/farcrysolrpro/documentation.html" />
 
 <cfoutput>
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right;" />
 	<h1>Detailed Installation and Setup Help</h1>
-	<p>For detailed installation and configuration assistance, please see the <a href="#linkWikiInstall#">online wiki</a>.</p>
+	<p>For detailed installation and configuration assistance, please see the <a href="#linkPluginInstall#">plugin's website</a>.</p>
 	<h1>Minimum Requirements</h1>
 	<ul>
 		<li>ColdFusion 9</li>
@@ -37,7 +37,7 @@
 	<p>If you've just installed this plugin, below is a checklist of things you'll need to do to get yourself on your way</p>
 	<ol>
 		<li>Deploy new types in the FarCry <abbr title="Conent Object API">COAPI</abbr>.</li>
-		<li>Start Solr.  We've provided sample Solr startup scripts found in the plugin's copy of <var>solr-server</var> (assuming you've downloaded our copy of Solr server). Tips for auto-starting Solr as a service can be found in the <a href="#linkWikiInstall#">wiki</a>.</li>
+		<li>Start Solr.  We've provided sample Solr startup scripts found in the plugin's copy of <var>solr-server</var> (assuming you've downloaded our copy of Solr server). Tips for auto-starting Solr as a service can be found at the <a href="#linkPluginInstall#">plugin's website</a>.</li>
 		<li>Run the FarCry Solr config at least once.  Even if you don't plan to change any of the defaults, running it once will copy over the necessary configuration files into your project's Solr conf folder (that folder's destination is set in that config folder.  By default it is set to [project]/solr - with conf and data subfolders).</li>
 		<li>Confirm that you've setup the web mapping correctly in your web server (needed for some ajax facade calls in the webtop) and that it matches whatever web map setting you've configured in your <a href="#linkConfig#">config</a>.  A simple way to do this is to look at the top of this very page and verify that you see the logos for Apache Solr and the FarCry Solr Pro plugin.</li>
 	</ol>
