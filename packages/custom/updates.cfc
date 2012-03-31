@@ -99,8 +99,6 @@ component accessors="true" {
 		var theXml = getUpdateXml();
 		var versions = [];
 		var downloads = [];
-		var i = "";
-		var d = "";
 		for (var i = 1; i lte arrayLen(theXml["versions"].xmlChildren); i++) {
 			for (var d = 1; d lte arrayLen(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren); d++) {
 				arrayAppend(downloads,{
