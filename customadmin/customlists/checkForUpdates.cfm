@@ -25,17 +25,36 @@
 
 		<cfset versions = updater.getAvailableVersions() />
 
-		<cfoutput><p>You are currently running version #updater.getCurrentVersion()#.  Version #updater.getMostRecentVersion()# is available.</p></cfoutput>
+		<cfoutput>
+			<p>You are currently running version #updater.getCurrentVersion()#.  The latest version available is <strong>#updater.getMostRecentVersion()#</strong>.</p>
+			<hr />
+			<p>The following version<cfif arrayLen(versions) gt 1>s are<cfelse> is</cfif> available for download:</p>
+		</cfoutput>
 
+		<cfset countVersion = 0 />
 		<cfloop array="#versions#" index="version">
+			<cfset countVersion++ />
 			<cfoutput>
 				<div class="version">
-					<h2>#version.version#</h2>
-					<div>#version.description#</div>
-					<p><a href="#version.downloadUrl#">Download</a></p>
-					<p>Released: #dateFormat(version.releasedate,"mm/dd/yyyy")#</p>
+					<h2>#dateFormat(version.releasedate,"yyyy-mm-dd")# v#version.version#</h2>
+          <div class="versioninfo">
+					  <div class="versiondesc">#version.description#</div>
+					  <div class="versiondownload">
+              <h3>Downloads</h3>
+              <ul>
+              <cfloop array="#version.downloads#" index="download">
+              <li><a href="#download.url#">Download v#version.version# #download.shortdesc#<cfif download.size neq ""> [#download.size#]</cfif></a></li>
+              </cfloop>
+              </ul>
+            </div>
+          </div>
 				</div>
 			</cfoutput>
+			<cfif countVersion lt arrayLen(versions)>
+				<cfoutput>
+					<hr />
+				</cfoutput>
+			</cfif>
 		</cfloop>
 
 	</cfif>
@@ -46,6 +65,13 @@
 
 </cfif>
 
+<cfoutput>
+	<hr />
+	<p>Note: See <a href="http://jeffcoughlin.github.com/farcrysolrpro/downloads.html">plugin website</a> for information on all versions and changelogs.</p>
+</cfoutput>
+
 <admin:footer />
 
+<!--- Load Custom Webtop Styling (load after admin:header) --->
+<skin:loadCss id="solrPro-customWebtopStyles" />
 <cfsetting enablecfoutputonly="false" />

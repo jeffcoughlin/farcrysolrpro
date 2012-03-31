@@ -98,13 +98,24 @@ component accessors="true" {
 	public array function getAvailableVersions() {
 		var theXml = getUpdateXml();
 		var versions = [];
+		var downloads = [];
+		var i = "";
+		var d = "";
 		for (var i = 1; i lte arrayLen(theXml["versions"].xmlChildren); i++) {
+			for (var d = 1; d lte arrayLen(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren); d++) {
+				arrayAppend(downloads,{
+					"url" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["url"].xmlText),
+					"shortdesc" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["shortdesc"].xmlText),
+					"size" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["size"].xmlText)
+				});
+			}
 			arrayAppend(versions,{
 				"version" = trim(theXml["versions"].xmlChildren[i]["version"].xmlText),
 				"description" = trim(theXml["versions"].xmlChildren[i]["description"].xmlText),
 				"releasedate" = trim(theXml["versions"].xmlChildren[i]["releasedate"].xmlText),
-				"downloadurl" = trim(theXml["versions"].xmlChildren[i]["downloadurl"].xmlText)
+				"downloads" = downloads
 			});
+		downloads = [];			
 		}
 		return versions;
 	}

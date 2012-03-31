@@ -69,6 +69,23 @@ table.solrprotable th {
 table.solrprotable tr:nth-child(even) {
 	background: none repeat scroll 0 0 ##F1F1F1;
 }
+
+/***********************************************************/
+/**                    Version Updater                    **/
+/***********************************************************/
+div.version {
+	margin-bottom: 20px;
+}
+div.version h2 {
+	font-size: 135%;
+}
+div.version h3 {
+	font-size: 116%;
+}
+div.version div.versiondesc {
+  margin-bottom: 12px;
+}
+
 /***********************************************************/
 /**                styles specifically for                **/
 /**          webskin/solrProContentType/edit.cfm          **/
