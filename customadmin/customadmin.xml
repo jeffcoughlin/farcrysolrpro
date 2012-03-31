@@ -36,7 +36,7 @@
 				<menuitem sequence="10" mergeType="merge" id="farcrysolrprodocsmenuitem01" label="About" link="/admin/customadmin.cfm?module=documentation/solrProAbout.cfm&amp;plugin=farcrysolrpro" />
 				<menuitem sequence="20" mergeType="merge" id="farcrysolrprodocsmenuitem02" label="How To" link="/admin/customadmin.cfm?module=documentation/solrHowTo.cfm&amp;plugin=farcrysolrpro" />
 				<menuitem sequence="30" mergeType="merge" id="farcrysolrprodocsmenuitem03" label="Menu Legend" link="/admin/customadmin.cfm?module=documentation/solrMenuLegend.cfm&amp;plugin=farcrysolrpro" />
-				<menuitem sequence="40" mergeType="merge" id="farcrysolrprodocsmenuitem04" label="Pluin Website" link="/admin/customadmin.cfm?module=documentation/solrPluginWebsite.cfm&amp;plugin=farcrysolrpro" />
+				<menuitem sequence="40" mergeType="merge" id="farcrysolrprodocsmenuitem04" label="Plugin Website" link="/admin/customadmin.cfm?module=documentation/solrPluginWebsite.cfm&amp;plugin=farcrysolrpro" />
 			</menu>
 		</subsection>
 	</section>
