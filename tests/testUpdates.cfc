@@ -48,30 +48,21 @@ component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
 
 	public void function testGetAvailableVersions() {
 
-		var expected = [
-			{
-				"version" = "0.0.2",
-				"downloadurl" = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/get/0.0.2.zip",
-				"description" = "This is the 0.0.2 release.  The upgrade instructions would go here.",
-				"releasedate" = "March 12, 2012"
-			},
-			{
-				"version" = "private-beta",
-				"downloadurl" = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/get/private-beta.zip",
-				"description" = "This is the private beta release",
-				"releasedate" = "March 6, 2012"
-			},
-			{
-				"version" = "alpha",
-				"downloadurl" = "https://bitbucket.org/jeffcoughlin/farcrysolrpro/get/alpha.zip",
-				"description" = "This is the alpha release.",
-				"releasedate" = "February 24, 2012"
-			}
-		];
+		var result = variables.updater.getAvailableVersions();
 
-		var actual = variables.updater.getAvailableVersions();
-
-		assertArrayEquals(expected, actual);
+		assertTrue(isArray(result));
+		assertTrue(arrayLen(result) eq 3);
+		assertTrue(isStruct(result[1]));
+		assertTrue(structKeyExists(result[1],"version"));
+		assertTrue(structKeyExists(result[1],"description"));
+		assertTrue(structKeyExists(result[1],"downloads"));
+		assertTrue(structKeyExists(result[1],"releasedate"));
+		assertTrue(isArray(result[1]["downloads"]));
+		assertTrue(arrayLen(result[1]["downloads"]) eq 2);
+		assertTrue(isStruct(result[1]["downloads"][1]));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"url"));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"shortdesc"));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"size"));
 
 	}
 
