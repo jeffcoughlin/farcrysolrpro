@@ -2,8 +2,7 @@
 <versions>
   <version>
     <version>0.0.2</version>
-    <downloadurl>https://github.com/jeffcoughlin/farcrysolrpro/zipball/0.0.2</downloadurl>
-    <description><![CDATA[
+		<description><![CDATA[
       <p>This is a sample description for the the 0.0.2 release.</p>
       <h3>Changelog</h3>
       <ul>
@@ -12,6 +11,18 @@
         <li>bug fixes</li>
      </ul>
     ]]></description>
-    <releasedate>March 12, 2012</releasedate>
+    <downloads>
+      <download>
+        <url>https://github.com/jeffcoughlin/farcrysolrpro/zipball/0.0.2</url>
+        <shortdesc><![CDATA[w/ Solr 3.5]]></shortdesc>
+        <size>85MB</size>
+      </download>
+      <download>
+        <url>https://github.com/jeffcoughlin/farcrysolrpro/zipball/0.0.2</url>
+        <shortdesc><![CDATA[<em>(plugin only)</em>]]></shortdesc>
+        <size>77MB</size>
+      </download>
+    </downloads>
+		<releasedate>March 28, 2012</releasedate>
   </version>
 </versions>
