@@ -21,6 +21,7 @@
 				<exclude name=".settings/**" />
 				<exclude name=".project" />
 				<exclude name="settings.xml" />
+				<exclude name="release/**" />
 			</fileset>
 		</zip>
 
@@ -36,6 +37,7 @@
 				<exclude name="settings.xml" />
 				<exclude name="packages/custom/cfsolrlib/contrib/**" />
 				<exclude name="packages/custom/cfsolrlib/solr-server/**" />
+				<exclude name="release/**" />
 			</fileset>
 		</zip>
 
