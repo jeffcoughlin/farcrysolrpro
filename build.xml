@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="FarCry Solr Pro" basedir="." default="release">
+
+	<target name="release">
+
+		<property name="releaseDir" value="./release" />
+		<property name="sourceDir" value="." />
+
+		<input message="Version Number?" addproperty="version" />
+
+		<!-- create the release dir if it doesn't exist -->
+		<mkdir dir="${releaseDir}" />
+
+		<!-- create the full release -->
+		<zip destfile="${releaseDir}/farcrysolrpro-${version}.zip">
+			<fileset dir="${sourceDir}">
+				<exclude name="build.xml" />
+				<exclude name=".git/**" />
+				<exclude name=".idea/**" />
+				<exclude name="*.iml" />
+				<exclude name=".settings/**" />
+				<exclude name=".project" />
+				<exclude name="settings.xml" />
+			</fileset>
+		</zip>
+
+		<!-- create the w/o solr release -->
+		<zip destfile="${releaseDir}/farcrysolrpro-nosolr-${version}.zip">
+			<fileset dir="${sourceDir}">
+				<exclude name="build.xml" />
+				<exclude name=".git/**" />
+				<exclude name=".idea/**" />
+				<exclude name="*.iml" />
+				<exclude name=".settings/**" />
+				<exclude name=".project" />
+				<exclude name="settings.xml" />
+				<exclude name="packages/custom/cfsolrlib/contrib/**" />
+				<exclude name="packages/custom/cfsolrlib/solr-server/**" />
+			</fileset>
+		</zip>
+
+	</target>
+
+</project>
