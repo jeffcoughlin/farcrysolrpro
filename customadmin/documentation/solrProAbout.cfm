@@ -189,10 +189,13 @@
 			</ul>
 		</li>
 	</ul>
-	<h2>Devoted Testers</h2>
-	<ul>
-		<li>None yet :)</li>
-	</ul>
+	<h1 style="margin-bottom: 1em;">Changelog</h1>
+	<cfloop array="#oManifest.aVersions#" index="version">
+		<div class="version">
+			<h3>#dateFormat(version.releasedate,"yyyy-mm-dd")# v#version.version#</h3>
+			#version.changelog#
+		</div>
+	</cfloop>
 	<br />
 </cfoutput>
 

@@ -1,6 +1,6 @@
 /**
 *
-* Author: Sean Coyne (sean@n42designs.com)
+* Author: Sean Coyne (sean@n42designs.com), Jeff Coughlin (www.jeffcoughlin.com)
 *
 */
 component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
@@ -11,7 +11,7 @@ component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
 		// set a default manifest and update url
 		variables.installManifest = createObject("component","farcry.plugins.farcrysolrpro.tests.data.testUpdates.manifest-0-0-3");
 		variables.updater = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.updates").init(
-			updateUrl = "http://" & cgi.http_host & "/farcrysolrpro/test/updates/0-0-2-update.xml",
+			updateUrl = "http://" & cgi.http_host & "/farcrysolrpro/test/updates/0-0-2-update.json",
 			installManifest = installManifest
 		);
 	}
@@ -36,33 +36,13 @@ component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
 
 		// ensure we get a "false" response if we have matching non-0.0.0 format versions
 		variables.updater.setInstallManifest(createObject("component","farcry.plugins.farcrysolrpro.tests.data.testUpdates.manifest-alpha"));
-		variables.updater.setUpdateUrl("http://" & cgi.http_host & "/farcrysolrpro/test/updates/alpha-update.xml");
+		variables.updater.setUpdateUrl("http://" & cgi.http_host & "/farcrysolrpro/test/updates/alpha-update.json");
 		assertFalse(variables.updater.updateAvailable(), "Returned update available even though we have matching unrecognizable versions");
 
 		// ensure we get a "true" response if we have non-matching non-0.0.0 format versions
 		variables.updater.setInstallManifest(createObject("component","farcry.plugins.farcrysolrpro.tests.data.testUpdates.manifest-alpha"));
-		variables.updater.setUpdateUrl("http://" & cgi.http_host & "/farcrysolrpro/test/updates/beta-update.xml");
+		variables.updater.setUpdateUrl("http://" & cgi.http_host & "/farcrysolrpro/test/updates/beta-update.json");
 		assertTrue(variables.updater.updateAvailable(), "Returned update unavailable even though we have non-matching unrecognizable versions");
-
-	}
-
-	public void function testGetAvailableVersions() {
-
-		var result = variables.updater.getAvailableVersions();
-
-		assertTrue(isArray(result));
-		assertTrue(arrayLen(result) eq 3);
-		assertTrue(isStruct(result[1]));
-		assertTrue(structKeyExists(result[1],"version"));
-		assertTrue(structKeyExists(result[1],"description"));
-		assertTrue(structKeyExists(result[1],"downloads"));
-		assertTrue(structKeyExists(result[1],"releasedate"));
-		assertTrue(isArray(result[1]["downloads"]));
-		assertTrue(arrayLen(result[1]["downloads"]) eq 2);
-		assertTrue(isStruct(result[1]["downloads"][1]));
-		assertTrue(structKeyExists(result[1]["downloads"][1],"url"));
-		assertTrue(structKeyExists(result[1]["downloads"][1],"shortdesc"));
-		assertTrue(structKeyExists(result[1]["downloads"][1],"size"));
 
 	}
 
@@ -73,7 +53,7 @@ component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
 		assertEquals(expected, actual);
 
 		// try with an unavailable URL, should return "UNKNOWN"
-		variables.updater.setUpdateUrl("http://this.doesntexist.com/update.xml");
+		variables.updater.setUpdateUrl("http://this.doesntexist.com/update.json");
 		assertEquals("UNKNOWN",variables.updater.getMostRecentVersion());
 
 	}
@@ -84,12 +64,29 @@ component extends="farcry.plugins.testMXUnit.tests.FarCryTestCase" {
 		assertEquals(expected, actual);
 	}
 
-	public void function testGetUpdateXml() {
-		makePublic(variables.updater,"getUpdateXml");
-		var result = variables.updater.getUpdateXml();
-		assertTrue(isXml(result));
-		assertTrue(arrayLen(result["versions"].xmlChildren) gte 1);
-		assertTrue(result["versions"].xmlChildren[1]["version"].xmlText eq "0.0.2");
+	public void function testGetDataFromJson() {
+		var result = variables.updater.getDataFromJson();
+
+		assertTrue(isArray(result));
+		assertTrue(arrayLen(result) eq 2);
+		assertTrue(isStruct(result[1]));
+		assertTrue(structKeyExists(result[1],"version"));
+		assertTrue(structKeyExists(result[1],"releasedate"));
+		assertTrue(structKeyExists(result[1],"description"));
+		assertTrue(structKeyExists(result[1],"changelog"));
+		assertTrue(structKeyExists(result[1],"downloads"));
+		assertTrue(structKeyExists(result[1],"requirements"));
+		assertTrue(structKeyExists(result[1],"repositoryurl"));
+		assertTrue(isArray(result[1]["downloads"]));
+		assertTrue(arrayLen(result[1]["downloads"]) eq 2);
+		assertTrue(isStruct(result[1]["downloads"][1]));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"url"));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"shortdesc"));
+		assertTrue(structKeyExists(result[1]["downloads"][1],"size"));
+		assertTrue(isStruct(result[1]["requirements"]));
+		assertTrue(structKeyExists(result[1]["requirements"],"cfml"));
+		assertTrue(structKeyExists(result[1]["requirements"],"farcry"));
+		assertTrue(structKeyExists(result[1]["requirements"],"solr"));
 	}
 
 }

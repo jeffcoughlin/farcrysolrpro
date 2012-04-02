@@ -1,0 +1,26 @@
+[
+  {
+    "downloads":[
+      {
+        "shortdesc":"w\/ Solr 3.5",
+        "size":"41MB",
+        "url":"https:\/\/github.com\/jeffcoughlin\/farcrysolrpro\/zipball\/alpha"
+      },
+      {
+        "shortdesc":"<em>(plugin only)<\/em>",
+        "size":"28MB",
+        "url":"https:\/\/github.com\/jeffcoughlin\/farcrysolrpro\/zipball\/alpha"
+      }
+    ],
+    "version":"alpha",
+    "description":"<p>This is a sample description for the the alpha release.<\/p>",
+    "repositoryurl":"https:\/\/github.com\/jeffcoughlin\/farcrysolrpro\/tree\/alpha",
+    "changelog":"<ul><li>bug fixes<\/li><\/ul>",
+    "releasedate":"2012-03-28",
+    "requirements":{
+      "farcry":[6.2,"6.1.3","6.1.18"],
+      "cfml":["ColdFusion 9","Railo 3.3"],
+      "solr":[3.5]
+    }
+  }
+]

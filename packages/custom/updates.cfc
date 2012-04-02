@@ -24,7 +24,7 @@ component accessors="true" {
 	}
 
 	public string function getCurrentVersion() {
-		return getInstallManifest().version;;
+		return getInstallManifest().version;
 	}
 
 	public boolean function updateAvailable() {
@@ -87,38 +87,15 @@ component accessors="true" {
 	}
 
 	public string function getMostRecentVersion() {
-		var versions = getAvailableVersions();
-		if (arrayLen(versions)) {
-			return versions[1].version;
+		var aData = getDataFromJson();
+		if (arrayLen(aData)) {
+			return aData[1].version;
 		} else {
 			return "UNKNOWN";
 		}
 	}
 
-	public array function getAvailableVersions() {
-		var theXml = getUpdateXml();
-		var versions = [];
-		var downloads = [];
-		for (var i = 1; i lte arrayLen(theXml["versions"].xmlChildren); i++) {
-			for (var d = 1; d lte arrayLen(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren); d++) {
-				arrayAppend(downloads,{
-					"url" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["url"].xmlText),
-					"shortdesc" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["shortdesc"].xmlText),
-					"size" = trim(theXml["versions"].xmlChildren[i]["downloads"].xmlChildren[d]["size"].xmlText)
-				});
-			}
-			arrayAppend(versions,{
-				"version" = trim(theXml["versions"].xmlChildren[i]["version"].xmlText),
-				"description" = trim(theXml["versions"].xmlChildren[i]["description"].xmlText),
-				"releasedate" = trim(theXml["versions"].xmlChildren[i]["releasedate"].xmlText),
-				"downloads" = downloads
-			});
-		downloads = [];			
-		}
-		return versions;
-	}
-
-	private xml function getUpdateXml() {
+	public array function getDataFromJson() {
 		try {
 			var updateUrl = getUpdateUrl();
 			var http = new com.adobe.coldfusion.http();
@@ -126,15 +103,16 @@ component accessors="true" {
 			http.setMethod("GET");
 			http.setThrowOnError(true);
 			var result = http.send();
-			var theXml = result.getPrefix().fileContent;
-			if (isXml(theXml)) {
-				return xmlParse(theXml);
+			var theJson = result.getPrefix().fileContent;
+			if (isJson(theJson)) {
+				return deSerializeJson(theJson);
 			} else {
-				return xmlParse("<versions />");
+				return [];
 			}
 		} catch (any err) {
-			return xmlParse("<versions />");
+			return [];
 		}
 	}
+
 
 }

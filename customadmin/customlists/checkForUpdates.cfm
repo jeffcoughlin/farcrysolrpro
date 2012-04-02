@@ -8,37 +8,39 @@
 <admin:header title="Check for Updates" />
 
 <cfscript>
-	updateUrl = "http://jeffcoughlin.github.com/farcrysolrpro/update.xml";
-	updater = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.updates").init(
+	updateUrl = "http://jeffcoughlin.github.com/farcrysolrpro/update.json";
+	oUpdater = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.updates").init(
 		updateUrl = updateUrl,
 		installManifest = application.stPlugins["farcrysolrpro"].oManifest
 	);
 </cfscript>
 
-<cfif updater.updateAvailable()>
+<cfif oUpdater.updateAvailable()>
 
-	<cfif updater.getMostRecentVersion() eq "UNKNOWN">
+	<cfif oUpdater.getMostRecentVersion() eq "UNKNOWN">
 
 		<cfoutput><p>There was a problem accessing the update site.  Please try again later.</p></cfoutput>
 
 	<cfelse>
 
-		<cfset versions = updater.getAvailableVersions() />
+		<cfset aVersions = oUpdater.getDataFromJson() />
+		<!---<cfdump var="#aVersions#" abort="true" />--->
 
 		<cfoutput>
-			<p>You are currently running version #updater.getCurrentVersion()#.  The latest version available is <strong>#updater.getMostRecentVersion()#</strong>.</p>
+			<p>You are currently running version #oUpdater.getCurrentVersion()#.  The latest version available is <strong>#oUpdater.getMostRecentVersion()#</strong>.</p>
 			<hr />
-			<p>The following version<cfif arrayLen(versions) gt 1>s are<cfelse> is</cfif> available for download:</p>
+			<p>The following version<cfif arrayLen(aVersions) gt 1>s are<cfelse> is</cfif> available for download:</p>
 		</cfoutput>
 
 		<cfset countVersion = 0 />
-		<cfloop array="#versions#" index="version">
+		<cfloop array="#aVersions#" index="version">
 			<cfset countVersion++ />
 			<cfoutput>
 				<div class="version">
 					<h2>#dateFormat(version.releasedate,"yyyy-mm-dd")# v#version.version#</h2>
           <div class="versioninfo">
-					  <div class="versiondesc">#version.description#</div>
+					  <cfif trim(version.description) neq ""><div class="versiondesc">#version.description#</div></cfif>
+					  <cfif trim(version.changelog) neq ""><div class="versionchangelog"><h3>Changelog</h3>#version.changelog#</div></cfif>
 					  <div class="versiondownload">
               <h3>Downloads</h3>
               <ul>
@@ -50,7 +52,7 @@
           </div>
 				</div>
 			</cfoutput>
-			<cfif countVersion lt arrayLen(versions)>
+			<cfif countVersion lt arrayLen(aVersions)>
 				<cfoutput>
 					<hr />
 				</cfoutput>
@@ -61,7 +63,7 @@
 
 <cfelse>
 
-	<cfoutput><p>You are currently running version #updater.getCurrentVersion()#.  This is the most recent version.</p></cfoutput>
+	<cfoutput><p>You are currently running version #oUpdater.getCurrentVersion()#.  This is the most recent version.</p></cfoutput>
 
 </cfif>
 

@@ -12,5 +12,32 @@
 	<cfset addSupportedCore(majorVersion="6", minorVersion="0", patchVersion="19") />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="1", patchVersion="4") />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
-	
+	<cfset this.aVersions = [
+	{
+		"version"="1.0.0",
+		"releasedate"="2012-04-04",
+		"description"="",
+		"changelog"="<ul><li>Initial release</li></ul>",
+		"downloads"=[
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0",
+				"shortdesc"="w/ Solr 3.5",
+				"size"="41MB"
+			},
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0",
+				"shortdesc"="<em>(plugin only)</em>",
+				"size"="28MB"
+			}
+		],
+		"requirements"={
+			"cfml"=["ColdFusion 9","Railo 3.3"],
+			"farcry"=["6.2","6.1.4","6.1.19"],
+			"solr"=["3.5"]
+		},
+		"repository"={
+			"url"="https://github.com/jeffcoughlin/farcrysolrpro/tree/1.0.0"
+		}
+	}
+] />
 </cfcomponent>
