@@ -4,3 +4,4 @@
 /packages/custom/cfsolrlib/solr-server/work
 *.iml
 .idea
+release

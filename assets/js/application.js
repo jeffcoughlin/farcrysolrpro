@@ -26,6 +26,7 @@ $(document).ready(function(){
 
 
 	populateDownloadMenu();
+	updateRequirements();
 
 }); //end document.ready()
 
@@ -48,4 +49,35 @@ function populateDownloadMenu() {
 		}
 	});
 
+}
+
+function updateRequirements() {
+	$.ajax({
+		url: "update.json",
+		method: "GET",
+		dataType: "json",
+		success: function (data, status, req) {
+
+			var requirements = $("ul.requirements");
+			requirements.find("li").each(function(i){
+				switch (i) {
+					case 0:
+						// cfml
+						$(this).text(data[0].requirements.cfml.join(", "));
+						break;
+					case 1:
+						// farcry
+						$(this).text("FarCry " + data[0].requirements.farcry.join(", "));
+						break;
+					case 2:
+						// solr
+						$(this).text("Solr " + data[0].requirements.solr.join(", ") + " (optionally included)");
+						break;
+					default:
+						break;
+				}
+			});
+
+		}
+	});
 }
