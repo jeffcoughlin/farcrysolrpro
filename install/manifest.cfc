@@ -3,7 +3,7 @@
 	<cfset this.name = "FarCry Solr Pro" />
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
-	<cfset this.version = "0.0.3" />
+	<cfset this.version = "1.0.0" />
 	<cfset this.buildState = "private beta" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
@@ -15,19 +15,19 @@
 	<cfset this.aVersions = [
 	{
 		"version"="1.0.0",
-		"releasedate"="2012-04-04",
+		"releasedate"="2012-04-02",
 		"description"="",
 		"changelog"="<ul><li>Initial release</li></ul>",
 		"downloads"=[
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0",
 				"shortdesc"="w/ Solr 3.5",
-				"size"="41MB"
+				"size"="40MB"
 			},
 			{
-				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0",
+				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
-				"size"="28MB"
+				"size"="23MB"
 			}
 		],
 		"requirements"={
