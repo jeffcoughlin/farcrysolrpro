@@ -6,9 +6,24 @@
 		<property name="releaseDir" value="./release" />
 		<property name="sourceDir" value="." />
 
-		<tstamp />
+		<!-- read latest version from json -->
+		<get src="http://jeffcoughlin.github.com/farcrysolrpro/update.json" dest="./update.json" />
+		<script language="javascript"><![CDATA[
 
-		<input message="Version Number?" addproperty="version" defaultvalue="${DSTAMP}${TSTAMP}"  />
+			importClass(java.io.File);
+			importClass(java.io.FileReader);
+			importClass(java.io.BufferedReader);
+
+			var file = new File("./update.json");
+			var fr = new FileReader(file);
+			var br = new BufferedReader(fr);
+			var json = br.readLine();
+
+			var versions = eval("(" + json + ")");
+			project.setProperty("version",versions[0].version);
+
+		]]></script>
+		<delete file="./update.json" />
 
 		<!-- create the release dir if it doesn't exist -->
 		<mkdir dir="${releaseDir}" />
