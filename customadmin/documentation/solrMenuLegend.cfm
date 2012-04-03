@@ -56,6 +56,8 @@
 	<h2>Reload Solr</h2>
 	<p>The <tt>RELOAD</tt> action loads a new core from the configuration of an existing, registered Solr core. While the new core is initializing, the existing one will continue to handle requests. When the new Solr core is ready, it takes over and the old core is unloaded.</p>
 	<p>This is useful when you've made changes to a Solr core's configuration on disk, such as adding new field definitions. Calling the <tt>RELOAD</tt> action lets you apply the new configuration without having to restart the Web container.</p>
+	<h2>Check for Updates</h2>
+	<p>Checks the plugin's remote website to see if there is a newer version available.  If there is it will show a changelog, link to download, and any important notes or information pertaining to that update if applicable.</p>
 
 	<!--- Influence Search --->
 	<h1>Reports &amp; Stats</h1>

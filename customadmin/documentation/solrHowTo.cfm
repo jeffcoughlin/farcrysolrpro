@@ -11,6 +11,8 @@
 <cfset linkPluginHome = "http://jeffcoughlin.github.com/farcrysolrpro/" />
 <cfset linkPluginInstall = "http://jeffcoughlin.github.com/farcrysolrpro/documentation.html" />
 
+<cfset oManifest = application.stPlugins.farcrysolrpro.oManifest />
+
 <cfoutput>
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="margin-top: 30px;" />
 	<img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-apacheSolr-75.png" style="float: right;" />
@@ -18,19 +20,9 @@
 	<p>For detailed installation and configuration assistance, please see the <a href="#linkPluginInstall#">plugin's website</a>.</p>
 	<h1>Minimum Requirements</h1>
 	<ul>
-		<li>ColdFusion 9</li>
-		<li>FarCry 6.2, 6.1.4, 6.0.19</li>
-		<li>Solr 3.5
-			<ul>
-				<li>Solr 3.5 is optionally included in this plugin.</li>
-				<li>To date, we have only tested this on Solr 3.5</li>
-			</ul>
-		</li>
-		<li>Although Solr can run from a separate server, FarCry needs directory access to the conf files (schema.xml, solrconfig.cml, etc) as well as the solr.xml file found in the root of the Solr server engine.  So if you plan to run Solr on a separate server you'll need to setup a mapped network drive for FarCry to use (and then set those settings in the <a href="#linkConfig#">Solr Pro Config</a>).
-			<ul>
-				<li>Note: Running Solr on a separate machine can result in slower response times if the network is not properly configured.  Please keep in mind that Solr uses HTTP requests to send and recieve JSON/XML (we use JSON in our plugin) strings of data back and forth.  In most cases, it is faster to run Solr on the same box.  Reasons for running it on a separate box are usually due to HDD space limiation, and/or CPU and RAM limitation.  If it is only HDD limitation that is the issue, you can still configure Solr to store the files on another mapped drive while running Solr on the same box as CF (to configure where the Solr configuration and data file live, see the <a href="#linkConfig#">Solr Pro Config</a>.)</li>
-			</ul>
-		</li>
+		<li>#arrayToList(oManifest.aVersions[1].requirements.cfml, ", ")#</li>
+		<li>FarCry #arrayToList(oManifest.aVersions[1].requirements.farcry, ", ")#</li>
+		<li>Solr #arrayToList(oManifest.aVersions[1].requirements.solr, ", ")# (optionally included)</li>
 	</ul>
 	<h1>Setup</h1>
 	<h2>First Time Setup</h2>
