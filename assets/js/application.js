@@ -39,11 +39,11 @@ function populateDownloadMenu() {
 
 			var link = $("#stable-dl a");
 			link.attr("href",data[0].downloads[0].url);
-			link.html('<i class="icon-download-alt"></i> Download v' + data[0].version + ' w/ Solr [' + data[0].downloads[0].size + ']');
+			link.html('<i class="icon-download-alt"></i> Download v' + data[0].version + ' ' + data[0].downloads[0].shortdesc + ' [' + data[0].downloads[0].size + ']');
 
 			var nosolrLink = $("#stable-dl-nosolr a");
 			nosolrLink.attr("href",data[0].downloads[1].url);
-			nosolrLink.html('<i class="icon-download-alt"></i> Download v' + data[0].version + ' w/o Solr [' + data[0].downloads[1].size + ']');
+			nosolrLink.html('<i class="icon-download-alt"></i> Download v' + data[0].version + ' ' + data[0].downloads[1].shortdesc + ' [' + data[0].downloads[1].size + ']');
 
 		}
 	});
