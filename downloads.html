@@ -22,39 +22,6 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script type="text/javascript" src="assets/js/downloads.js"></script>
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// load downloads info
-			$.ajax({
-				url: "update.json",
-				method: "GET",
-				dataType: "json",
-				success: function (data, status, req) {
-
-					// load the current release
-					loadCurrentRelease(data);
-
-					// load archive releases (hide if no archives found)
-					if (data.length > 1) {
-						loadArchiveReleases(data);
-					} else {
-						// no archive releases
-						$(".archive-releases").hide();
-					}
-
-					// populate the change log
-					populateChangeLog(data);
-
-				}
-			});
-
-		});
-    </script>
-
   </head>
 
   <body>
@@ -200,5 +167,35 @@
     <script src="assets/google-code-prettify/prettify.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/application.js"></script>
+    <script type="text/javascript" src="assets/js/downloads.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// load downloads info
+			$.ajax({
+				url: "update.json",
+				method: "GET",
+				dataType: "json",
+				success: function (data, status, req) {
+
+					// load the current release
+					loadCurrentRelease(data);
+
+					// load archive releases (hide if no archives found)
+					if (data.length > 1) {
+						loadArchiveReleases(data);
+					} else {
+						// no archive releases
+						$(".archive-releases").hide();
+					}
+
+					// populate the change log
+					populateChangeLog(data);
+
+				}
+			});
+
+		});
+    </script>
   </body>
 </html>
