@@ -59,8 +59,6 @@ function loadArchiveReleases(data) {
 	// skip the first (that is the current release)
 	for (var z = 1; z < data.length; z++) {
 
-		console.log(data[z]);
-
 		var tr = $("<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
 
 		// loop over each table cell and set the contents
