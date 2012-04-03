@@ -118,3 +118,20 @@ function loadArchiveReleases(data) {
 	}
 
 }
+
+function populateChangeLog(data) {
+
+	var changeLog = $("dl.changelog");
+	changeLog.empty();
+
+	for (var i = 0; i < data.length; i++) {
+
+		var dt = $("<dt>" + data[i].releasedate + " v" + data[i].version + "</dt>");
+		var dd = $("<dd>" + data[i].changelog + "</dd>");
+
+		changeLog.append(dt);
+		changeLog.append(dd);
+
+	}
+
+}

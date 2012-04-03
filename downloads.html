@@ -46,6 +46,9 @@
 						$(".archive-releases").hide();
 					}
 
+					// populate the change log
+					populateChangeLog(data);
+
 				}
 			});
 
@@ -170,10 +173,7 @@
           </div>
           <div class="span3">
             <h3>Changelog</h3>
-            <dl class="changelog">
-              <dt>2012-04-02 v1.0.0</dt>
-              <dd>Initial release</dd>
-            </dl>
+            <dl class="changelog"></dl>
           </div>
         </div>
       </section>
