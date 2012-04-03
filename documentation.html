@@ -53,9 +53,9 @@
                   </a>
                   <ul class="dropdown-menu">
                     <li class="nav-header">Current Stable Release</li>
-                    <li><a href="#"><i class="icon-download-alt"></i> Download v1.0.0 w/ Solr 3.5 [85MB]</a></li>
-                    <li><a href="#"><i class="icon-download-alt"></i> Download v1.0.0 w/o Solr [385KB]</a></li>
-                      <li class="divider"></li>
+                    <li><a href="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0"><i class="icon-download-alt"></i> Download v1.0.0 w/ Solr 3.5 [40MB]</a></li>
+                    <li><a href="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip"><i class="icon-download-alt"></i> Download v1.0.0 w/o Solr [23MB]</a></li>
+                    <li class="divider"></li>
                     <li><a href="downloads.html"><i class="icon-download"></i> All Downloads</a></li>
                   </ul>
                 </li><!--/.dropdown -->
@@ -107,14 +107,9 @@
           <div class="span4">
             <h3>Minimum Requirements</h3>
             <ul>
-              <li>ColdFusion 9+</li>
+              <li>ColdFusion 9, Railo 3.3</li>
               <li>FarCry 6.2, 6.1.4, 6.0.19</li>
-              <li>Solr 3.5
-                <ul>
-                  <li>Solr 3.5 is optionally included in this plugin.</li>
-                  <li>To date, we have only tested this on Solr 3.5</li>
-                </ul>
-              </li>
+              <li>Solr 3.5 (optionally included)</li>
             </ul>
           </div>
         </div>
@@ -155,9 +150,9 @@
         </div>
 
         <h2>Where to Run Solr From</h2>
-            <p>Solr can run from any server as long as CF has HTTP access to it.  By default the plugin will assume you are running it on the same box as CF (and for most people this will work just fine).  To configure where the plugin can find your Solr server, see the plugin config (<a href="#configuretheplugin">the plugin config is discussed below</a>).</p>
-            <h3>Consider Network Speeds</h3>
-            <p>Please keep in mind that if you plan to run Solr on a separate box, there is a possibility of it appearing slow if you have any network/bottleneck issues or network lag.  This is because a lot of data is being sent over HTTP.  One advantage we have over Solr's normal interaction with file parsing is that we interact with Tika directly from ColdFusion, so we don't ahve to send a huge binary file to Solr - which then sends the data to Tika.  So this helps tremendously with network speed issues if you plan to run Solr on a separate box.  But if you notice that your searches and indexes appear to be slow, consider the network speed and maybe verify it by testing/running Solr on the same box to see if the performance improves.</p>
+        <p>Solr can run from any server as long as CF has HTTP access to it.  By default the plugin will assume you are running it on the same box as CF (and for most people this will work just fine).  To configure where the plugin can find your Solr server, see the plugin config (<a href="#configuretheplugin">the plugin config is discussed below</a>).</p>
+        <h3>Consider Network Speeds</h3>
+        <p>Please keep in mind that if you plan to run Solr on a separate box, there is a possibility of it appearing slow if you have any network/bottleneck issues or network lag.  This is because a lot of data is being sent over HTTP.  One advantage we have over Solr's normal interaction with file parsing is that we interact with Tika directly from ColdFusion, so we don't ahve to send a huge binary file to Solr - which then sends the data to Tika.  So this helps tremendously with network speed issues if you plan to run Solr on a separate box.  But if you notice that your searches and indexes appear to be slow, consider the network speed and maybe verify it by testing/running Solr on the same box to see if the performance improves.</p>
         <div class="row">
           <div class="span8">
             <h3>Use our copy of Solr or Your Own</h3>
@@ -166,6 +161,10 @@
               <li>Add persistent="true" to the &lt;solr&gt; tag.</li>
               <li>Add adminPath="/admin/cores" to the &lt;cores&gt; tag.</li>
             </ul>
+            <div class="alert">
+              <h4 class="alert-heading"><i class="icon-exclamation-sign"></i> Important!</h4>
+              <p>We have not tried using this plugin with Solr on another box (we haven't had the need yet).  If you've had success (or failure) with running Solr on another box in conjunction with this plugin, let us know.</p>
+            </div>
           </div>
           <div class="span4">
 <pre class="prettyprint linenums">
