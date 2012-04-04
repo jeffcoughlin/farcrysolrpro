@@ -8,7 +8,7 @@
 	<cfproperty ftSeq="160" ftFieldset="Search Log" name="suggestion" type="nstring" ftLabel="Suggestion" ftType="string" ftDisplayOnly="true" />
 	
 	<cffunction name="purgeLog" access="public" output="false" returntype="void">
-		<cfargument name="purgeDate" required="false" defaul="" type="string" />
+		<cfargument name="purgeDate" required="false" default="" type="string" />
 		
 		<!--- purge the log records --->
 		<cfquery datasource="#application.dsn#">
