@@ -143,10 +143,10 @@
 			<cfset var lExistingRecords = "" />
 			<cfset var r = "" />
 			<cfloop array="#existingRecords.results#" index="r">
-				<cfif isArray(r.objectid)>
-					<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid[1]) />
+				<cfif isArray(r["objectid"])>
+					<cfset lExistingRecords = listAppend(lExistingRecords, r["objectid"][1]) />
 				<cfelse>	
-					<cfset lExistingRecords = listAppend(lExistingRecords, r.objectid) />
+					<cfset lExistingRecords = listAppend(lExistingRecords, r["objectid"]) />
 				</cfif>
 			</cfloop>
 			
