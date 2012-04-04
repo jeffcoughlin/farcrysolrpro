@@ -75,7 +75,7 @@
 			</cfif>
 		</cfloop>
 		
-		<cfif not listContainsNoCase(finalList, stDocBoost.boostValue)>
+		<cfif structKeyExists(stDocBoost, "boostValue") and not listContainsNoCase(finalList, stDocBoost.boostValue)>
 			<cfset finalList = listAppend(finalList, stDocBoost.boostValue) />
 		</cfif>
 		
