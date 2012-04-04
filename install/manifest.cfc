@@ -22,12 +22,12 @@
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0",
 				"shortdesc"="w/ Solr 3.5",
-				"size"="40MB"
+				"size"="38MB"
 			},
 			{
 				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
-				"size"="23MB"
+				"size"="22MB"
 			}
 		],
 		"requirements"={
