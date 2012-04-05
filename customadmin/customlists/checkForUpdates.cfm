@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Check for Updates --->
-<!--- @@author: Sean Coyne (sean@n42designs.com) --->
+<!--- @@author: Sean Coyne (www.n42designs.com), Jeff Coughlin (www.jeffcoughlin.com) --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
@@ -24,7 +24,6 @@
 	<cfelse>
 
 		<cfset aVersions = oUpdater.getDataFromJson() />
-		<!---<cfdump var="#aVersions#" abort="true" />--->
 
 		<cfoutput>
 			<p>You are currently running version #oUpdater.getCurrentVersion()#.  The latest version available is <strong>#oUpdater.getMostRecentVersion()#</strong>.</p>
