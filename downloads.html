@@ -169,33 +169,34 @@
     <script src="assets/js/application.js"></script>
     <script type="text/javascript" src="assets/js/downloads.js"></script>
     <script type="text/javascript">
-		$(document).ready(function(){
+      $(document).ready(function(){
 
-			// load downloads info
-			$.ajax({
-				url: "update.json",
-				method: "GET",
-				dataType: "json",
-				success: function (data, status, req) {
+        // load downloads info
+        $.ajax({
+          url: "update.json",
+          method: "GET",
+          dataType: "json",
+          success: function (data, status, req) {
 
-					// load the current release
-					loadCurrentRelease(data);
+            // load the current release
+            loadCurrentRelease(data);
 
-					// load archive releases (hide if no archives found)
-					if (data.length > 1) {
-						loadArchiveReleases(data);
-					} else {
-						// no archive releases
-						$(".archive-releases").hide();
-					}
+            // load archive releases (hide if no archives found)
+            if (data.length > 1) {
+              loadArchiveReleases(data);
+            } else {
+              // no archive releases
+              $(".archive-releases").hide();
+            }
 
-					// populate the change log
-					populateChangeLog(data);
+            // populate the change log
+            populateChangeLog(data);
 
-				}
-			});
+          }
+        });
 
-		});
+      });
     </script>
+    <script src="assets/js/googleanalytics.js"></script>
   </body>
 </html>
