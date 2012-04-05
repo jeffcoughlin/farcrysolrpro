@@ -32,7 +32,7 @@
 		],
 		"requirements"={
 			"cfml"=["ColdFusion 9","Railo 3.3"],
-			"farcry"=["6.2","6.1.4","6.1.19"],
+			"farcry"=["6.2","6.1.4","6.0.19"],
 			"solr"=["3.5"]
 		},
 		"repository"={
@@ -58,7 +58,7 @@
 		],
 		"requirements"={
 			"cfml"=["ColdFusion 9","Railo 3.3"],
-			"farcry"=["6.2","6.1.4","6.1.19"],
+			"farcry"=["6.2","6.1.4","6.0.19"],
 			"solr"=["3.5"]
 		},
 		"repository"={
