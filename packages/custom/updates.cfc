@@ -98,12 +98,12 @@ component accessors="true" {
 	public array function getDataFromJson() {
 		try {
 			var updateUrl = getUpdateUrl();
-			var http = new com.adobe.coldfusion.http();
+			var http = createObject("component","httpHelper");
 			http.setUrl(updateUrl);
 			http.setMethod("GET");
 			http.setThrowOnError(true);
 			var result = http.send();
-			var theJson = result.getPrefix().fileContent;
+			var theJson = result.fileContent;
 			if (isJson(theJson)) {
 				return deSerializeJson(theJson);
 			} else {
