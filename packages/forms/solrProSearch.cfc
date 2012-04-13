@@ -70,13 +70,18 @@
 			
 			<!--- get the field list for the content type(s) we are searching --->
 			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->
+			<cfset var lContentTypeIds = "" />
+			<cfset var ct = "" />
+			<cfloop list="#stSearchForm.lContentTypes#" index="ct">
+				<cfset lContentTypeIds = listAppend(lContentTypeIds, oContentType.getByContentType(ct).objectid) />
+			</cfloop>
 			<cfset params["qf"] = oContentType.getFieldListForTypes(
-				lContentTypes = stSearchForm.lContentTypes, 
+				lContentTypes = lContentTypeIds,
 				bIncludePhonetic = (stSearchForm.operator neq "phrase"), 
-				bUseCache = true, 
+				bUseCache = true,
 				bFlushCache = false
 			) />
-			
+
 			<!--- return the score --->
 			<cfset params["fl"] = "*,score" />
 			
