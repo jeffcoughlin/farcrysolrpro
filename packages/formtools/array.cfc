@@ -6,7 +6,12 @@
 	<cffunction name="prepMetadata" access="public" output="false" returntype="struct" hint="Allows modification of property metadata in the displayLibrary webskins">
 		<cfargument name="stObject" type="struct" required="true" hint="The object being edited" />
 		<cfargument name="stMetadata" type="struct" required="true" hint="The property metadata" />
-		<cfset arguments.stMetadata = prepFtJoin(typename = arguments.stObject.typename, stMetadata = arguments.stMetadata) />
+		<cfif not structKeyExists(arguments.stObject,"typename") and structKeyExists(arguments.stObject, "objectid")>
+			<cfset arguments.stObject.typename = application.fapi.findType(arguments.stObject.objectId) />
+		</cfif>
+		<cfif structKeyExists(arguments.stObject,"typename")>
+			<cfset arguments.stMetadata = prepFtJoin(typename = arguments.stObject.typename, stMetadata = arguments.stMetadata) />
+		</cfif>
 		<cfreturn super.prepMetadata(argumentCollection = arguments) />
 	</cffunction>
 
