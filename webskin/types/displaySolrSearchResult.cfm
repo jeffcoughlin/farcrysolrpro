@@ -34,8 +34,8 @@
 </cfif>
 
 <!--- Get result teaser --->
-<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField) and len(stObj[stContentType.resultSummaryField][1])>
-	<cfif isArray(stObj[stContentType.resultSummaryField]) and arrayLen(stObj[stContentType.resultSummaryField])>
+<cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField)>
+	<cfif isArray(stObj[stContentType.resultSummaryField]) and arrayLen(stObj[stContentType.resultSummaryField]) and len(stObj[stContentType.resultSummaryField][1])>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField][1]) />
 	<cfelse>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />
