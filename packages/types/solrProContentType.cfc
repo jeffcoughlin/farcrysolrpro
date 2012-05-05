@@ -139,7 +139,7 @@
 			<cfset var lItemsInDb = stResult.lItemsInDb />
 			
 			<!--- load all records for this type from solr for comparison later --->
-			<cfset var existingRecords = search(q = "typename:" & stContentType.contentType, rows = 999999) />
+			<cfset var existingRecords = search(q = "typename:" & stContentType.contentType & " AND fcsp_sitename:" & application.applicationName, rows = 999999) />
 			<cfset var lExistingRecords = "" />
 			<cfset var r = "" />
 			<cfloop array="#existingRecords.results#" index="r">
@@ -608,15 +608,37 @@
 		<cfif len(trim(arguments.sitename))>
 			<cfset deleteQuery = deleteQuery & " AND fcsp_sitename:" & arguments.sitename />
 		</cfif>
+
 		<cfset var i = "" />
-		<cfif listLen(arguments.lObjectIds)>
+
+		<!--- max clause count is 1024 --->
+		<cfset var batchSize = 1000 />
+		<cfif listLen(arguments.lObjectIds) gt batchSize>
+			<!--- run in batches --->
+			<cfset var numBatches = ceiling(listLen(arguments.lObjectIds) / batchSize) />
+			<cfset var batchIdx = "" />
+			<cfset var batchStart = 1 />
+			<cfloop from="1" to="#numBatches#" index="batchIdx">
+				<cfset batchQuery = deleteQuery & " AND (" />
+				<cfset var batchEnd = min(listLen(arguments.lObjectIds), (batchStart + batchSize - 1)) />
+				<cfloop from="#batchStart#" to="#batchEnd#" index="i">
+					<cfset batchQuery = batchQuery & " objectid:#listGetAt(arguments.lObjectIds,i)#" />
+				</cfloop>
+				<cfset batchQuery = batchQuery & " )" />
+				<cfset deleteByQuery(q = batchQuery) />
+				<cfset batchStart+= batchSize />
+			</cfloop>
+		<cfelseif listLen(arguments.lObjectIds)>
 			<cfset deleteQuery = deleteQuery & " AND (" />
 			<cfloop list="#arguments.lObjectIds#" index="i">
 				<cfset deleteQuery = deleteQuery & " objectid:#i#" />
 			</cfloop>
 			<cfset deleteQuery = deleteQuery & " )" />
+			<cfset deleteByQuery(q = deleteQuery) />
+		<cfelse>
+			<cfset deleteByQuery(q = deleteQuery) />
 		</cfif>
-		<cfset deleteByQuery(q = deleteQuery) />
+
 		<cfif arguments.bCommit>
 			<cfset commit() />
 		</cfif>
