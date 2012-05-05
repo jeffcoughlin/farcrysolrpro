@@ -110,7 +110,7 @@
 
 		<!--- delete any records that have a typename value that is not in the list of indexed typenames --->
 		<cfset var lValidTypenames = valueList(qContentTypes.contentType) />
-		<cfset var deleteQueryString = "q={!lucene q.op=AND}" />
+		<cfset var deleteQueryString = "q={!lucene q.op=AND} fcsp_sitename:" & application.applicationName />
 		<cfset var t = "" />
 		<cfloop list="#lValidTypenames#" index="t">
 			<cfset deleteQueryString = deleteQueryString & " -typename:" & t />
@@ -327,7 +327,8 @@
 	
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & application.applicationName, params = { "fl" = "objectid" }, rows = 9999999).results) />
+		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & arguments.sitename, params = { "fl" = "objectid" }, rows = 9999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
