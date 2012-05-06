@@ -234,7 +234,10 @@
 		<!-- field to store the site this record came from. (used when multiple sites share a common solr core) -->
 		<field name="fcsp_sitename" type="text" indexed="true" stored="true" required="true" multiValued="false" />
 		<field name="fcsp_benablesearch" type="boolean" indexed="true" stored="true" required="true" multiValued="false" />
-		
+
+		<!-- a unique id -->
+		<field name="fcsp_id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+
 		<!-- dynamic fields -->
 
 		<!-- NOTE: fc* prefixed fields are FarCry Solr Pro plugin specific.  fcDataTypes indicates FarCry datatypes that the Solr field is suggested for.  If unsure, or it doesn't match up well with a FarCry datatype, leave it blank. -->
@@ -302,7 +305,7 @@
 	<copyField source="fcsp_rulecontent" dest="fcsp_spell" />
 	<copyField source="fcsp_spell" dest="fcsp_spellphrase" />
 	
-	<uniqueKey>objectid</uniqueKey>
+	<uniqueKey>fcsp_id</uniqueKey>
 	
 	<!-- field for the QueryParser to use when an explicit fieldname is absent -->
  	<defaultSearchField>label</defaultSearchField>

@@ -11,6 +11,8 @@
 <cfparam name="stParam.highlighting" default="#structNew()#" />
 <cfparam name="stParam.totalResults" default="0" />
 
+<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+
 <cfset aObjectIds = [] />
 <cfloop array="#stParam.results#" index="i">
 	<cfset arrayAppend(aObjectIds, i["objectid"]) />
@@ -22,8 +24,6 @@
 </cfif>
 <cfset actionUrl = application.fapi.getLink(objectid = request.navid, stParameters = addValues) />
 
-<cfset oContentType = application.fapi.getContentType("solrProContentType") />
-
 <skin:pagination 
 	paginationId="" 
 	array="#aObjectIds#" 
@@ -33,17 +33,18 @@
 	currentPage="#stParam.currentPage#" 
 	recordsPerPage="#stParam.rows#" 
 	pageLinks="#stParam.pageLinks#" r_stObject="st">
-	<cfif structKeyExists(stParam.highlighting, stParam.results[st.currentRow]["objectid"])>
-		<cfset highlighting = stParam.highlighting[stParam.results[st.currentRow]["objectid"]] />
-	<cfelse>
-		<cfset highlighting = {} />
-	</cfif>
-	
+
 	<cfset thisObj = {} />
 	<cfloop collection="#stParam.results[st.currentRow]#" item="f">
 		<cfset thisObj[f] = stParam.results[st.currentRow][lcase(f)] />
 	</cfloop>
-	
+
+	<cfif structKeyExists(stParam.highlighting, thisObj["fcsp_id"])>
+		<cfset highlighting = stParam.highlighting[thisObj["fcsp_id"]] />
+	<cfelse>
+		<cfset highlighting = {} />
+	</cfif>
+
 	<skin:view webskin="displaySolrSearchResult" stObject="#thisObj#" oContentType="#oContentType#" highlighting="#highlighting#" />
 
 </skin:pagination>

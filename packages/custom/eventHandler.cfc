@@ -81,7 +81,7 @@
 			<cfset oContentType.addRecordToIndex(objectid = stRecordToIndex.objectId, typename = stRecordToIndex.typename, stContentType = stContentType, bCommit = true) />
 		<cfelseif structCount(stRecordToIndex)>
 			<!--- this record is NOT indexable, delete it from the index --->
-			<cfset oContentType.deleteById(id = stRecordToIndex.objectid, bCommit = true) />
+			<cfset oContentType.deleteById(id = application.applicationName & "_" & stRecordToIndex.objectid, bCommit = true) />
 		</cfif>
 
 		<cfreturn arguments.stProperties />
@@ -94,7 +94,7 @@
 		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
 		<cfset var stContentType = oContentType.getByContentType(arguments.typename) />
 		<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-			<cfset oContentType.deleteById(id = arguments.stObject.objectid, bCommit = true) />
+			<cfset oContentType.deleteById(id = application.applicationName & "_" & arguments.stObject.objectid, bCommit = true) />
 		</cfif>
 	</cffunction>
 

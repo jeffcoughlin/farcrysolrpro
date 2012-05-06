@@ -131,17 +131,16 @@
 
 		<cfloop array="#arguments.aDocumentsToInclude#" index="doc">
 			<cfset xmlDoc = xmlElemNew(xml, "doc") />
-			<cfset xmlDoc.xmlAttributes["id"] = doc />
+			<cfset xmlDoc.xmlAttributes["id"] = application.applicationName & "_" & doc />
 			<cfset arrayAppend(queryNode.xmlChildren, xmlDoc) />
 		</cfloop>
 
 		<cfloop array="#arguments.aDocumentsToExclude#" index="doc">
 			<cfset xmlDoc = xmlElemNew(xml, "doc") />
-			<cfset xmlDoc.xmlAttributes["id"] = doc />
+			<cfset xmlDoc.xmlAttributes["id"] = application.applicationName & "_" & doc />
 			<cfset xmlDoc.xmlAttributes["exclude"] = "true" />
 			<cfset arrayAppend(queryNode.xmlChildren, xmlDoc) />
 		</cfloop>
-
 
 		<!--- add the query node to the xml document --->
 		<cfset arrayAppend(xml["elevate"].xmlChildren, queryNode) />

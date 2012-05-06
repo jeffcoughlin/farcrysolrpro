@@ -36,6 +36,7 @@
 		<cfargument name="bLogSearch" required="false" type="boolean" default="#application.fapi.getConfig(key = 'solrserver', name = 'bLogSearches', default = true)#" hint="Log the search criteria and number of results?" />
 		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" hint="If using a single Solr core for multiple sites, do you want to filter results for only this site (true) or for all sites (false)?" />
+		<cfargument name="customQueryString" required="false" type="string" hint="If you want to use a custom query string, you can pass it along here" />
 		
 		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
@@ -65,8 +66,12 @@
 			<cfelse>
 				<cfset params["spellcheck"] = false />
 			</cfif>
-			
-			<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes, bCleanString = arguments.bCleanString, bFilterBySite = arguments.bFilterBySite) />
+
+			<cfif structKeyExists(arguments,"customQueryString")>
+				<cfset var q = arguments.customQueryString />
+			<cfelse>
+				<cfset var q = oContentType.buildQueryString(searchString = stSearchForm.q, operator = stSearchForm.operator, lContentTypes = stSearchForm.lContentTypes, bCleanString = arguments.bCleanString, bFilterBySite = arguments.bFilterBySite) />
+			</cfif>
 			
 			<!--- get the field list for the content type(s) we are searching --->
 			<!--- if doing a "PHRASE" search, remove all PHONETIC fields. to match Google and other search engine functionality --->

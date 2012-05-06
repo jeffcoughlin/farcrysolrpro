@@ -82,7 +82,7 @@
 				webskin="displaySearchSuggestions" 
 				suggestion="#stSearchResult.suggestion#" />
 		</cfif>
-		
+
 		<cfif arraylen(stSearchResult.results) GT 0>
 			<cfparam name="stSearchResult.highlighting" default="#structnew()#" />
 			<skin:view 

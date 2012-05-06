@@ -328,7 +328,7 @@
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
 		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & arguments.sitename, params = { "fl" = "objectid" }, rows = 9999999).results) />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & arguments.sitename, params = { "fl" = "fcsp_id" }, rows = 9999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
@@ -358,6 +358,9 @@
 		
 		<!--- each record in Solr should track the application name --->
 		<cfset stRecord["fcsp_sitename"] = application.applicationName />
+
+		<!--- set a unique id --->
+		<cfset stRecord["fcsp_id"] = application.applicationName & "_" & stRecord.objectid />
 		
 		<!--- create a solr object for this record --->
 		<cfset var doc = [] />
@@ -623,7 +626,7 @@
 				<cfset batchQuery = deleteQuery & " AND (" />
 				<cfset var batchEnd = min(listLen(arguments.lObjectIds), (batchStart + batchSize - 1)) />
 				<cfloop from="#batchStart#" to="#batchEnd#" index="i">
-					<cfset batchQuery = batchQuery & " objectid:#listGetAt(arguments.lObjectIds,i)#" />
+					<cfset batchQuery = batchQuery & " fcsp_id:#arguments.sitename#_#listGetAt(arguments.lObjectIds,i)#" />
 				</cfloop>
 				<cfset batchQuery = batchQuery & " )" />
 				<cfset deleteByQuery(q = batchQuery) />
@@ -632,7 +635,7 @@
 		<cfelseif listLen(arguments.lObjectIds)>
 			<cfset deleteQuery = deleteQuery & " AND (" />
 			<cfloop list="#arguments.lObjectIds#" index="i">
-				<cfset deleteQuery = deleteQuery & " objectid:#i#" />
+				<cfset deleteQuery = deleteQuery & " fcsp_id:#arguments.sitename#_#i#" />
 			</cfloop>
 			<cfset deleteQuery = deleteQuery & " )" />
 			<cfset deleteByQuery(q = deleteQuery) />
@@ -1065,7 +1068,7 @@
 	<cffunction name="deleteByID" access="public" output="false" hint="Delete a document from the index by ID">
 		<cfargument name="id" type="string" required="true" hint="ID of object to delete.">
 		<cfargument name="bCommit" type="boolean" required="false" default="false" />
-		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteById(id = arguments.id, idFieldName = "objectid") />
+		<cfset application.stPlugins["farcrysolrpro"].cfsolrlib.deleteById(id = arguments.id, idFieldName = "fcsp_id") />
 		<cfif arguments.bCommit>
 			<cfset commit() />
 		</cfif>

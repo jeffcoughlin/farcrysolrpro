@@ -116,7 +116,7 @@
         </div>
         <div class="searchResultMeta">
           <div class="searchResultLocation"><a href="#itemUri#">#abbrLink#</a></div>
-          <div class="searchResultFileType">#application.stCoapi[stObj.typename].displayName#</div>
+          <div class="searchResultFileType">#application.stCoapi[stObj['typename']].displayName#</div>
           <div class="searchResultDate divider">#dateFormat(variables.resultDate, "mmm d, yyyy")#<!--- #timeFormat(variables.resultDate, "h:mm tt")# ---></div>
           <cfif stObj.fcsp_documentsize gt 0><div class="searchResultSize divider">#oCustomFunctions.byteConvert(stObj.fcsp_documentsize)#</div></cfif>
         </div>
