@@ -419,16 +419,14 @@
 						<cfscript>
 							// if this field is an image or file field, parse the contents
 							var ftType = getFTTypeForProperty(arguments.typename,field);
-							if (listFindNoCase("image,file",ftType)) {
+							if (listFindNoCase("image,file",ftType) && len(trim(stRecord[field]))) {
 							
 								if (ftType eq "image") {
-									var filePath = application.fapi.getImageWebroot() & stRecord[field];
+									var filePath = expandPath(application.fapi.getImageWebroot() & stRecord[field]);
 								} else {
-									var filePath = application.fapi.getFileWebroot() & stRecord[field];	
+									var filePath = getFilePathForProperty(stRecord, field);
 								}
-								
-								filePath = expandPath(filePath);
-								
+
 								if (fileExists(filePath)) {
 								
 									// parse and save the value
@@ -442,7 +440,7 @@
 									
 									// save parsed value to stRecord so we can use it to build the "highlight" summary
 									stRecord[field & "_contents"] = parsedValue;
-									
+
 								}
 								
 							}
@@ -504,23 +502,25 @@
 		<cfif len(trim(arguments.stContentType.lDocumentSizeFields))>
 			<cfset var docSizeField = "" />
 			<cfloop list="#arguments.stContentType.lDocumentSizeFields#" index="docSizeField">
-				<cfset var docSizeFtType = getFtTypeForProperty(typename = stRecord.typename, propertyName = docSizeField) />
-				<cfswitch expression="#docSizeFtType#">
-					<cfcase value="file,image">
-						<!--- get the size of the file --->
-						<cfif docSizeFtType eq "file">
-							<cfset var fp = expandPath(application.fapi.getFileWebroot() & stRecord[docSizeField]) />
-						<cfelse>
-							<cfset var fp = expandPath(application.fapi.getImageWebroot() & stRecord[docSizeField]) />
-						</cfif>
-						<cfif fileExists(fp)>
-							<cfset docSize+= createObject("java","java.io.File").init(fp).length() />
-						</cfif>
-					</cfcase>
-					<cfdefaultcase>
-						<cfset docSize+= len(stRecord[docSizeField]) />
-					</cfdefaultcase>
-				</cfswitch>
+				<cfif len(trim(stRecord[docSizeField]))>
+					<cfset var docSizeFtType = getFtTypeForProperty(typename = stRecord.typename, propertyName = docSizeField) />
+					<cfswitch expression="#docSizeFtType#">
+						<cfcase value="file,image">
+							<!--- get the size of the file --->
+							<cfif docSizeFtType eq "file">
+								<cfset var fp = getFilePathForProperty(stRecord, docSizeField) />
+							<cfelse>
+								<cfset var fp = expandPath(application.fapi.getImageWebroot() & stRecord[docSizeField]) />
+							</cfif>
+							<cfif fileExists(fp)>
+								<cfset docSize+= createObject("java","java.io.File").init(fp).length() />
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							<cfset docSize+= len(stRecord[docSizeField]) />
+						</cfdefaultcase>
+					</cfswitch>
+				</cfif>
 			</cfloop>
 		</cfif>
 		<cfset arrayAppend(doc, {
@@ -817,6 +817,23 @@
 			<cfreturn application.stPlugins["farcrysolrpro"]["typeProperties-" & arguments.typename]  />
 		</cfif>
 		
+	</cffunction>
+
+	<cffunction name="getFilePathForProperty" access="public" output="false" returntype="string">
+		<cfargument name="stObject" required="true" type="struct" />
+		<cfargument name="propertyName" required="true" type="string" />
+		<cfscript>
+			var pathInfo = application.fapi.getFormtool("file").getFileLocation(
+				stObject = arguments.stObject,
+				stMetadata = application.fapi.getPropertyMetadata(typename = arguments.stObject.typename, property = arguments.propertyName)
+			);
+			if (structKeyExists(pathInfo,"fullPath")) {
+				return pathInfo.fullPath;
+			} else {
+				// it wasn't found, try and cobble something together
+				return application.path.defaultfilepath & arguments.stObject[arguments.propertyName];
+			}
+		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getFTTypeForProperty" access="public" output="false" returntype="string">
