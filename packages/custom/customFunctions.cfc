@@ -121,6 +121,9 @@
 				str = replace(str,"___TEMP___ENDNOSTRIP___",">","ALL");
 			}
 
+			// remove html comments (sean coyne, sean@n42designs.com)
+			str = reReplaceNoCase(str, "<!--(.+?)-->","","ALL");
+
 			return str;
 		</cfscript>
 	</cffunction>
