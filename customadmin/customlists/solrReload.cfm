@@ -12,7 +12,7 @@
 	<cfscript>
 		oContentType = application.fapi.getContentType("solrProContentType");
 		oContentType.reload();
-		oContentType.optmize();
+		oContentType.optimize();
 	</cfscript>
 	
 	<cfoutput>
