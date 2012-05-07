@@ -9,11 +9,15 @@
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
-	<cfset application.fapi.getContentType("solrProContentType").reload() />
+	<cfscript>
+		oContentType = application.fapi.getContentType("solrProContentType");
+		oContentType.reload();
+		oContentType.optmize();
+	</cfscript>
 	
 	<cfoutput>
 		<h1>Complete!</h1>
-		<p>Solr has been reloaded.  Changes to the following files have been reloaded:</p>
+		<p>Solr has been reloaded and the collection has been optimized.  Changes to the following files have been reloaded:</p>
 		<ul>
 			<li>solrconfig.xml</li>
 			<li>schema.xml</li>
