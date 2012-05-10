@@ -26,8 +26,10 @@
 <cfif structKeyExists(stObj, stContentType.resultTitleField)>
 	<cfif isArray(stobj[stContentType.resultTitleField]) and arrayLen(stobj[stContentType.resultTitleField]) and len(stObj[stContentType.resultTitleField][1])>
 		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField][1]) />
+	<cfelseif isSimpleValue(stObj[stContentType.resultTitleField])>
+		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />
 	<cfelse>
-		<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj[stContentType.resultTitleField]) />	
+		<cfset variables.resultTitle = stObj["label"] />
 	</cfif>
 <cfelse>
 	<cfset variables.resultTitle = oCustomFunctions.xmlSafeText(stObj.label) />
@@ -37,8 +39,10 @@
 <cfif len(trim(stContentType.resultSummaryField)) and structKeyExists(stObj, stContentType.resultSummaryField)>
 	<cfif isArray(stObj[stContentType.resultSummaryField]) and arrayLen(stObj[stContentType.resultSummaryField]) and len(stObj[stContentType.resultSummaryField][1])>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField][1]) />
-	<cfelse>
+	<cfelseif isSimpleValue(stObj[stContentType.resultSummaryField])>
 		<cfset variables.teaser = oCustomFunctions.tagStripper(stObj[stContentType.resultSummaryField]) />
+	<cfelse>
+		<cfset vairables.teaser = "" />
 	</cfif>
 	<!--- abbreviate teaser --->
 	<cfset variables.teaser = oCustomFunctions.abbreviate(teaser, variables.teaserLen) />
