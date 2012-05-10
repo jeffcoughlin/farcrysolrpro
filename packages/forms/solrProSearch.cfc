@@ -24,7 +24,6 @@
 	
 	<cffunction name="getSearchResults" access="public" output="false" returntype="struct" hint="Returns a structure containing extensive information of the search results">
 		<cfargument name="objectid" required="true" hint="The objectid of the solrProSearch object containing the details of the search" />
-		<cfargument name="typename" required="false" default="solrProSearch" hint="The solr search form type used to control the search." />
 		<cfargument name="bSpellcheck" required="false" default="true" hint="enable/disable spellchecker" />
 		<cfargument name="rows" required="false" default="10" />
 		<cfargument name="page" required="false" default="1" />
@@ -41,8 +40,7 @@
 		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
 		<cfset var stResult = { bSearchPerformed = 0 } />
-		<cfset var oSearchForm = application.fapi.getContentType(arguments.typename) />
-		<cfset var stSearchForm = oSearchForm.getData(objectid = arguments.objectid) />
+		<cfset var stSearchForm = getData(objectid = arguments.objectid) />
 		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
 		<cfset var params = {} />
 		
@@ -104,9 +102,8 @@
 				<cfset params["hl.simple.pre"] = arguments.hlPre />
 				<cfset params["hl.simple.post"] = arguments.hlPost />
 			</cfif>
-			
-			<cfset var oSearchService = application.fapi.getContentType("solrProContentType") />
-			<cfset stResult = oSearchService.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
+
+			<cfset stResult = oContentType.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
 			<cfif arguments.bSpellcheck>
