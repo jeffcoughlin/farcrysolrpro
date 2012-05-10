@@ -35,54 +35,61 @@
 	<cffunction name="afterSave" access="public" output="false" returntype="struct">
 		<cfargument name="stProperties" type="struct" required="true" />
 
-		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
-		<cfset var stRecordToIndex = {} />
-		<cfset var stContentType = {} />
+		<cftry>
 
-		<!--- handle rules and types separately --->
-		<cfif left(stProperties.typename,4) eq "rule">
-			<!--- determine containing page --->
-			<cfset var containerId = application.fapi.getContentType(stProperties.typename).getRuleContainerID(objectid = stProperties.objectid) />
-			<cfif isValid("uuid",containerId)>
-				<cfset var pageId = getPageIdForContainer(containerId) />
+			<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+			<cfset var stRecordToIndex = {} />
+			<cfset var stContentType = {} />
+
+			<!--- handle rules and types separately --->
+			<cfif left(stProperties.typename,4) eq "rule">
+				<!--- determine containing page --->
+				<cfset var containerId = application.fapi.getContentType(stProperties.typename).getRuleContainerID(objectid = stProperties.objectid) />
+				<cfif isValid("uuid",containerId)>
+					<cfset var pageId = getPageIdForContainer(containerId) />
+					<!--- determine if this page is being indexed --->
+					<cfif isValid("uuid",pageId)>
+						<cfset var pageType = application.fapi.findType(pageId) />
+						<cfset stContentType = oContentType.getByContentType(pageType) />
+						<!--- make sure this content type is being indexed, has the index on save flag, and is indexing this rule --->
+						<cfif structCount(stContentType) and stContentType.bIndexOnSave is true and listFindNoCase(stContentType.lIndexedRules,stProperties.typename)>
+							<!--- get the page --->
+							<cfset stRecordToindex = application.fapi.getContentType(pageType).getData(pageId) />
+						</cfif>
+					</cfif>
+				</cfif>
+			<cfelseif stProperties.typename eq "container">
+				<!--- determine the containing page --->
+				<cfset var pageId = getPageIdForContainer(stProperties.objectId) />
 				<!--- determine if this page is being indexed --->
 				<cfif isValid("uuid",pageId)>
 					<cfset var pageType = application.fapi.findType(pageId) />
 					<cfset stContentType = oContentType.getByContentType(pageType) />
-					<!--- make sure this content type is being indexed, has the index on save flag, and is indexing this rule --->
-					<cfif structCount(stContentType) and stContentType.bIndexOnSave is true and listFindNoCase(stContentType.lIndexedRules,stProperties.typename)>
+					<!--- make sure this content type is being indexed, has the index on save flag --->
+					<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
 						<!--- get the page --->
 						<cfset stRecordToindex = application.fapi.getContentType(pageType).getData(pageId) />
 					</cfif>
 				</cfif>
-			</cfif>
-		<cfelseif stProperties.typename eq "container">
-			<!--- determine the containing page --->
-			<cfset var pageId = getPageIdForContainer(stProperties.objectId) />
-			<!--- determine if this page is being indexed --->
-			<cfif isValid("uuid",pageId)>
-				<cfset var pageType = application.fapi.findType(pageId) />
-				<cfset stContentType = oContentType.getByContentType(pageType) />
-				<!--- make sure this content type is being indexed, has the index on save flag --->
+			<cfelse>
+				<cfset stContentType = oContentType.getByContentType(stProperties.typename) />
 				<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-					<!--- get the page --->
-					<cfset stRecordToindex = application.fapi.getContentType(pageType).getData(pageId) />
+					<cfset stRecordToindex = stProperties />
 				</cfif>
 			</cfif>
-		<cfelse>
-			<cfset stContentType = oContentType.getByContentType(stProperties.typename) />
-			<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-				<cfset stRecordToindex = stProperties />
-			</cfif>
-		</cfif>
 
-		<!--- if we have a record to index, check that it is "indexable" and index it --->
-		<cfif structCount(stRecordToIndex) and isIndexable(stObject = stRecordToIndex)>
-			<cfset oContentType.addRecordToIndex(objectid = stRecordToIndex.objectId, typename = stRecordToIndex.typename, stContentType = stContentType, bCommit = true) />
-		<cfelseif structCount(stRecordToIndex)>
-			<!--- this record is NOT indexable, delete it from the index --->
-			<cfset oContentType.deleteById(id = application.applicationName & "_" & stRecordToIndex.objectid, bCommit = true) />
-		</cfif>
+			<!--- if we have a record to index, check that it is "indexable" and index it --->
+			<cfif structCount(stRecordToIndex) and isIndexable(stObject = stRecordToIndex)>
+				<cfset oContentType.addRecordToIndex(objectid = stRecordToIndex.objectId, typename = stRecordToIndex.typename, stContentType = stContentType, bCommit = true) />
+			<cfelseif structCount(stRecordToIndex)>
+				<!--- this record is NOT indexable, delete it from the index --->
+				<cfset oContentType.deleteById(id = application.applicationName & "_" & stRecordToIndex.objectid, bCommit = true) />
+			</cfif>
+
+			<cfcatch>
+				<cflog application="true" file="farcrySolrPro" type="error" text="Index on Save was unable to index objectid: #arguments.stProperties.objectid# (#arguments.stProperties.typename#).  The error was: #cfcatch.message# #cfcatch.detail#" />
+			</cfcatch>
+		</cftry>
 
 		<cfreturn arguments.stProperties />
 
@@ -91,11 +98,20 @@
 	<cffunction name="onDelete" access="public" output="false" returntype="void">
 		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
 		<cfargument name="stObject" type="struct" required="true" hint="The object" />
-		<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
-		<cfset var stContentType = oContentType.getByContentType(arguments.typename) />
-		<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-			<cfset oContentType.deleteById(id = application.applicationName & "_" & arguments.stObject.objectid, bCommit = true) />
-		</cfif>
+
+		<cftry>
+
+			<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
+			<cfset var stContentType = oContentType.getByContentType(arguments.typename) />
+			<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
+				<cfset oContentType.deleteById(id = application.applicationName & "_" & arguments.stObject.objectid, bCommit = true) />
+			</cfif>
+
+			<cfcatch>
+				<cflog application="true" file="farcrySolrPro" type="error" text="Index on Delete was unable to remove objectid: #arguments.stObject.objectid# (#arguments.typename#)  The error was: #cfcatch.message# #cfcatch.detail#" />
+			</cfcatch>
+		</cftry>
+
 	</cffunction>
 
 </cfcomponent>
