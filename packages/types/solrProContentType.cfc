@@ -528,6 +528,14 @@
 			value = javacast("int",docSize),
 			farcryField = ""
 		}) />
+
+		<cfscript>
+			// handle any custom field mapping for this type
+			var oType = application.fapi.getContentType(arguments.typename);
+			if (structKeyExists(oType,"mapSolrFields")) {
+				doc = oType.mapSolrFields(stObject = stRecord, fields = doc);
+			}
+		</cfscript>
 		
 		<!--- add core boost values to document --->
 		<cfset var i = "" />
