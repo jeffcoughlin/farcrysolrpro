@@ -52,8 +52,11 @@
 	<cfif structKeyExists(stParam.highlighting, "fcsp_highlight") and isArray(stParam.highlighting["fcsp_highlight"])>
 		<cfloop array="#stParam.highlighting['fcsp_highlight']#" index="hl">
 			
+			<!--- strip HTML (except highlighting) --->
+			<cfset hl = oCustomFunctions.tagStripper(hl, "strip", "strong") />
+
 			<!--- remove leading non-alphanumeric --->
-			<cfset hl = trim(reReplaceNoCase(hl,"^[^a-z0-9]","")) />
+			<cfset hl = trim(reReplaceNoCase(hl,"^[^a-z0-9<]","")) />
 			
 			<!--- concatenate the highlighted text strings --->
 			<cfset variables.teaser = variables.teaser & "..." & hl />
