@@ -91,6 +91,8 @@
 			<!--- apply the sort --->
 			<cfif stSearchForm.orderby eq "date">
 				<cfset params["sort"] = "datetimelastupdated desc" />
+			<cfelseif stSearchForm.orderby eq "dateAsc">
+				<cfset params["sort"] = "datetimelastupdated asc" />
 			</cfif>
 			
 			<!--- get highlighting --->
