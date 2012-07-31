@@ -361,7 +361,7 @@
           <div class="span6">
 <pre class="prettyprint linenums">
 &lt;cffunction name="contentToIndex" access="public" output="false" returntype="query"&gt;
-  &lt;cffunction name="objectId" type="uuid" required="false" /&gt;
+  &lt;cfargument name="objectId" type="uuid" required="false" /&gt;
   &lt;cfset var qData = "" /&gt;
   &lt;cfquery name="qData" datasource="#application.dsn#"&gt;
     select objectID, datetimelastupdated
