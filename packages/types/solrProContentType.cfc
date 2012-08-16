@@ -995,33 +995,16 @@
 		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" />
 		
 		<cfset var type = "" />
+		<cfset var q = arguments.searchString />
 		
 		<cfif arguments.bCleanString>
-			<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
-			<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />
-			
-			<cfif reFind("[[:space:]]",q) gt 0>
-					
-				<!--- remove operators from string (AND, OR, NOT) --->
-				<cfset q = trim(reReplaceNoCase(q,"^AND |^OR |^NOT | AND | OR | NOT | AND$| OR$| NOT$"," ","ALL")) />
-				
-				<!--- build the main search phrase --->
-				<cfif arguments.operator eq "all">
-					<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," AND ","ALL") & ")" />
-				<cfelseif arguments.operator eq "any">
-					<cfset q = "(" & reReplace(q,"[[:space:]]{1,}"," OR ","ALL") & ")" />
-				<cfelseif arguments.operator eq "phrase">
-					<cfset q = '("' & q & '")' />
-				</cfif>
-				
-			</cfif>
-		<cfelse>
-			<cfset q = '(' & q & ')' />
+			<cfset q = cleanQueryString(arguments.searchString,arguments.operator) />
 		</cfif>
+		<cfset q = '(' & q & ')' />
 		
 		<!--- add a typename filter --->
 		<cfif listLen(arguments.lContentTypes)>
-			<cfset q = q & " AND (" />
+			<cfset q = q & " AND +(" />
 			
 			<cfset var counter = 0 />
 			<cfloop list="#arguments.lContentTypes#" index="type">
@@ -1039,10 +1022,41 @@
 		</cfif>
 		
 		<cfif arguments.bFilterBySite>
-			<cfset q = "(" & q & ") AND (fcsp_sitename:" & application.applicationName & ")" />
+			<cfset q = q & " AND +(fcsp_sitename:" & application.applicationName & ")" />
 		</cfif>
 		
-		<cfset q = "(" & q & ") AND fcsp_benablesearch:true" />
+		<cfset q = q & " AND +fcsp_benablesearch:true" />
+		
+		<cfreturn q />
+		
+	</cffunction>
+
+	<cffunction name="cleanQueryString" access="public" output="false" returntype="string">
+		<cfargument name="searchString" required="true" type="string" />
+		<cfargument name="operator" required="false" type="string" default="ANY" hint="ANY,ALL,PHRASE" />
+		
+		<cfset var type = "" />
+		
+		<!--- escape lucene special chars (+ - && || ! ( ) { } [ ] ^ " ~ * ? : \) --->
+		<cfset var q = trim(reReplaceNoCase(arguments.searchString,'([\+\-!(){}\[\]\^"~*?:\\]|&&|\|\|)',"\\\1","ALL")) />
+		
+		<cfif arguments.operator eq "phrase">
+			<!--- Operators in phrases don't need to be removed --->
+			<cfset q = '"' & q & '"' />
+		<cfelse>
+			<!--- remove any terms that are operators (AND, OR, NOT) --->
+			<cfset q = trim(reReplaceNoCase(q,"\b(AND|OR|NOT)\b"," ","ALL")) />
+			
+			<!--- If there are multiple terms, connect them with AND or OR operators --->
+			<cfif reFind("[[:space:]]",q) gt 0>
+				<cfif arguments.operator eq "all">
+					<cfset q = reReplace(q,"[[:space:]]+"," AND ","ALL") />
+				<cfelse>
+					<!--- Default operator is ANY --->
+					<cfset q = reReplace(q,"[[:space:]]+"," OR ","ALL") />
+				</cfif>
+			</cfif>
+		</cfif>
 		
 		<cfreturn q />
 		
