@@ -36,6 +36,7 @@
 		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" hint="If using a single Solr core for multiple sites, do you want to filter results for only this site (true) or for all sites (false)?" />
 		<cfargument name="customQueryString" required="false" type="string" hint="If you want to use a custom query string, you can pass it along here" />
+		<cfargument name="customParams" required="false" type="struct" hint="If you want to use a custom Solr parameters, you can pass them along here" />
 		
 		<!--- calculate the start row --->
 		<cfset var startRow = ((arguments.page - 1) * arguments.rows) />
@@ -104,7 +105,12 @@
 				<cfset params["hl.simple.pre"] = arguments.hlPre />
 				<cfset params["hl.simple.post"] = arguments.hlPost />
 			</cfif>
-
+			
+			<!--- Custom params override generated params --->
+			<cfif structKeyExists(arguments,"customParams")>
+				<cfset structAppend(params,arguments.customParams,"yes") />
+			</cfif>
+			
 			<cfset stResult = oContentType.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
