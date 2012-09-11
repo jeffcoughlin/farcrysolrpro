@@ -1,24 +1,11 @@
 @echo off
 rem description: Starts the Solr server for the FarCry Solr Pro plugin
-rem author: Jeff Coughlin (www.jeffcoughlin.com), Sean Coyne (www.n42designs.com)
+rem author: Jeff Coughlin (www.jeffcoughlin.com), Sean Coyne (www.n42designs.com), Dennis Clark (github.com/boomfish)
 
-rem Set min and max memory
-set XMS="256M"
-set XMX="512M"
+rem Assume config scripts are in the same directory as this batch file
+set CONFDIR=%~dp0
 
-rem Folder location for solr-server (must end in a slash)
-rem set SOLRDIR="C:\program files (x86)\solr-server\"
-set SOLRDIR="./"
-
-rem Set unique port and stop key
-set DTSOPPORT="8079"
-set DSTOPKEY="farcrysolrpro"
-
-rem Add java bin folder to system path
-@path=%path%;c:\program files\java\jre6\bin;c:\program files (x86)\java\jre6\bin;c:\program files\java\jre7\bin;c:\program files (x86)\java\jre7\bin;
-
-rem ###
-rem Edit settings/variables above this line as needed
+call "%CONFDIR%\solrconf.bat"
 
 echo.
 echo =======================
@@ -27,4 +14,8 @@ echo =======================
 echo Starting Solr Server...
 
 cd %SOLRDIR%
-java -Dsolr.solr.home=multicore -DSTOP.PORT=%DTSOPPORT% -DSTOP.KEY=%DSTOPKEY% -Xms%XMS%  -Xmx%XMX% -jar %SOLRDIR%start.jar
+
+rem Make sure work directory exists
+mkdir work 2>nul
+
+%_EXECJAVA% %_STARTOPTS% %_SHAREDOPTS% %_JAROPTS% %_XMLARGS%
