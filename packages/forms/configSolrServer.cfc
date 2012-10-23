@@ -153,7 +153,7 @@
 			application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(
 				loadPaths = [	
 					expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"),
-					expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.1.jar")
+					expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.2.jar")
 				],
 				loadColdFusionClassPath = true
 			);	
