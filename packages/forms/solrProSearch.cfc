@@ -114,7 +114,7 @@
 			<cfset stResult = oContentType.search(q = trim(q), start = startRow, rows = arguments.rows, params = params) />
 			<cfset stResult.bSearchPerformed = 1 />
 			
-			<cfif arguments.bSpellcheck>
+			<cfif arguments.bSpellcheck and structKeyExists(stResult, "spellcheck")>
 				<cfset stResult.suggestion = getSuggestion(
 					linkURL = application.fapi.getLink(objectid = request.navid), 
 					spellcheck = stResult.spellcheck, 
