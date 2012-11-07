@@ -303,6 +303,9 @@
 				</cfif>
 				<cfif arguments.bIncludePhonetic or (fieldType[1] neq 'phonetic' and arguments.bIncludePhonetic eq false)>
 					<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
+					<cfif getFTTypeForProperty(typename = arguments.typename, propertyName = prop.fieldName) eq "file">
+						<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_contents_" & fieldType[1] & "_" & fieldType[2]) />
+					</cfif>
 				</cfif>
 			</cfloop>
 		</cfloop>
