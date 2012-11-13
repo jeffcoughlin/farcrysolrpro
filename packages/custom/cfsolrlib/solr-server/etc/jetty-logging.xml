@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!--                                                                 -->
+<!-- Documentation of this file format can be found at:              -->
+<!-- http://docs.codehaus.org/display/JETTY/jetty.xml                -->
+<!--                                                                 -->
+<!-- =============================================================== -->
+
+<Configure id="Server" class="org.mortbay.jetty.Server">
+
+<!-- =========================================================== -->
+    <!-- Configure Request Log                                       -->
+    <!-- Request logs  may be configured for the entire server here, -->
+    <!-- or they can be configured for a specific web app in a       -->
+    <!-- contexts configuration (see $(jetty.home)/contexts/test.xml -->
+    <!-- for an example).                                            -->
+    <!-- =========================================================== -->
+    <Ref id="RequestLog">
+      <Set name="requestLog">
+        <New id="RequestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
+          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Arg>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>
+
+<!-- =============================================================== -->
+                <!-- Configure stderr and stdout to a Jetty rollover log file        -->
+                <!-- this configuration file should be used in combination with      -->
+                <!-- other configuration files.  e.g.                                -->
+                <!--    java -jar start.jar etc/jetty-logging.xml etc/jetty.xml      -->
+                <!-- =============================================================== -->
+    <New id="StdErr" class="java.io.PrintStream">
+      <Arg>
+        <New class="org.mortbay.util.RolloverFileOutputStream">
+          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/stderr-yyyy_mm_dd.log</Arg>
+          <Arg type="boolean">true</Arg>
+          <Arg type="int">14</Arg>
+          <Get id="ServerLogName" name="datedFilename"/>
+        </New>
+      </Arg>
+    </New>
+    <New id="StdOut" class="java.io.PrintStream">
+      <Arg>
+        <New class="org.mortbay.util.RolloverFileOutputStream">
+          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/stdout-yyyy_mm_dd.log</Arg>
+          <Arg type="boolean">true</Arg>
+          <Arg type="int">14</Arg>
+          <Get id="ServerLogName" name="datedFilename"/>
+        </New>
+      </Arg>
+    </New>    
+
+    <Call class="org.mortbay.log.Log" name="info"><Arg>Redirecting stderr/stdout to disk</Arg></Call>
+    <Call class="java.lang.System" name="setErr"><Arg><Ref id="StdErr"/></Arg></Call>
+    <Call class="java.lang.System" name="setOut"><Arg><Ref id="StdOut"/></Arg></Call>    
+
+</Configure>

@@ -1,6 +1,7 @@
 /.settings
 /.project
 /settings.xml
+/packages/custom/cfsolrlib/solr-server/logs/*.log
 /packages/custom/cfsolrlib/solr-server/work
 *.iml
 .idea
