@@ -186,8 +186,8 @@
        	<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         
-        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \(fcsp_sitename:(.*)\)" replacement="" />
-        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \(typename:(.*)\)" replacement="" />
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \(fcsp_sitename:([^)]+)\)" replacement="" />
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND \((typename:([^)]+)( OR )?)+\)" replacement="" />
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern=" AND fcsp_benablesearch:(true|false)" replacement="" />
       </analyzer>
     </fieldType>
