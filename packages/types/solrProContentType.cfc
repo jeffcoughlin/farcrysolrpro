@@ -431,22 +431,18 @@
 								}
 
 								if (fileExists(filePath)) {
-
+								
 									// parse and save the value
-									try {
-										var parsedValue = parseFile(filePath = filePath);
-										arrayAppend(doc, {
-											"name" = lcase(field) & "_contents_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
-											"value" = parsedValue,
-											"boost" = typeSetup.boostValue,
-											"farcryField" = field
-										});
-										
-										// save parsed value to stRecord so we can use it to build the "highlight" summary
-										stRecord[field & "_contents"] = parsedValue;
-									} catch (any e) {
-										WriteLog(application = true, file = 'farcrySolrPro', type = 'error', text = 'Tika failed to parse #filePath#');
-									}
+									var parsedValue = parseFile(filePath = filePath);
+									arrayAppend(doc, {
+										"name" = lcase(field) & "_contents_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										"value" = parsedValue,
+										"boost" = typeSetup.boostValue,
+										"farcryField" = field
+									});
+									
+									// save parsed value to stRecord so we can use it to build the "highlight" summary
+									stRecord[field & "_contents"] = parsedValue;
 
 								}
 								
