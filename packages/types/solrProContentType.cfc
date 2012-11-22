@@ -1150,16 +1150,24 @@
 	<cffunction name="parseFile" access="public" output="false" returntype="string" hint="Parses a file using Tika and returns the file contents as a string">
 		<cfargument name="filePath" required="true" type="string" />
 		
+		<cfset var returnValue = '' />
+
 		<cfscript>
-			if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(arguments.filePath,5))) {
-				// parsing OpenXML files must be done using a different context class loader
-				return application.stPlugins["farcrysolrpro"].javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = arguments.filePath });
-			} else {
-				// use our cached copy of tika and parse the file
-				return application.stPlugins["farcrysolrpro"].tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
+			try {
+				if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(arguments.filePath,5))) {
+					// parsing OpenXML files must be done using a different context class loader
+					returnValue = application.stPlugins["farcrysolrpro"].javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = arguments.filePath });
+				} else {
+					// use our cached copy of tika and parse the file
+					returnValue = application.stPlugins["farcrysolrpro"].tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
+				}
+			} catch (any e) {
+				WriteLog(application = true, file = 'farcrySolrPro', type = 'error', text = 'Tika failed to parse #filePath#, the error was #e.message#');
 			}
 		</cfscript>
 		
+		<cfreturn returnValue />
+
 	</cffunction>
 	
 	<cffunction name="listCompare" output="false" returnType="string">
