@@ -1007,7 +1007,7 @@
 		
 		<!--- add a typename filter --->
 		<cfif listLen(arguments.lContentTypes)>
-			<cfset q = q & " AND +(" />
+			<cfset q = q & " AND (" />
 			
 			<cfset var counter = 0 />
 			<cfloop list="#arguments.lContentTypes#" index="type">
@@ -1025,10 +1025,10 @@
 		</cfif>
 		
 		<cfif arguments.bFilterBySite>
-			<cfset q = q & " AND +(fcsp_sitename:" & application.applicationName & ")" />
+			<cfset q = q & " AND (fcsp_sitename:" & application.applicationName & ")" />
 		</cfif>
 		
-		<cfset q = q & " AND +fcsp_benablesearch:true" />
+		<cfset q = q & " AND fcsp_benablesearch:true" />
 		
 		<cfreturn q />
 		
