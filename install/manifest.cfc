@@ -14,10 +14,36 @@
 	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
 	<cfset this.aVersions = [
 	{
+		"version"="1.2.4",
+		"releasedate"="2012-11-26",
+		"description"="",
+		"changelog"="<ul><li>Fixes a elevation bug (be sure to update your project's schema.xml from the version in the templates directory.)</li><li>Documentation fix</li><li>Better error logging for Tika file parsing</li></ul>",
+		"downloads"=[
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.2.4",
+				"shortdesc"="w/ Solr 3.5",
+				"size"="38MB"
+			},
+			{
+				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.4.zip",
+				"shortdesc"="<em>(plugin only)</em>",
+				"size"="22MB"
+			}
+		],
+		"requirements"={
+			"cfml"=["ColdFusion 9","Railo 3.3"],
+			"farcry"=["6.2","6.1.4","6.0.19"],
+			"solr"=["3.5"]
+		},
+		"repository"={
+			"url"="https://github.com/jeffcoughlin/farcrysolrpro/tree/1.2.4"
+		}
+	},
+	{
 		"version"="1.2.3",
 		"releasedate"="2012-11-07",
 		"description"="",
-		"changelog"="<ul><li>Fixes a but that prevented Tika parsed content from being searched</li></ul>",
+		"changelog"="<ul><li>Fixes a bug that prevented Tika parsed content from being searched</li></ul>",
 		"downloads"=[
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.2.3",
