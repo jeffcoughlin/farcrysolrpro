@@ -8,7 +8,7 @@ function loadCurrentRelease(data) {
 		switch (i) {
 			case 0:
 				// version w/ github link
-				item.html('<a href="' + data[0].repositoryurl + '">v' + data[0].version + '</a>');
+				item.html('<a href="' + data[0].repository.url + '">v' + data[0].version + '</a>');
 				break;
 			case 1:
 				// release date
@@ -69,7 +69,7 @@ function loadArchiveReleases(data) {
 			switch (i) {
 				case 0:
 					// version w/ github link
-					item.html('<a href="' + data[z].repositoryurl + '">v' + data[z].version + '</a>');
+					item.html('<a href="' + data[z].repository.url + '">v' + data[z].version + '</a>');
 					break;
 				case 1:
 					// release date
