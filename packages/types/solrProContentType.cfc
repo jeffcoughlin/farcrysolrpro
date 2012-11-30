@@ -996,12 +996,16 @@
 		<cfargument name="lContentTypes" required="false" type="string" default="" />
 		<cfargument name="bCleanString" required="false" type="boolean" default="true" />
 		<cfargument name="bFilterBySite" required="false" type="boolean" default="true" />
+		<cfargument name="bLowerCaseString" required="false" type="boolean" default="true" />
 		
 		<cfset var type = "" />
 		<cfset var q = arguments.searchString />
 		
+		<cfif arguments.bLowerCaseString>
+			<cfset q = lcase(q) />
+		</cfif>
 		<cfif arguments.bCleanString>
-			<cfset q = cleanQueryString(arguments.searchString,arguments.operator) />
+			<cfset q = cleanQueryString(q,arguments.operator) />
 		</cfif>
 		<cfset q = '(' & q & ')' />
 		
