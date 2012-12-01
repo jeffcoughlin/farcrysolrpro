@@ -31,6 +31,18 @@
 		<skin:bubble title='Reset Conect Type' message='"#stContentType.title#" has been reset for site #application.applicationName#' />
 	</ft:processForm>	
 	
+	<ft:processForm action="resetAndReindexBySite">
+		<cfsetting requesttimeout="9999" />
+		<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+		<cfset stContentType = oContentType.getData(form.selectedObjectId) />
+		<!--- Reset index --->
+		<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, bCommit = true) />
+		<cfset stContentType.builtToDate = "" />
+		<cfset oContentType.setData(stContentType) />
+		<!--- Index records without comparing old data - since there is nothing to compare --->
+		<cfset stResult = oContentType.indexRecords(lContentTypeIds = stContentType.objectid, bRemoveOldDataFromSolr = false) />
+		<skin:bubble title='Index Content Type' message='"#stContentType.title#" has been reset and re-indexed for site #application.applicationName#. #stResult.aStats[1].indexRecordCount# items were indexed in #timeFormat(application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate(stResult.processTime),'HH:mm:ss')#' />
+	</ft:processForm>
 </cfif>
 
 <ft:processForm action="resetContentType">
@@ -68,6 +80,19 @@
 	<skin:bubble title='Index Content Type' message='"#stContentType.title#" has been indexed. #stResult.aStats[1].indexRecordCount# items were indexed in #timeFormat(application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate(stResult.processTime),'HH:mm:ss')#' />
 </ft:processForm>
 
+<ft:processForm action="resetAndReindex">
+	<cfsetting requesttimeout="9999" />
+	<cfset oContentType = application.fapi.getContentType("solrProContentType") />
+	<cfset stContentType = oContentType.getData(form.selectedObjectId) />
+	<!--- Reset index --->
+	<cfset oContentType.deleteByTypename(typename = stContentType.contentType, sitename = "", bCommit = true) />
+	<cfset stContentType.builtToDate = "" />
+	<cfset oContentType.setData(stContentType) />
+	<!--- Index records without comparing old data - since there is nothing to compare --->
+	<cfset stResult = oContentType.indexRecords(lContentTypeIds = stContentType.objectid, bRemoveOldDataFromSolr = false) />
+	<skin:bubble title='Index Content Type' message='"#stContentType.title#" has been reset and re-indexed. #stResult.aStats[1].indexRecordCount# items were indexed in #timeFormat(application.stPlugins.farcrysolrpro.oCustomFunctions.millisecondsToDate(stResult.processTime),'HH:mm:ss')#' />
+</ft:processForm>
+
 <cfscript>
 	aButtons = [
 		{ value = "Add", permission = 1, onclick = "" },
@@ -97,6 +122,12 @@
 		<cfset lCustomActions = lCustomActions & " (All Sites),resetContentTypeBySite:Reset Content Type (This Site)" />
 	</cfif>
 	
+	<cfset lCustomActions = listAppend(lCustomActions, "resetAndReindex:Reset and Re-index") />
+
+	<cfif application.applicationName neq application.fapi.getConfig(key = 'solrserver', name = 'collectionName')>
+		<cfset lCustomActions = lCustomActions & " (All Sites),resetAndReindexBySite:Reset and Re-index (This Site)" />
+	</cfif>
+	
 	<ft:objectadmin 
 		typename="solrProContentType"
 		columnList="title,contentType,datetimecreated" 
@@ -111,7 +142,7 @@
 		
 	<cfcatch>
 		
-		<cfoutput><p><br />Error loading object admin, be sure you have deployed all COAPI objects.</p></cfoutput>
+		<cfoutput><p><br />Error loading object admin, be sure you have deployed all COAPI objects.</p><cfdump var="#cfcatch#"/></cfoutput>
 		
 	</cfcatch>
 

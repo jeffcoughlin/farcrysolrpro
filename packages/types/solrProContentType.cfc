@@ -6,8 +6,8 @@
 	<cfproperty ftSeq="130" ftFieldset="Solr Content Type" ftLabel="Result Title" name="resultTitleField" ftType="list" type="nstring" required="true" default="label" ftDefault="label" ftValidation="required" ftHint="The field that will be used for the search result title." />
 	<cfproperty ftSeq="140" ftFieldset="Solr Content Type" ftLabel="Result Summary" name="resultSummaryField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result summary." />
 	<cfproperty ftSeq="142" ftFieldset="Solr Content Type" ftLabel="Summary Fields" name="lSummaryFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to build the summary" />
-	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Result Image" name="resultImageField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result teaser image." />
-	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Document Size Fields" name="lDocumentSizeFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to calculate the document size" />
+	<cfproperty ftSeq="145" ftFieldset="Solr Content Type" ftLabel="Result Image" name="resultImageField" ftType="list" type="nstring" required="false" default="" ftDefault="" ftHint="The field that will be used for the search result teaser image." />
+	<cfproperty ftSeq="147" ftFieldset="Solr Content Type" ftLabel="Document Size Fields" name="lDocumentSizeFields" ftType="list" ftAllowMultiple="true" type="longchar" required="false" default="" ftHint="The fields to use to calculate the document size" />
 	
 	<cfproperty ftSeq="150" ftFieldset="Solr Content Type" ftLabel="Enable Site Search?" name="bEnableSearch" ftType="boolean" type="boolean" required="true" default="1" ftDefault="1" ftHint="Should this content type be included in the global, site-wide search?" />
 	<cfproperty ftSeq="160" ftFieldset="Solr Content Type" ftLabel="Built to Date" name="builtToDate" ftType="datetime" type="date" required="false" ftHint="For system use.  Updated by the system.  Used as a reference date of the last indexed item.  Used for batching when indexing items.  Default is blank (no date)." />
@@ -82,7 +82,7 @@
 		
 		<!--- check for duplicates --->
 		<cfquery name="qDupeCheck" datasource="#application.dsn#">
-			select objectid from solrProContentType where lower(contentType) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(lcase(arguments.stFieldPost.value))#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
+			select objectid from #application.dbowner#solrProContentType where lower(contentType) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(lcase(arguments.stFieldPost.value))#" /> and objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />; 
 		</cfquery>
 		
 		<cfif qDupeCheck.recordCount gt 0>
@@ -97,6 +97,7 @@
 		<cfargument name="bOptimize" type="boolean" required="false" default="true" />
 		<cfargument name="batchSize" type="numeric" required="false" default="#application.fapi.getConfig(key = 'solrserver', name = 'batchSize', default = 1000)#" />
 		<cfargument name="lContentTypeIds" type="string" required="false" default="" hint="A list of SolrProContentType ObjectIDs.  If empty string, all preconfigured content types will be indexed." />
+		<cfargument name="bRemoveOldDataFromSolr" type="boolean" required="false" default="true" hint="If true, looks for and removes data from the Solr index that no longer exists in FarCry (default behaviour).  However, it is useful to disable this feature when importing data for the first time or when reindexing all of the data (clearing index data, then re-index) because it offers a huge speed improvement. It is not advised to disable this feature if you are adding records to existing data because it won't cross-check existing data." />
 		
 		<!--- Start timer --->
 		<cfset var tickBegin = GetTickCount() />
@@ -134,7 +135,7 @@
 			<cfset var stContentType = getData(objectid = qContentTypes.objectid[qContentTypes.currentRow]) />
 			
 			<!--- get the records to index --->
-			<cfset var stResult = getRecordsToIndex(typename = stContentType.contentType, batchSize = arguments.batchSize, builtToDate = stContentType.builtToDate) />
+			<cfset var stResult = getRecordsToIndex(typename = stContentType.contentType, batchSize = arguments.batchSize, builtToDate = stContentType.builtToDate, bGetAllIds = arguments.bRemoveOldDataFromSolr) />
 			<cfset var qContentToIndex = stResult.qContentToIndex />
 			<cfset var lItemsInDb = stResult.lItemsInDb />
 			
@@ -165,9 +166,12 @@
 			</cfloop>
 			
 			<!--- delete any records in the index that are no longer in the database. (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
-			<cfset var lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
-			<cfif listLen(lItemsToDelete)>
-				<cfset deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, lObjectIds = lItemsToDelete, bCommit = false) />
+			<cfset var lItemsToDelete = "" />
+			<cfif arguments.bRemoveOldDataFromSolr is true>
+				<cfset lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
+				<cfif listLen(lItemsToDelete)>
+					<cfset deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, lObjectIds = lItemsToDelete, bCommit = false) />
+				</cfif>
 			</cfif>
 			
 			<!--- update metadata for this content type --->
@@ -574,9 +578,10 @@
 	
 	<cffunction name="getRecordsToIndex" returntype="struct" access="public" output="false" hint="Get the records to index for a given content type">
 		<cfargument name="typename" required="true" type="string" />
-		<cfargument name="batchSize" required="true" type="numeric" />
-		<cfargument name="builtToDate" required="false" type="any" />
-		
+		<cfargument name="batchSize" required="false" type="numeric" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" />
+		<cfargument name="builtToDate" required="false" type="any" default="" />
+		<cfargument name="bGetAllIds" type="boolean" required="false" default="true" hint="If true, returns all records (used for indexRecords() method when comparing DB and Solr records so Solr knows which ones to delete)." />
+
 		<cfset var oType = application.fapi.getContentType(arguments.typename) />
 		<cfset var stResult = {} />
 		
@@ -585,30 +590,43 @@
 		<cfelse>
 			<cfset var tablename = oType.getTypename() />
 		</cfif>
+		
+		<cfif arguments.bGetAllIds is true>
+			<cfset var maxrows = -1 />
+		<cfelse>
+			<cfset var maxrows = arguments.batchSize />
+		</cfif>
 					
 		<cfif structKeyExists(oType, "contentToIndex")>
 			<!--- run the contentToIndex method for this content type --->
-			<cfset stResult.qContentToIndex = oType.contentToIndex() />
+			<cfset stResult.qContentToIndex = oType.contentToIndex(builtToDate=arguments.builtToDate,batchSize=maxrows,bGetAllIds=arguments.bGetAllIds) />
 		<cfelse>
 			<!--- no contentToIndex method, just grab all the records --->
-			<cfquery name="stResult.qContentToIndex" datasource="#application.dsn#">
-			SELECT objectID, datetimelastupdated
-			FROM #tablename#
-			<cfif structkeyexists(application.stcoapi[tablename].stprops, "status")>
-			where status = 'approved'
-			</cfif>
+			<cfquery name="stResult.qContentToIndex" datasource="#application.dsn#" maxrows="#maxrows#">
+				SELECT objectID, datetimelastupdated
+				FROM #application.dbowner##tablename#
+				where 1=1
+				<cfif structkeyexists(application.stcoapi[tablename].stprops, "status")>
+					and status = 'approved'
+				</cfif>
+				<cfif arguments.bGetAllIds is false and arguments.builtToDate neq "" and isDate(arguments.builtToDate)>
+					and datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
+				</cfif>
+				order by datetimelastupdated
 			</cfquery>
 		</cfif>
 		
 		<cfset stResult.lItemsInDb = valueList(stResult.qContentToIndex.objectid) />
 		
-		<cfquery name="stResult.qContentToIndex" dbtype="query" maxrows="#batchSize#">
-			select objectid, datetimelastupdated from stResult.qContentToIndex 
-			<cfif structKeyExists(arguments,"builtToDate") and isDate(arguments.builtToDate)>
-			where datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
-			</cfif>
-			order by datetimelastupdated
-		</cfquery>
+		<cfif arguments.bGetAllIds is true>
+			<cfquery name="stResult.qContentToIndex" dbtype="query" maxrows="#batchSize#">
+				select objectid, datetimelastupdated from stResult.qContentToIndex 
+				<cfif structKeyExists(arguments,"builtToDate") and isDate(arguments.builtToDate)>
+				where datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
+				</cfif>
+				order by datetimelastupdated
+			</cfquery>
+		</cfif>
 		
 		<cfreturn stResult />
 		
@@ -673,7 +691,7 @@
 		<cfargument name="contentType" type="string" required="true" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#" cachedwithin="#createTimeSpan(0,0,0,60)#">
-			select objectid from solrProContentType where lower(contenttype) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.contentType)#" /> 
+			select objectid from #application.dbowner#solrProContentType where lower(contenttype) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.contentType)#" /> 
 		</cfquery>
 		<cfif q.recordCount>
 			<cfreturn getData(q.objectid[1]) />
@@ -694,8 +712,8 @@
 				cxr.data, 
 				cxr.typename 
 			from 
-				container c 
-				join container_aRules cxr on c.objectID = cxr.parentid
+				#application.dbowner#container c 
+				join #application.dbowner#container_aRules cxr on c.objectID = cxr.parentid
 			where 
 				lower(cxr.typename) in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#lcase(arguments.lRuleTypes)#" />) 
 				and lower(c.label) like <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.objectid)#%" />
@@ -710,7 +728,7 @@
 			<cfif arrayLen(rule)>
 				
 				<cfquery name="qData" datasource="#application.dsn#">
-					select #rule[1].indexableFields# from #qRulesToIndex.typename[qRulesToIndex.currentRow]# where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qRulesToIndex.data[qRulesToIndex.currentRow]#" />
+					select #rule[1].indexableFields# from #application.dbowner##qRulesToIndex.typename[qRulesToIndex.currentRow]# where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qRulesToIndex.data[qRulesToIndex.currentRow]#" />
 				</cfquery>
 				
 				<cfloop query="qData">
@@ -734,7 +752,7 @@
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
 			select p.objectid 
-			from solrProIndexedProperty p 
+			from #application.dbowner#solrProIndexedProperty p 
 			join solrProContentType_aIndexedProperties cxp on p.objectid = cxp.data 
 			where lower(p.fieldName) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.fieldName)#" />
 			and cxp.parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
@@ -977,7 +995,8 @@
 		<cfargument name="bIncludeNonSearchable" type="boolean" required="false" default="false" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
-			select objectid, contentType, title, bEnableSearch from solrProContentType
+			select objectid, contentType, title, bEnableSearch
+			from #application.dbowner#solrProContentType
 			where 1=1
 			<cfif listLen(arguments.lObjectIds)>
 			and objectid in (<cfqueryparam list="true" cfsqltype="cf_sql_varchar" value="#arguments.lObjectIds#" />)
