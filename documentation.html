@@ -338,32 +338,44 @@
 
       <section id="filtercontent">
         <div class="page-header">
-          <h1>Filter Content</h1>
+          <h1>Filter Content (Optional)</h1>
         </div>
 
         <div class="row">
-          <div class="span6">
-            <h2>How Do I Determine What Content Gets Indexed?</h2>
+          <div class="span12">
+            <h2>How Can I Filter Content That Gets Indexed in Solr?</h2>
             <p>By default the plugin will index all items and only filter those that follow the FarCry publishing model (meaning, if a status field exists, only index a record that is 'approved').</p>
-            <p>You may, however, wish to apply your own filters for a specific content type.  Every time the plugin attempts to update the index for a content item, it will look to see if the content type has a "contentToIndex" function.  All you need to do is add the function to your type and allow it to filter by any desired rules <em>(see example)</em>.</p>
+            <p>You may, however, wish to apply your own filters for a specific content type.  Every time the plugin attempts to update the index for a content type, it will look to see if the content type has a <b>contentToIndex()</b> method.  All you need to do is add the method to your content type and allow it to filter by any desired rules <em>(see example)</em>.</p>
+            <h3>Example <em>contentToIndex()</em> Method</h3>
             <p>In the example seen here I have the following conditions I want to validate on my custom type (myProduct.cfc) before allowing the content item to be indexed:</p>
             <ul>
               <li>I am using the FarCry publishing model (versioning) - I only want to index published items (approved items).</li>
               <li>I have a publishDate field - publishDate needs to be either before now() or a blank/null value.</li>
+              <li>I have an expiryDate field - expiryDate needs to be either after now() or a blank/null value.</li>
               <li>I have a checkbox field that signifies that the record is active/inactive (boolean) - I only want to index records that are set to Active.</li>
             </ul>
             <p>To filter by the above rules when indexing on my custom type, I need to add a function called "contentToIndex" to my type (myProduct.cfc).  The following rules apply for the function:</p>
             <ul>
               <li>objectId is not required, but should be allowed as a filter for performance reasons.</li>
               <li>The function needs to return a query with the fields objectId, datetimelastupdated.</li>
+              <li>Optional batchSize when doing smaller batch queries.</li>
+              <li>Optional builtToDate field for filtering.</li>
+              <li>Optional boolean bGetAllIds to get all IDs when cehcking for records to delete from Solr.</li>
             </ul>
           </div>
-          <div class="span6">
+
+        </div>
+        <div class="row">
+          <div class="span12">
+            <h4>Example of a custom "contentToIndex" Function/Method</h4>
 <pre class="prettyprint linenums">
 &lt;cffunction name="contentToIndex" access="public" output="false" returntype="query"&gt;
   &lt;cfargument name="objectId" type="uuid" required="false" /&gt;
+  &lt;cfargument name="batchSize" required="false" type="numeric" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" /&gt;
+  &lt;cfargument name="builtToDate" required="false" type="any" default="" /&gt;
+  &lt;cfargument name="bGetAllIds" type="boolean" required="false" default="true" hint="If true, returns all records (used for indexRecords() method when comparing DB and Solr records so that Solr knows which ones to delete)." /&gt;
   &lt;cfset var qData = "" /&gt;
-  &lt;cfquery name="qData" datasource="#application.dsn#"&gt;
+  &lt;cfquery name="qData" datasource="#application.dsn#" maxrows="#arguments.batchSize#"&gt;
     select objectID, datetimelastupdated
     from #application.dbowner#myProduct
     where status = 'approved'
@@ -374,17 +386,25 @@
                  and publishDate &lt;= getdate()
                )
           )
+      and (expirydate >= getdate()
+            or expirydate = ''
+            or expirydate is null
+          )
       and bActive = 1
       &lt;cfif structKeyExists(arguments, "objectId")&gt;
         and objectId = &lt;cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectId#" /&gt;
       &lt;/cfif&gt;
+      &lt;cfif arguments.bGetAllIds is false and arguments.builtToDate neq "" and isDate(arguments.builtToDate)&gt;
+        and datetimelastupdated &gt; &lt;cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" /&gt;
+      &lt;/cfif&gt;
+      order by datetimelastupdated;
   &lt;/cfquery&gt;
   &lt;cfreturn qData /&gt;
 &lt;/cffunction&gt;
 </pre>
           </div>
         </div>
-        <p>The plugin will also detect when one of these values have changed.  Meaning, if you had previously set a content item to <strong>active</strong> (which was then indexed) and then later decided to set the same content item to <strong>inactive</strong>, the plugin will remove the content item from the index when you save the content item within the webtop.</p>
+        <p>The plugin will also detect when one of the referenced DB values have changed.  Meaning, if you had previously set a content item to <strong>active</strong> (which was then indexed on-save) and then later decided to set the same content item to <strong>inactive</strong>, the plugin will remove the content item from the index when you save the content item within the webtop. <em>(Assumes you have "index on save" option enabled for that type. Otherwise the change will be reflected the next time you batch index that type).</em></p>
       </section><!-- /#filtercontent -->
 
       <section id="performancetips">
