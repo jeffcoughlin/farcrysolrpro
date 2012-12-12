@@ -54,7 +54,9 @@
 	<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
 	<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
 	<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
+	<cfargument name="method" type="string" required="false" default="GET" hint="Options are GET and POST. POST can send a longer query string, but GET can return url logging data. Niether option has any performance benefit over the other." />
 	<cfset var thisQuery = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows) />
+	<cfset var methodClass = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrRequest$METHOD") />
 	<cfset var thisParam = "" />
 	<cfset var response = "" />
 	<cfset var ret = structNew() />
@@ -76,8 +78,14 @@
 		</cfif>
 	</cfloop>
 	
-	<!--- we do this instead of making the user call java functions, to work around a CF bug --->
-	<cfset response = THIS.solrQueryServer.query(thisQuery) />
+	<!--- Query with GET or POST method --->
+	<!--- We query this way instead of making the user call java functions to work around a CF bug --->
+	<cfif arguments.method eq "GET">
+		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.GET) />
+	<cfelse>
+		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.POST) />
+	</cfif>
+	
 	<cfset ret.highlighting = response.getHighlighting() />
 	<cfset ret.results = response.getResults() / >
 	<cfset ret.totalResults = response.getResults().getNumFound() / >

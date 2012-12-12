@@ -15,7 +15,7 @@
     <!-- Increase the maximum POST size to 1 MB to be able to handle large shard requests -->
     <Call class="java.lang.System" name="setProperty">
       <Arg>org.mortbay.jetty.Request.maxFormContentSize</Arg>
-      <Arg>1000000</Arg>
+      <Arg>1000000000</Arg>
     </Call>
 
     <!-- =========================================================== -->
@@ -76,6 +76,8 @@
             <Set name="maxIdleTime">50000</Set>
             <Set name="lowResourceMaxIdleTime">1500</Set>
             <Set name="statsOn">false</Set>
+            <!-- Next line added to handle incoming GET requests up to 256k in length -->
+            <Set name="headerBufferSize">262144</Set>
           </New>
       </Arg>
     </Call>

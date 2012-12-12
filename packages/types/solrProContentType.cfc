@@ -137,22 +137,13 @@
 			<!--- get the records to index --->
 			<cfset var stResult = getRecordsToIndex(typename = stContentType.contentType, batchSize = arguments.batchSize, builtToDate = stContentType.builtToDate, bGetAllIds = arguments.bRemoveOldDataFromSolr) />
 			<cfset var qContentToIndex = stResult.qContentToIndex />
-			<cfset var lItemsInDb = stResult.lItemsInDb />
+			<cfset var lItemsInDB = stResult.lItemsInDb />
 			
 			<!--- load all records for this type from solr for comparison later --->
-			<cfset var existingRecords = search(q = "typename:" & stContentType.contentType & " AND fcsp_sitename:" & application.applicationName, rows = 999999) />
-			<cfset var lExistingRecords = "" />
-			<cfset var r = "" />
-			<cfloop array="#existingRecords.results#" index="r">
-				<cfif isArray(r["objectid"])>
-					<cfset lExistingRecords = listAppend(lExistingRecords, r["objectid"][1]) />
-				<cfelse>	
-					<cfset lExistingRecords = listAppend(lExistingRecords, r["objectid"]) />
-				</cfif>
-			</cfloop>
-			
+			<cfset var stSolrRecords = search(q = "typename:" & stContentType.contentType & " AND fcsp_sitename:" & application.applicationName, rows = 999999999, params = {"fl" = "objectid"}) />
+			<cfset var aItemsInSolr = application.stPlugins.farcrysolrpro.oCustomFunctions.extractFromArrayOfStructs(aObj = stSolrRecords.results, key = "objectid") />
+
 			<cfloop query="qContentToIndex">
-				
 				<!--- add each record to the index --->
 				<cfset addRecordToIndex(
 					objectid = qContentToIndex.objectid[qContentToIndex.currentRow],
@@ -162,15 +153,27 @@
 					oDocumentBoost = oDocumentBoost,
 					bCommit = false
 				) />
-				
 			</cfloop>
 			
 			<!--- delete any records in the index that are no longer in the database. (use a solr "delete by query" to delete all items for this content type that are not in the qContentToIndex results) --->
-			<cfset var lItemsToDelete = "" />
+			<cfset var aItemsToDeleteFromSolr = [] />
 			<cfif arguments.bRemoveOldDataFromSolr is true>
-				<cfset lItemsToDelete = listCompare(lExistingRecords, lItemsInDB) />
-				<cfif listLen(lItemsToDelete)>
-					<cfset deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, lObjectIds = lItemsToDelete, bCommit = false) />
+				<!--- Create filter for Solr --->
+				<cfif len(lItemsInDB) gt 0>
+					<cfset var lItemsInDBSolrFilter = "-objectid:" & lItemsInDB />
+					<cfset lItemsInDBSolrFilter = replace(lItemsInDBSolrFilter, ",", ",-objectid:", "all") />
+					<cfset var aItemsInDBSolrFilter = listToArray(lItemsInDBSolrFilter) />
+				<cfelse>
+					<cfset aItemsInDBSolrFilter = [] />
+				</cfif>
+
+				<!--- Find the difference (Items in Solr that aren't in SQL DB). We need to use the POST method here to send a large query sting to Solr --->
+				<cfset var stDiffRecords = search(q = "typename:" & stContentType.contentType & " AND fcsp_sitename:" & application.applicationName, rows = 999999999, params = {"fl" = "objectid", "fq" = aItemsInDBSolrFilter}, method = "POST") />
+				<cfset aItemsToDeleteFromSolr = application.stPlugins.farcrysolrpro.oCustomFunctions.extractFromArrayOfStructs(aObj = stDiffRecords.results, key = "objectid") />
+
+				<!--- Find the difference between the two arrays --->
+				<cfif arrayLen(aItemsToDeleteFromSolr)>
+					<cfset deleteByTypename(typename = stContentType.contentType, sitename = application.applicationName, lObjectIds = arrayToList(aItemsToDeleteFromSolr), bCommit = false) />
 				</cfif>
 			</cfif>
 			
@@ -187,7 +190,7 @@
 			<cfset stStats["typeName"] = qContentTypes.contentType[qContentTypes.currentRow] />
 			<cfset stStats["processtime"] = typeTickEnd - typeTickBegin />
 			<cfset stStats["indexRecordCount"] =  qContentToIndex.recordCount />
-			<cfset stStats["totalRecordCount"] = listLen(lExistingRecords) + qContentToIndex.recordCount - listLen(lItemsToDelete) />
+			<cfset stStats["totalRecordCount"] = arrayLen(aItemsInSolr) + qContentToIndex.recordCount - arrayLen(aItemsToDeleteFromSolr) />
 			<cfset stStats["builtToDate"] = stContentType.builtToDate />
 			<cfset arrayAppend(aStats, stStats) />
 			
@@ -335,7 +338,7 @@
 	<cffunction name="getRecordCountForType" returntype="numeric" access="public" output="false">
 		<cfargument name="typename" required="true" type="string" />
 		<cfargument name="sitename" required="false" type="string" default="#application.applicationName#" />
-		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & arguments.sitename, params = { "fl" = "fcsp_id" }, rows = 9999999).results) />
+		<cfreturn arrayLen(search(q = "typename:" & arguments.typename & " AND fcsp_sitename:" & arguments.sitename, params = { "fl" = "fcsp_id" }, rows = 999999999).results) />
 	</cffunction>
 	
 	<cffunction name="addRecordToIndex" returntype="void" access="public" output="false">
@@ -1127,6 +1130,7 @@
 		<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
 		<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
 		<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
+		<cfargument name="method" type="string" required="false" default="GET" hint="Options are GET and POST. POST can send a longer query string, but GET returns better logging data. Niether option has any performance benefit over the other." />
 		<cfreturn application.stPlugins["farcrysolrpro"].cfsolrlib.search(argumentCollection = arguments) />
 	</cffunction>
 	
@@ -1192,36 +1196,7 @@
 		<cfreturn returnValue />
 
 	</cffunction>
-	
-	<cffunction name="listCompare" output="false" returnType="string">
-	   <cfargument name="list1" type="string" required="true" />
-	   <cfargument name="list2" type="string" required="true" />
-	   <cfargument name="delim1" type="string" required="false" default="," />
-	   <cfargument name="delim2" type="string" required="false" default="," />
-	   <cfargument name="delim3" type="string" required="false" default="," />
-		<!---
-		 Compares one list against another to find the elements in the first list that don't exist in the second list.
-		 v2 mod by Scott Coldwell
-		 
-		 @param List1      Full list of delimited values. (Required)
-		 @param List2      Delimited list of values you want to compare to List1. (Required)
-		 @param Delim1      Delimiter used for List1.  Default is the comma. (Optional)
-		 @param Delim2      Delimiter used for List2.  Default is the comma. (Optional)
-		 @param Delim3      Delimiter to use for the list returned by the function.  Default is the comma. (Optional)
-		 @return Returns a delimited list of values. 
-		 @author Rob Brooks-Bilson (rbils@amkor.com) 
-		 @version 2, June 25, 2009 
-		--->
-	   <cfset var list1Array = ListToArray(arguments.List1,Delim1) />
-	   <cfset var list2Array = ListToArray(arguments.List2,Delim2) />
-	
-	   <!--- Remove the subset List2 from List1 to get the diff --->
-	   <cfset list1Array.removeAll(list2Array) />
-	
-	   <!--- Return in list format --->
-	   <cfreturn ArrayToList(list1Array, Delim3) />
-	</cffunction>
-	
+		
 	<cffunction name="isSolrRunning" access="public" returntype="boolean" output="false">
 		<cfargument name="config" required="false" type="struct" default="#application.fapi.getContentType('farConfig').getConfig(key = 'solrserver')#" />
 		<cftry>

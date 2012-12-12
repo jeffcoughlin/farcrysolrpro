@@ -248,4 +248,25 @@
 		<cfreturn (result & " " & newunit) />
 	</cffunction>
 
+	<cffunction name="extractFromArrayOfStructs" access="public" returntype="array" output="false" hint="Takes and array of structs and converts it to a simple array using the value of the struct key specified.">
+		<cfargument name="aObj" type="array" required="true" />
+		<cfargument name="key" type="string" required="true" />
+		<cfscript>
+			/*
+			 Takes and array of structs and converts it to a simple array using the value of the struct key specified
+			 
+			 @param aObj   Array of structs. (Required)
+			 @param key    Key of the struct to get data from. (Required)
+			 @return Returns a simple array of values. 
+			 @author Sean Coyne (www.n42designs.com) 
+			 @version 1, December 5, 2012 
+			*/
+			var result = [];
+			for (var item in arguments.aObj) {
+				arrayAppend(result, item[arguments.key]);
+			}
+			return result;
+		</cfscript>	
+	</cffunction>
+
 </cfcomponent>
