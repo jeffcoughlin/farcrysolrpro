@@ -25,9 +25,9 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.5.zip",
+				"url"="http://jeffcoughlin.com/downloads/farcry/plugins/farcrysolrpro/farcrysolrpro-nosolr-1.2.5.zip",
 				"shortdesc"="<em>(plugin only)</em>",
-				"size"="22MB"
+				"size"="24MB"
 			}
 		],
 		"requirements"={
