@@ -61,7 +61,7 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
         * Video formats (<abbr title="Flash Video">FLV</abbr> parser)
         * Java class files and archives
         * The mbox format (extracting email messages from mailbox formats)
-    * For more details on what formats Tika supports, see <a href="tika.apache.org/1.1/formats.html">Tika's Supported Document Formats</a> page.
+    * For more details on what formats Tika supports, see <a href="http://tika.apache.org/1.1/formats.html">Tika's Supported Document Formats</a> page.
 * **Document size**
     * Optionally return the document size with each result.
         * You can choose which fields total up the size (options are text-based fields, files, and images).
