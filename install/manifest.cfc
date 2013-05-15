@@ -25,7 +25,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="http://jeffcoughlin.com/downloads/farcry/plugins/farcrysolrpro/farcrysolrpro-nosolr-1.2.6.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.6.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="24MB"
 			}
@@ -51,7 +51,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="http://jeffcoughlin.com/downloads/farcry/plugins/farcrysolrpro/farcrysolrpro-nosolr-1.2.5.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.5.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="24MB"
 			}
@@ -77,7 +77,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.4.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.4.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -103,7 +103,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.3.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.3.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -129,7 +129,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.2.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.2.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -155,7 +155,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.1.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.1.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -181,7 +181,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.2.0.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.2.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -207,7 +207,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.1.1.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.1.1.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -233,7 +233,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.1.0.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.1.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -259,7 +259,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.2.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.0.2.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -285,7 +285,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.1.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.0.1.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
@@ -311,7 +311,7 @@
 				"size"="38MB"
 			},
 			{
-				"url"="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip",
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
 				"size"="22MB"
 			}
