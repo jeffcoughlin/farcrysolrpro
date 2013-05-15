@@ -7,7 +7,7 @@
 		<property name="sourceDir" value="." />
 
 		<!-- read latest version from json -->
-		<get src="http://jeffcoughlin.github.com/farcrysolrpro/update.json" dest="./update.json" />
+		<get src="http://jeffcoughlin.github.io/farcrysolrpro/update.json" dest="./update.json" />
 		<script language="javascript"><![CDATA[
 
 			importClass(java.io.File);
