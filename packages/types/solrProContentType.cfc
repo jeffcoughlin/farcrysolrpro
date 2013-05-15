@@ -419,12 +419,23 @@
 							boostValue = listGetAt(ft,3,":")
 						} />
 						
-						<cfset arrayAppend(doc, {
-							name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
-							value = stRecord[field],
-							boost = typeSetup.boostValue,
-							farcryField = field
-						}) />
+						<cfif typeSetup.fieldType eq "date">
+							<cfif isDate(stRecord[field])>
+								<cfset arrayAppend(doc, {
+									name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+									value = stRecord[field],
+									boost = typeSetup.boostValue,
+									farcryField = field
+								}) />
+							</cfif>
+						<cfelse>
+							<cfset arrayAppend(doc, {
+								name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+								value = stRecord[field],
+								boost = typeSetup.boostValue,
+								farcryField = field
+							}) />	
+						</cfif>
 						
 						<cfscript>
 							// if this field is an image or file field, parse the contents
