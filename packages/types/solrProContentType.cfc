@@ -419,23 +419,56 @@
 							boostValue = listGetAt(ft,3,":")
 						} />
 						
-						<cfif typeSetup.fieldType eq "date">
-							<cfif isDate(stRecord[field])>
+						<cfswitch expression="#typeSetup.fieldType#">
+							<cfcase value="date,tdate">
+								<cfif isDate(stRecord[field])>
+									<cfset arrayAppend(doc, {
+										name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										value = stRecord[field],
+										boost = typeSetup.boostValue,
+										farcryField = field
+									}) />
+								</cfif>
+							</cfcase>
+							<cfcase value="boolean">
+								<cfif isBoolean(stRecord[field])>
+									<cfset arrayAppend(doc, {
+										name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										value = ((stRecord[field]) ? 1 : 0),
+										boost = typeSetup.boostValue,
+										farcryField = field
+									}) />
+								</cfif>
+							</cfcase>
+							<cfcase value="binary">
+								<cfif isBinary(stRecord[field])>
+									<cfset arrayAppend(doc, {
+										name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										value = stRecord[field],
+										boost = typeSetup.boostValue,
+										farcryField = field
+									}) />
+								</cfif>
+							</cfcase>
+							<cfcase value="int,float,long,double">
+								<cfif isNumeric(stRecord[field])>
+									<cfset arrayAppend(doc, {
+										name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
+										value = stRecord[field],
+										boost = typeSetup.boostValue,
+										farcryField = field
+									}) />
+								</cfif>
+							</cfcase>
+							<cfdefaultcase>
 								<cfset arrayAppend(doc, {
 									name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
 									value = stRecord[field],
 									boost = typeSetup.boostValue,
 									farcryField = field
 								}) />
-							</cfif>
-						<cfelse>
-							<cfset arrayAppend(doc, {
-								name = lcase(field) & "_" & typeSetup.fieldType & "_" & ((typeSetup.bStored eq 1) ? "stored" : "notstored"),
-								value = stRecord[field],
-								boost = typeSetup.boostValue,
-								farcryField = field
-							}) />	
-						</cfif>
+							</cfdefaultcase>
+						</cfswitch>
 						
 						<cfscript>
 							// if this field is an image or file field, parse the contents
