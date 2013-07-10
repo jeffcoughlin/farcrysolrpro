@@ -595,6 +595,7 @@
 		<cfargument name="batchSize" required="false" type="numeric" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" />
 		<cfargument name="builtToDate" required="false" type="any" default="" />
 		<cfargument name="bGetAllIds" type="boolean" required="false" default="true" hint="If true, returns all records (used for indexRecords() method when comparing DB and Solr records so Solr knows which ones to delete)." />
+		<cfargument name="orderby" type="string" require="false" default="datetimelastupdated asc" />
 
 		<cfset var oType = application.fapi.getContentType(arguments.typename) />
 		<cfset var stResult = {} />
@@ -613,7 +614,7 @@
 					
 		<cfif structKeyExists(oType, "contentToIndex")>
 			<!--- run the contentToIndex method for this content type --->
-			<cfset stResult.qContentToIndex = oType.contentToIndex(builtToDate=arguments.builtToDate,batchSize=maxrows,bGetAllIds=arguments.bGetAllIds) />
+			<cfset stResult.qContentToIndex = oType.contentToIndex(builtToDate=arguments.builtToDate,batchSize=maxrows,bGetAllIds=arguments.bGetAllIds,orderby=arguments.orderby) />
 		<cfelse>
 			<!--- no contentToIndex method, just grab all the records --->
 			<cfquery name="stResult.qContentToIndex" datasource="#application.dsn#" maxrows="#maxrows#">
@@ -624,9 +625,9 @@
 					and status = 'approved'
 				</cfif>
 				<cfif arguments.bGetAllIds is false and arguments.builtToDate neq "" and isDate(arguments.builtToDate)>
-					and datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
+					and datetimelastupdated >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
 				</cfif>
-				order by datetimelastupdated
+				order by #arguments.orderby#;
 			</cfquery>
 		</cfif>
 		
