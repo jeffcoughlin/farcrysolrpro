@@ -17,7 +17,7 @@
 		"version"="1.2.7",
 		"releasedate"="2013-11-20",
 		"description"="",
-		"changelog"="<ul><li>Sort order can be overridden when indexing.</li></ul>",
+		"changelog"="<ul><li>Sort order can be overridden when indexing.</li><li>Fixes a bug that caused records to be left out of the index if a field contained blank or invalid data.</li></ul>",
 		"downloads"=[
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.2.7",
