@@ -25,3 +25,7 @@ function populateHomePageDownloadButtons() {
 	});
 
 }
+
+$(document).ready(function(){
+	populateHomePageDownloadButtons();
+});

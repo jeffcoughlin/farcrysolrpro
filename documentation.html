@@ -1,74 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Documentation // FarCry Solr Pro</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <link href="assets/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-    </style>
-    <link href="assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="assets/google-code-prettify/prettify.css" rel="stylesheet">
-    <link href="assets/css/application.css" rel="stylesheet">
-
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-
-  <body data-spy="scroll" data-target=".subnav" data-offset="50">
-
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="index.html">FarCry Solr Pro plugin</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="features.html">Features</a></li>
-              <li class="active"><a href="documentation.html">Documentation</a></li>
-              <li class="divider-vertical"></li>
-              <li><a href="demos.html">Demos</a></li>
-              <li><a href="showcase.html">Showcase</a></li>
-            </ul>
-            <div class="pull-right">
-              <ul class="nav" style="margin-right: 50px;">
-                <li class="dropdown" style="background-color: #222;">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    Downloads
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li class="nav-header">Current Stable Release</li>
-                    <li id="stable-dl"><a href="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.0.0"><i class="icon-download-alt"></i> Download v1.0.0 w/ Solr 3.5 [40MB]</a></li>
-                    <li id="stable-dl-nosolr"><a href="https://github.com/downloads/jeffcoughlin/farcrysolrpro/farcrysolrpro-nosolr-1.0.0.zip"><i class="icon-download-alt"></i> Download v1.0.0 w/o Solr [23MB]</a></li>
-                    <li class="divider"></li>
-                    <li><a href="downloads.html"><i class="icon-download"></i> All Downloads</a></li>
-                  </ul>
-                </li><!--/.dropdown -->
-              </ul>
-              <div class="farcryplugins"><a href="http://plugins.farcrycore.org">FarCry Plugins</a></div>
-            </div>
-            <a href="https://github.com/jeffcoughlin/farcrysolrpro"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1031; position: fixed;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
+---
+layout: default
+title: Documentation
+---
 
       <header class="jumbotron subhead" id="overview">
         <h1>Documentation</h1>
@@ -97,7 +30,7 @@
           <div class="span4">
             <h3>Download as Zip File</h3>
             <p>Get the latest release as well as archived versions in the download area.</p>
-            <p><a class="btn" href="downloads.html">Downloads Page &raquo;</a></p>
+            <p><a class="btn" href="{{ site.baseurl }}/downloads.html">Downloads Page &raquo;</a></p>
           </div>
           <div class="span4">
             <h3>Clone from Git</h3>
@@ -116,7 +49,7 @@
 
         <h2>Install</h2>
         <p>To install, copy the plugin files to <code>/farcry/plugins/farcrysolrpro</code> and add "farcrysolrpro" to your "this.plugins" setting in your FarCry constructor.  Deploy the content types in the COAPI manager and restart the application.</p>
-        <p>You will need a copy of <a href="http://lucene.apache.org/solr/">Solr 3.5.x</a>.  One is provided in the git repository or optionally as part of the plugin distro.  Solr does not have to run from within the plugin folders.  By default our git repository has a copy of Solr under <code>/farcrysolrpro/packages/custom/cfsolrlib/solr-server</code> for convenience and because it was just easier for us to manage the files this way and offer a complete packaged solution.  However Solr can be run from anywhere (on the same server or remotely with a couple restrictions - see <a href="#solr">Running Solr</a> below) and you are not required to use the version of Solr we provide as a convenience (Solr is a pretty large download, so feel free to grab it elsewhere if desired).  The <a href="downloads.html"></a>downloads</a> page lists the version of Solr that has been tested with each corresponding plugin version.  Using a different version of Solr with the plugin is at your own risk.  If you choose to run Solr from a different location, make sure to note that in your webtop config for the plugin (and be aware of the possible speed implications that can happen from running Solr on a separate machine).</p>
+        <p>You will need a copy of <a href="http://lucene.apache.org/solr/">Solr 3.5.x</a>.  One is provided in the git repository or optionally as part of the plugin distro.  Solr does not have to run from within the plugin folders.  By default our git repository has a copy of Solr under <code>/farcrysolrpro/packages/custom/cfsolrlib/solr-server</code> for convenience and because it was just easier for us to manage the files this way and offer a complete packaged solution.  However Solr can be run from anywhere (on the same server or remotely with a couple restrictions - see <a href="#solr">Running Solr</a> below) and you are not required to use the version of Solr we provide as a convenience (Solr is a pretty large download, so feel free to grab it elsewhere if desired).  The <a href="{{ site.baseurl }}/downloads.html"></a>downloads</a> page lists the version of Solr that has been tested with each corresponding plugin version.  Using a different version of Solr with the plugin is at your own risk.  If you choose to run Solr from a different location, make sure to note that in your webtop config for the plugin (and be aware of the possible speed implications that can happen from running Solr on a separate machine).</p>
       </section><!-- /#download -->
 
       <section id="solr">
@@ -167,13 +100,13 @@
             </div>
           </div>
           <div class="span4">
-<pre class="prettyprint linenums">
-&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;solr persistent="true"&gt;
-  &lt;cores adminPath="/admin/cores"&gt;
-  &lt;/cores&gt;
-&lt;/solr&gt;
-</pre>
+{% highlight xml linenos %}
+<?xml version="1.0" encoding="UTF-8" ?>
+<solr persistent="true">
+  <cores adminPath="/admin/cores">
+  </cores>
+</solr>
+{% endhighlight %}
           </div>
         </div>
 
@@ -220,7 +153,7 @@
             </div>
           </div>
           <div class="span7">
-            <p><img src="assets/images/webtopConfig.jpg" alt="Webtop Config" title="Webtop Config" /></p>
+            <p><img src="{{ site.baseurl }}/assets/images/webtopConfig.jpg" alt="Webtop Config" title="Webtop Config" /></p>
           </div>
         </div><!-- /.row -->
 
@@ -235,7 +168,7 @@
             <h3>Content Type Edit Form</h3>
             <p>You need to setup your collections in order for them to get indexed.</p>
             <p><code>Webtop --&gt; Admin --&gt; Solr Pro (dropdown) --&gt; Setup --&gt; Content Types</code></p>
-            <p><img src="assets/images/farcrySolrProWebtopConfig.jpg" alt="FarCry Solr Pro Webtop Config" title="FarCry Solr Pro Webtop Config" /></p>
+            <p><img src="{{ site.baseurl }}/assets/images/farcrySolrProWebtopConfig.jpg" alt="FarCry Solr Pro Webtop Config" title="FarCry Solr Pro Webtop Config" /></p>
             <p>There is more detailed information at the bottom of the edit form (scroll to the bottom of the form when creating/editing a content type).</p>
           </div>
           <div class="span5">
@@ -368,14 +301,14 @@
         <div class="row">
           <div class="span12">
             <h4>Example of a custom "contentToIndex" Function/Method</h4>
-<pre class="prettyprint linenums">
-&lt;cffunction name="contentToIndex" access="public" output="false" returntype="query"&gt;
-  &lt;cfargument name="objectId" type="uuid" required="false" /&gt;
-  &lt;cfargument name="batchSize" required="false" type="numeric" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" /&gt;
-  &lt;cfargument name="builtToDate" required="false" type="any" default="" /&gt;
-  &lt;cfargument name="bGetAllIds" type="boolean" required="false" default="true" hint="If true, returns all records (used for indexRecords() method when comparing DB and Solr records so that Solr knows which ones to delete)." /&gt;
-  &lt;cfset var qData = "" /&gt;
-  &lt;cfquery name="qData" datasource="#application.dsn#" maxrows="#arguments.batchSize#"&gt;
+{% highlight cfm linenos %}
+<cffunction name="contentToIndex" access="public" output="false" returntype="query">
+  <cfargument name="objectId" type="uuid" required="false" />
+  <cfargument name="batchSize" required="false" type="numeric" default="#application.fapi.getConfig(key = "solrserver", name = "batchSize", default = 1000)#" />
+  <cfargument name="builtToDate" required="false" type="any" default="" />
+  <cfargument name="bGetAllIds" type="boolean" required="false" default="true" hint="If true, returns all records (used for indexRecords() method when comparing DB and Solr records so that Solr knows which ones to delete)." />
+  <cfset var qData = "" />
+  <cfquery name="qData" datasource="#application.dsn#" maxrows="#arguments.batchSize#">
     select objectID, datetimelastupdated
     from #application.dbowner#myProduct
     where status = 'approved'
@@ -383,7 +316,7 @@
             or publishDate is null
             or (publishDate != ''
                  and not publishDate is null
-                 and publishDate &lt;= getdate()
+                 and publishDate <= getdate()
                )
           )
       and (expirydate >= getdate()
@@ -391,17 +324,17 @@
             or expirydate is null
           )
       and bActive = 1
-      &lt;cfif structKeyExists(arguments, "objectId")&gt;
-        and objectId = &lt;cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectId#" /&gt;
-      &lt;/cfif&gt;
-      &lt;cfif arguments.bGetAllIds is false and arguments.builtToDate neq "" and isDate(arguments.builtToDate)&gt;
-        and datetimelastupdated &gt; &lt;cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" /&gt;
-      &lt;/cfif&gt;
+      <cfif structKeyExists(arguments, "objectId")>
+        and objectId = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectId#" />
+      </cfif>
+      <cfif arguments.bGetAllIds is false and arguments.builtToDate neq "" and isDate(arguments.builtToDate)>
+        and datetimelastupdated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.builtToDate#" />
+      </cfif>
       order by datetimelastupdated;
-  &lt;/cfquery&gt;
-  &lt;cfreturn qData /&gt;
-&lt;/cffunction&gt;
-</pre>
+  </cfquery>
+  <cfreturn qData />
+</cffunction>
+{% endhighlight %}
           </div>
         </div>
         <p>The plugin will also detect when one of the referenced DB values have changed.  Meaning, if you had previously set a content item to <strong>active</strong> (which was then indexed on-save) and then later decided to set the same content item to <strong>inactive</strong>, the plugin will remove the content item from the index when you save the content item within the webtop. <em>(Assumes you have "index on save" option enabled for that type. Otherwise the change will be reflected the next time you batch index that type).</em></p>
@@ -430,29 +363,3 @@
         </div>
         <p>There is more documentation found within the webtop for the plugin.  Also, when creating or editing a content type for the Solr Pro plugin you'll find detailed help and tips at the bottom of the edit form.</p>
       </section>
-
-      <footer class="footer">
-        <div class="pull-right">
-          <p><a href="http://farcrycore.org">FarCry Core</a> is an open source product by <a href="http://daemon.com.au">Daemon Pty Limited</a></p>
-          <p>Documentation Design and logic by <a href="http://twitter.github.com/bootstrap/">Twiiter Bootstrap</a></p>
-        </div>
-        <div class="pull-left">
-          <p><a href="index.html">FarCry Solr Pro plugin</a> &copy; 2012</p>
-          <p>Jeff Coughlin (<a href="http://jeffcoughlin.com">http://jeffcoughlin.com</a>)</p>
-          <p>Sean Coyne (<a href="http://www.n42designs.com">http://www.n42designs.com</a>)</p>
-          <p>Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-        </div>
-      </footer>
-
-    </div><!-- /.container -->
-
-    <!-- javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
-    <script src="assets/google-code-prettify/prettify.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/application.js"></script>
-    <script src="assets/js/googleanalytics.js"></script>
-  </body>
-</html>

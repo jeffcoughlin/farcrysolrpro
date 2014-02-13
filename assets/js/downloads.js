@@ -36,11 +36,11 @@ function loadCurrentRelease(data) {
 					if (y == 0) {
 						link.addClass("btn-primary");
 					} else {
-						link.addClass("btn-inverse");
+						link.addClass("btn-default");
 						link.attr('style',"margin-top: 5px; clear: right;");
 					}
 					link.addClass("btn-small");
-					link.html('<i class="icon-download-alt icon-white"></i>&nbsp;Download v' + data[0].version + '&nbsp;<span style="font-size: .85em;" class="pull-right">' + data[0].downloads[y].shortdesc + ' [' + data[0].downloads[y].size + ']</span>');
+					link.html('<i class="icon-download-alt' + ((y == 0) ? ' icon-white' : '') + '"></i>&nbsp;Download v' + data[0].version + '&nbsp;<span class="pull-right">' + data[0].downloads[y].shortdesc + ' [' + data[0].downloads[y].size + ']</span>');
 					item.append(link);
 				}
 				break;
@@ -97,11 +97,11 @@ function loadArchiveReleases(data) {
 						if (y == 0) {
 							link.addClass("btn-primary");
 						} else {
-							link.addClass("btn-inverse");
+							link.addClass("btn-default");
 							link.attr('style',"margin-top: 5px; clear: right;");
 						}
 						link.addClass("btn-small");
-						link.html('<i class="icon-download-alt icon-white"></i>&nbsp;Download v' + data[z].version + '&nbsp;<span style="font-size: .85em;" class="pull-right">' + data[z].downloads[y].shortdesc + ' [' + data[z].downloads[y].size + ']</span>');
+						link.html('<i class="icon-download-alt' + ((y == 0) ? ' icon-white' : '') + '"></i>&nbsp;Download v' + data[z].version + '&nbsp;<span class="pull-right">' + data[z].downloads[y].shortdesc + ' [' + data[z].downloads[y].size + ']</span>');
 						item.append(link);
 					}
 					break;
@@ -133,3 +133,24 @@ function populateChangeLog(data) {
 	}
 
 }
+
+$(document).ready(function(){
+	$.ajax({
+		url: "update.json",
+		method: "GET",
+		dataType: "json",
+		success: function (data, status, req) {
+			// load the current release
+			loadCurrentRelease(data);
+			// load archive releases (hide if no archives found)
+			if (data.length > 1) {
+				loadArchiveReleases(data);
+			} else {
+				// no archive releases
+				$(".archive-releases").hide();
+			}
+			// populate the change log
+			populateChangeLog(data);
+		}
+	});
+});
