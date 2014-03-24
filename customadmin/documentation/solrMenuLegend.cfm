@@ -7,7 +7,7 @@
 
 <admin:header title="Solr Pro: Menu Legend" />
 
-<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
+<cfset linkConfig = application.url.webtop & "/index.cfm?sec=admin&sub=general&menu=settings&listfarconfig" />
 <cfset linkHowTo = application.url.webtop & "/admin/customadmin.cfm?module=documentation/solrHowTo.cfm&plugin=farcrysolrpro" />
 <cfset linkAbout = application.url.webtop & "/admin/customadmin.cfm?module=documentation/solrProAbout.cfm&amp;plugin=farcrysolrpro" />
 
@@ -16,7 +16,7 @@
 	<p>We've taken advantage of many of Solr's functions and features and tried to make them as user-friendly as possible.  Below is a simple breakdown to help explain the main menu seen on the left.</p>
 	<!--- Setup --->
 	<h1>Setup</h1>
-	<p>Setting up your Solr Plugin to work with your content is the first step.  Don't forget to edit the <a href="#linkConfig#">Solr configuration</a> first.  More details on all of this are explained in the <a href="#linkHowTo#">How-To</a> documentation.</p>
+	<p>Setting up your Solr Plugin to work with your content is the first step.  Don't forget to edit the <a target="_top" href="#linkConfig#">Solr configuration</a> first.  More details on all of this are explained in the <a href="#linkHowTo#">How-To</a> documentation.</p>
 	<h2>Content Types</h2>
 	<p>This is where you setup your content types for Solr to index.  Each of the options for setting this up are exaplined at the bottom of the screen when you add/edit a content type to Solr.</p>
 	<h2>Solr Admin</h2>

@@ -60,8 +60,8 @@ $j(document).ready(function(){
 
 <cfelse>
 	
-	<cfset linkConfig = application.url.webtop & "/admin/customadmin.cfm?module=customlists/farConfig.cfm" />
-	<cfoutput><p>You must <a href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
+	<cfset linkConfig = application.url.webtop & "/index.cfm?sec=admin&sub=general&menu=settings&listfarconfig" />
+	<cfoutput><p>You must <a target="_top" href="#linkConfig#">configure the Solr settings</a> before you can test search.</p></cfoutput>
 	
 </cfif>
 

@@ -35,15 +35,18 @@
 			---------------------------------------->
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#">
-					
+
 					<!--- mark as configured, tracks if the user has updated the configuration.  This avoids creating directories on first load that may not be necessary. --->
-					
-					<cfwddx action="wddx2cfml" input="#stProperties.configdata#" output="configdata" />
-					
-					<cfset configdata.bConfigured = 1 />
-					
-					<cfwddx action="cfml2wddx" input="#configdata#" output="stProperties.configdata" /> 
-					
+					<cfif isWDDX(stProperties.configdata)>
+						<cfwddx action="wddx2cfml" input="#stProperties.configdata#" output="configdata" />
+						<cfset configdata.bConfigured = 1 />
+						<cfwddx action="cfml2wddx" input="#configdata#" output="stProperties.configdata" /> 
+					<cfelse>
+						<cfset stConfig = deserializeJSON(stProperties.configdata)>
+						<cfset stConfig.bConfigured = 1 />
+						<cfset stProperties.configdata = serializeJSON(stConfig)>
+					</cfif>
+
 				</ft:processFormObjects>
 			</ft:processForm>
 		
