@@ -13,7 +13,7 @@
 	<p>More details on the plugin and installation help can be found on the plugin's website: <a href="#linkPlugin#">#linkPlugin#</a>.</p>
 	<p>For your convenience the plugin website has been iFrame'd below (assuming you currently have web access to the site from your location).</p>
 	<br />
-	<iframe src="#linkPlugin#" width="100%" height="100%" />
+	<iframe src="#linkPlugin#" width="100%" height="500"></iframe>
 </cfoutput>
 
 <admin:footer />
