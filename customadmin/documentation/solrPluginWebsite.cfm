@@ -6,7 +6,7 @@
 
 <admin:header title="Solr Admin" />
 
-<cfset linkPlugin = "http://jeffcoughlin.github.com/farcrysolrpro" />
+<cfset linkPlugin = "http://jeffcoughlin.github.io/farcrysolrpro" />
 
 <cfoutput>
 	<h1>FarCry Solr Pro Website Reference</h1>

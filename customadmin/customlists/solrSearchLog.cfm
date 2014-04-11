@@ -8,7 +8,7 @@
 
 <skin:loadJs id="fc-jquery" />
 <skin:loadJs id="fc-jquery-ui" />
-<skin:loadCss id="fc-jquery-ui" />
+<skin:loadCss id="jquery-ui" />
 
 <skin:onReady>
 <cfoutput>

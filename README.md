@@ -1,4 +1,4 @@
-![FarCry Solr Pro](http://jeffcoughlin.github.com/farcrysolrpro/assets/images/logo-farcrySolrPro-admin.png "FarCry Solr Pro")
+![FarCry Solr Pro](http://jeffcoughlin.github.io/farcrysolrpro/assets/images/logo-farcrySolrPro-admin.png "FarCry Solr Pro")
 
 # FarCry Solr Pro Plugin
 
@@ -6,11 +6,11 @@ The FarCry Solr Pro plugin lets you use the power of Lucene (through Solr) to in
 
 FarCry Solr Pro was designed with FarCry's framework in mind.  It matches each record with its unique record ID and grants you the power to make your searches more relevant with things like field boosting, search term elevation, and more.
 
-![FarCry Solr Pro Webtop](http://jeffcoughlin.github.com/farcrysolrpro/assets/images/searchExample.png "FarCry Solr Pro Webtop")
+![FarCry Solr Pro Webtop](http://jeffcoughlin.github.io/farcrysolrpro/assets/images/searchExample.png "FarCry Solr Pro Webtop")
 
 ## Details and Installation
 
-For more details and installation information, see the [documentation pages](http://jeffcoughlin.github.com/farcrysolrpro "FarCry Solr Pro").
+For more details and installation information, see the [documentation pages](http://jeffcoughlin.github.io/farcrysolrpro "FarCry Solr Pro").
 
 ## Authors
 

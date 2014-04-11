@@ -11,7 +11,6 @@
 	if (oSysInfo.getMajorVersion() lt 7) {
 		application.fapi.registerJs(id = "fc-jquery", lCombineIDs = "jquery", append = "$.noConflict(); $j = jQuery.noConflict();");
 		application.fapi.registerJs(id = "fc-jquery-ui", lCombineIDs = "jquery-ui");
-		application.fapi.registerCss(id = "fc-jquery-ui", lCombineIDs = "jquery-ui");
 	}
 </cfscript>
 

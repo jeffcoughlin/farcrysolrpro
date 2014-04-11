@@ -8,7 +8,7 @@
 
 <skin:loadJs id="fc-jquery" />
 <skin:loadJs id="fc-jquery-ui" />
-<skin:loadCss id="fc-jquery-ui" />
+<skin:loadCss id="jquery-ui" />
 
 <!--- Load Custom Webtop Styling --->
 <skin:loadCss id="solrPro-customWebtopStyles" />
@@ -468,8 +468,19 @@
 				padding-left: 0.5em;
 				vertical-align: middle;
 			}
+			.fieldType div.fieldTypeAttributesRight .combobox label {
+				margin: 0;
+				padding: 0;
+				display: inline;
+			}
 			.fieldType div.fieldTypeAttributesRight div input {
 				vertical-align: middle;
+				margin: 0;
+				padding: 0;
+			}
+			.fieldType div.fieldTypeAttributesRight div button {
+				margin: 0;
+				padding: 0;
 			}
 			.fieldType div.buttonset label:not(.ui-state-active) span {
 				color: ##888 !important;

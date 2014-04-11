@@ -8,8 +8,8 @@
 <admin:header title="Solr Pro: How To" />
 
 <cfset linkConfig = application.url.webtop & "/index.cfm?sec=admin&sub=general&menu=settings&listfarconfig" />
-<cfset linkPluginHome = "http://jeffcoughlin.github.com/farcrysolrpro/" />
-<cfset linkPluginInstall = "http://jeffcoughlin.github.com/farcrysolrpro/documentation.html" />
+<cfset linkPluginHome = "http://jeffcoughlin.github.io/farcrysolrpro/" />
+<cfset linkPluginInstall = "http://jeffcoughlin.github.io/farcrysolrpro/documentation.html" />
 
 <cfset oManifest = application.stPlugins.farcrysolrpro.oManifest />
 

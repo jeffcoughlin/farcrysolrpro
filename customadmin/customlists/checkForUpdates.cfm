@@ -8,7 +8,7 @@
 <admin:header title="Check for Updates" />
 
 <cfscript>
-	updateUrl = "http://jeffcoughlin.github.com/farcrysolrpro/update.json";
+	updateUrl = "http://jeffcoughlin.github.io/farcrysolrpro/update.json";
 	oUpdater = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.updates").init(
 		updateUrl = updateUrl,
 		installManifest = application.stPlugins["farcrysolrpro"].oManifest
@@ -68,7 +68,7 @@
 
 <cfoutput>
 	<hr />
-	<p>Note: See <a href="http://jeffcoughlin.github.com/farcrysolrpro/downloads.html">plugin website</a> for information on all versions and changelogs.</p>
+	<p>Note: See <a href="http://jeffcoughlin.github.io/farcrysolrpro/downloads.html">plugin website</a> for information on all versions and changelogs.</p>
 </cfoutput>
 
 <admin:footer />

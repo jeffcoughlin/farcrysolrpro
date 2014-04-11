@@ -12,7 +12,7 @@
 
 <skin:loadJs id="fc-jquery" />
 <skin:loadJs id="fc-jquery-ui" />
-<skin:loadCss id="fc-jquery-ui" />
+<skin:loadCss id="jquery-ui" />
 
 <cfparam name="form.purgeDate" default="" />
 
@@ -22,13 +22,11 @@
 	<cfset form.purgeDate = "" />
 </cfif>
 
-<skin:loadJs id="purgeLogs">
+<skin:onReady>
 <cfoutput>
-$j(document).ready(function(){
-	$j(".datepicker").datepicker();
-});
+$j('input.datepicker').datepicker();
 </cfoutput>
-</skin:loadJs>
+</skin:onReady>
 
 <ft:processForm action="Purge">
 
