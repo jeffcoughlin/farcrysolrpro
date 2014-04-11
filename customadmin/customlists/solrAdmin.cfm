@@ -19,7 +19,7 @@
 	<p>The screen below is pulled from Solr itself and is not managed by FarCry.  Generally you shouldn't need this tool for any of your Solr management, however we've provided this screen here for your convenience for testing and troubleshooting should you desire it (ref: <a href="#uri#">Solr Admin</a>).</p>
 	<br />
 	<cfif bContinue>
-	<iframe src="#uri#" width="100%" height="600" />
+	<iframe src="#uri#" width="100%" height="600"></iframe>
 	<cfelse>
 		<cfset linkConfig = application.url.webtop & "/index.cfm?sec=admin&sub=general&menu=settings&listfarconfig" />
 		<p>Solr is not responding.  Please be sure your <a target="_top" href="#linkConfig#">Solr configuration</a> is correct, and that the Solr service is running.</p>

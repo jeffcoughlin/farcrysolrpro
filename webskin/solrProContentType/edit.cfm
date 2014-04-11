@@ -6,9 +6,9 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<skin:loadJs id="jquery" />
-<skin:loadJs id="jquery-ui" />
-<skin:loadCss id="jquery-ui" />
+<skin:loadJs id="fc-jquery" />
+<skin:loadJs id="fc-jquery-ui" />
+<skin:loadCss id="fc-jquery-ui" />
 
 <!--- Load Custom Webtop Styling --->
 <skin:loadCss id="solrPro-customWebtopStyles" />

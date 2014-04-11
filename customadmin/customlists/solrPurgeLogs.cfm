@@ -10,9 +10,9 @@
 
 <cfif application.fapi.getConfig(key = 'solrserver', name = 'bConfigured', default = false) eq true>
 
-<skin:loadJs id="jquery" />
-<skin:loadJs id="jquery-ui" />
-<skin:loadCss id="jquery-ui" />
+<skin:loadJs id="fc-jquery" />
+<skin:loadJs id="fc-jquery-ui" />
+<skin:loadCss id="fc-jquery-ui" />
 
 <cfparam name="form.purgeDate" default="" />
 
