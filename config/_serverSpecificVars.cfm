@@ -8,9 +8,18 @@
 <cfscript>
 	// on FarCry 6, alias the jquery & jquery-ui JS/CSS assets to match FarCry 7 (so we only have one version check, rather than conditionals all over the place)
 	oSysInfo = createObject("component", application.fc.utils.getPath(package = "farcry", component = "sysinfo"));
-	if (oSysInfo.getMajorVersion() lt 7) {
-		application.fapi.registerJs(id = "fc-jquery", lCombineIDs = "jquery", append = "$.noConflict(); $j = jQuery.noConflict();");
-		application.fapi.registerJs(id = "fc-jquery-ui", lCombineIDs = "jquery-ui");
+	if (oSysInfo.getMajorVersion() eq 6 and oSysInfo.getMinorVersion() lt 2) {
+		param name = "application.fc.stJSLibraries" default = {};
+		if (structKeyExists(application.fc.stJSLibraries, "jquery")) {
+			stJquery = duplicate(application.fc.stJSLibraries["jquery"]);
+			stJQuery.id = "fc-jquery";
+			application.fapi.registerJs(argumentCollection = stJQuery);	
+		}
+		if (structKeyExists(application.fc.stJSLibraries, "jquery-ui")) {
+			stJQueryUI = duplicate(application.fc.stJSLibraries["jquery-ui"]);
+			stJQueryUI.id = "fc-jquery-ui";
+			application.fapi.registerJs(argumentCollection = stJQueryUI);	
+		}
 	}
 </cfscript>
 
