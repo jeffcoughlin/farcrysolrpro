@@ -1,0 +1,30 @@
+{
+  "name": "farcrysolrpro",
+  "version": "1.2.11",
+  "description": "An advanced Solr search implementation for FarCry",
+  "main": "www/index.cfm",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Tests can be run from within FarCry via the testMXUnit plugin\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffcoughlin/farcrysolrpro.git"
+  },
+  "contributors": [
+    "Sean Coyne <sean@n42designs.com>",
+    "Jeff Coughlin <jeff@jeffcoughlin.com>"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jeffcoughlin/farcrysolrpro/issues"
+  },
+  "homepage": "http://jeffcoughlin.github.io/farcrysolrpro/",
+  "private": true,
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-compress": "^0.11.0"
+  }
+}
