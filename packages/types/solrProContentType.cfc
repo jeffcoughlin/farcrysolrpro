@@ -29,8 +29,10 @@
 		<cfset structDelete(application.stPlugins.farcrysolrpro.corePropertyBoosts,stProperties.objectid) />
 		
 		<!--- reset the cache for the field list for this type (both phonetic and non-phonetic) --->
-		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = true) />
-		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = false) />
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = true, bIncludeString = false) />
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = true, bIncludeNonString = true) />
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = false, bIncludeString = true) />
+		<cfset setFieldListCacheForType(typename = stProperties.contentType, bIncludePhonetic = false, bIncludeNonString = false) />
 		
 		<cfreturn super.aftersave(argumentCollection = arguments) />
 		
@@ -220,20 +222,22 @@
 	<cffunction name="setFieldListCacheForType" returntype="void" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
-		<cfargument name="fieldList" type="string" required="false" default="#getFieldListForType(typename = arguments.typename, bIncludePhonetic = arguments.bIncludePhonetic)#" />
+		<cfargument name="bIncludeNonString" type="boolean" required="false" default="false" />
+		<cfargument name="fieldList" type="string" required="false" default="#getFieldListForType(typename = arguments.typename, bIncludePhonetic = arguments.bIncludePhonetic, bIncludeNonString = arguments.bIncludeNonString)#" />
 		<cfparam name="application.stPlugins['farcrysolrpro'].fieldLists" default="#structNew()#" />
-		<cfset application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic] = arguments.fieldList />
+		<cfset application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic & "-" & arguments.bIncludeNonString] = arguments.fieldList />
 	</cffunction>
 	
 	<cffunction name="getFieldListCacheForType" returntype="string" access="public" output="false">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
 		<cfargument name="bFlushCache" type="boolean" required="false" default="false" />
+		<cfargument name="bIncludeNonString" type="boolean" required="false" default="false" />
 		
 		<!--- try to load the cached value --->
 		<cfparam name="application.stPlugins['farcrysolrpro'].fieldLists" default="#structNew()#" />
-		<cfif structKeyExists(application.stPlugins["farcrysolrpro"].fieldLists, arguments.typename & "-" & arguments.bIncludePhonetic)>
-			<cfset var cachedValue = application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic] />
+		<cfif structKeyExists(application.stPlugins["farcrysolrpro"].fieldLists, arguments.typename & "-" & arguments.bIncludePhonetic & "-" & arguments.bIncludeNonString)>
+			<cfset var cachedValue = application.stPlugins["farcrysolrpro"].fieldLists[arguments.typename & "-" & arguments.bIncludePhonetic & "-" & arguments.bIncludeNonString] />
 		<cfelse>
 			<cfset var cachedValue = "" />	
 		</cfif>
@@ -241,10 +245,10 @@
 		<cfif len(trim(cachedValue)) eq 0 or arguments.bFlushCache eq true>
 			
 			<!--- no cached version, generate the field list --->
-			<cfset var fieldList = getFieldListForType(arguments.typename,arguments.bIncludePhonetic) />
+			<cfset var fieldList = getFieldListForType(typename = arguments.typename,bIncludePhonetic = arguments.bIncludePhonetic, bIncludeNonString = arguments.bIncludeNonString) />
 			
 			<!--- cache it for later use --->
-			<cfset setFieldListCacheForType(typename = arguments.typename,bIncludePhonetic = arguments.bIncludePhonetic,fieldList = fieldList) />
+			<cfset setFieldListCacheForType(typename = arguments.typename,bIncludePhonetic = arguments.bIncludePhonetic,fieldList = fieldList, bIncludeNonString = arguments.bIncludeNonString) />
 			
 			<!--- return the field list --->
 			<cfreturn fieldList />
@@ -263,15 +267,16 @@
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
 		<cfargument name="bUseCache" type="boolean" required="false" default="true" />
 		<cfargument name="bFlushCache" type="boolean" required="false" default="false" />
+		<cfargument name="bIncludeNonString" type="boolean" required="false" default="false" hint="Include non-string data fields (boolean, date, number, etc).  If not included only string, text and phonetic fields are included." />
 		<cfset var q = getAllContentTypes(lContentTypes) />
 		<cfset var qf = "" />
 		
 		<!--- for each indexed content type, get the field list --->
 		<cfloop query="q">
 			<cfif arguments.bUseCache>
-				<cfset qf = qf & " " & getFieldListCacheForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bFlushCache = arguments.bFlushCache) />
+				<cfset qf = qf & " " & getFieldListCacheForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bFlushCache = arguments.bFlushCache, bIncludeNonString = arguments.bIncludeNonString) />
 			<cfelse>
-				<cfset qf = qf & " " & getFieldListForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic) />
+				<cfset qf = qf & " " & getFieldListForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bIncludeNonString = arguments.bInclueNonString) />
 			</cfif>		
 		</cfloop> 
 		
@@ -287,10 +292,43 @@
 		
 	</cffunction>
 	
+	<cffunction name="isStringFieldType" returntype="boolean" access="private" output="false">
+		<cfargument name="fieldType" required="true" type="string" />
+		
+		<cfscript>
+		switch (arguments.fieldType) {
+			
+			// for recognized non-string data types, return false
+			case "int":
+			case "array":
+			case "long":
+			case "boolean":
+			case "float":
+			case "double":
+			case "date":
+			case "location":
+				return false;
+				break;
+			
+			// for string, text & phonetic return true
+			case "string":
+			case "text":
+			case "phonetic":
+			// if we don't recognize this type then assume string for backwards compatibility or to support user's custom field types
+			default:
+				return true;
+				break;
+				
+		}
+		</cfscript>
+		
+	</cffunction>
+	
 	<cffunction name="getFieldListForType" returntype="string" access="public" output="false" hint="Returns a list of fields (space delimited) for a given content type.  Used for the qf (query fields) Solr parameter">
 		<cfargument name="typename" required="true" />
 		<cfargument name="bIncludePhonetic" type="boolean" required="false" default="true" />
 		<cfargument name="qf" type="array" required="false" default="#['fcsp_rulecontent','fcsp_rulecontent_phonetic','objectid']#" hint="The starting list for the query fields" />
+		<cfargument name="bIncludeNonString" type="boolean" required="false" default="false" />
 		<cfset var st = getByContentType(arguments.typename) />
 		<cfset var oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 		<cfset var prop = "" />
@@ -298,8 +336,15 @@
 		<cfset var ft = "" />
 		<cfset var fieldType = [] />
 		
+		<cfif arguments.bIncludePhonetic eq false>
+			<cfset var idx = arrayFindNoCase(arguments.qf, 'fcsp_rulecontent_phonetic') />
+			<cfif idx gt 0>
+				<cfset arrayDeleteAt(arguments.qf, arrayFindNoCase(arguments.qf, 'fcsp_rulecontent_phonetic')) />	
+			</cfif>
+		</cfif>
+		
 		<cfloop array="#st.aIndexedProperties#" index="propId">
-			<cfset prop = oIndexedProperty.getData(propId) />
+			<cfset prop = oIndexedProperty.getData(propId) />	
 			<cfloop list="#prop.lFieldTypes#" index="ft">
 				<!--- for each field type for this farcry field, build the solr dynamic field name --->
 				<cfset fieldType = listToArray(ft,":") />
@@ -308,10 +353,12 @@
 				<cfelse>
 					<cfset fieldType[2] = "stored" />
 				</cfif>
-				<cfif arguments.bIncludePhonetic or (fieldType[1] neq 'phonetic' and arguments.bIncludePhonetic eq false)>
-					<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
-					<cfif getFTTypeForProperty(typename = arguments.typename, propertyName = prop.fieldName) eq "file">
-						<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_contents_" & fieldType[1] & "_" & fieldType[2]) />
+				<cfif arguments.bIncludeNonString eq true or isStringFieldType(fieldType[1])>
+					<cfif arguments.bIncludePhonetic eq true or fieldType[1] neq 'phonetic'>
+						<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_" & fieldType[1] & "_" & fieldType[2]) />
+						<cfif getFTTypeForProperty(typename = arguments.typename, propertyName = prop.fieldName) eq "file">
+							<cfset arrayAppend(arguments.qf, lcase(prop.fieldName) & "_contents_" & fieldType[1] & "_" & fieldType[2]) />
+						</cfif>
 					</cfif>
 				</cfif>
 			</cfloop>

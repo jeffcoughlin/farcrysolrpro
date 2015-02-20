@@ -83,6 +83,7 @@
 			<cfset params["qf"] = oContentType.getFieldListForTypes(
 				lContentTypes = lContentTypeIds,
 				bIncludePhonetic = (stSearchForm.operator neq "phrase"), 
+				bIncludeNonString = false,
 				bUseCache = true,
 				bFlushCache = false
 			) />
