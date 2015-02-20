@@ -5,6 +5,5 @@
 *.iml
 .idea
 release
-Gemfile.lock
 /_site
 node_modules

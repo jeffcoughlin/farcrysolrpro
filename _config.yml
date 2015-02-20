@@ -1,6 +1,6 @@
 safe: true
 lsi: false
-pygments: true
 source: .
+highligher: pygments
 baseurl: /farcrysolrpro
 name: FarCry Solr Pro Plugin
