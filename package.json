@@ -1,6 +1,6 @@
 {
   "name": "farcrysolrpro",
-  "version": "1.2.11",
+  "version": "1.3.0",
   "description": "An advanced Solr search implementation for FarCry",
   "main": "www/index.cfm",
   "directories": {
@@ -25,6 +25,6 @@
   "private": true,
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-compress": "^0.11.0"
+    "grunt-contrib-compress": "^0.13.0"
   }
 }
