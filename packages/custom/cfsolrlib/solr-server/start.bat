@@ -15,7 +15,7 @@ set DTSOPPORT="8079"
 set DSTOPKEY="farcrysolrpro"
 
 rem Add java bin folder to system path
-@path=%path%;c:\program files\java\jre6\bin;c:\program files (x86)\java\jre6\bin;c:\program files\java\jre7\bin;c:\program files (x86)\java\jre7\bin;
+@path=%path%;c:\program files\java\jre6\bin;c:\program files (x86)\java\jre6\bin;c:\program files\java\jre7\bin;c:\program files (x86)\java\jre7\bin;c:\program files\java\jre8\bin;
 
 rem ###
 rem Edit settings/variables above this line as needed
