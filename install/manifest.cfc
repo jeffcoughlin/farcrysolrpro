@@ -3,7 +3,7 @@
 	<cfset this.name = "FarCry Solr Pro" />
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
-	<cfset this.version = "1.3.0" />
+	<cfset this.version = "1.3.1" />
 	<cfset this.buildState = "" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
@@ -15,6 +15,32 @@
 	<cfset addSupportedCore(majorVersion="6", minorVersion="3", patchVersion="0") />
 	<cfset addSupportedCore(majorVersion="7", minorVersion="0", patchVersion="0") />
 	<cfset this.aVersions = [
+	{
+		"version"="1.3.1",
+		"releasedate"="2015-07-28",
+		"description"="",
+		"changelog"="<ul><li>Bug fix</li></ul>",
+		"downloads"=[
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/zipball/1.3.1",
+				"shortdesc"="w/ Solr 3.5",
+				"size"="38MB"
+			},
+			{
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.3.1.zip",
+				"shortdesc"="<em>(plugin only)</em>",
+				"size"="24MB"
+			}
+		],
+		"requirements"={
+			"cfml"=["ColdFusion 9","Railo 3.3"],
+			"farcry"=["7.0", "6.3", "6.2","6.1.4","6.0.19"],
+			"solr"=["3.5"]
+		},
+		"repository"={
+			"url"="https://github.com/jeffcoughlin/farcrysolrpro/tree/1.3.1"
+		}
+	},
 	{
 		"version"="1.3.0",
 		"releasedate"="2015-02-20",
