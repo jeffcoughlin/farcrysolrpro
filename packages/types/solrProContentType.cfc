@@ -276,7 +276,7 @@
 			<cfif arguments.bUseCache>
 				<cfset qf = qf & " " & getFieldListCacheForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bFlushCache = arguments.bFlushCache, bIncludeNonString = arguments.bIncludeNonString) />
 			<cfelse>
-				<cfset qf = qf & " " & getFieldListForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bIncludeNonString = arguments.bInclueNonString) />
+				<cfset qf = qf & " " & getFieldListForType(typename = q.contentType,bIncludePhonetic = arguments.bIncludePhonetic, bIncludeNonString = arguments.bIncludeNonString) />
 			</cfif>		
 		</cfloop> 
 		
