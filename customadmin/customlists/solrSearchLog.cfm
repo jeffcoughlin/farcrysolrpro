@@ -51,7 +51,7 @@ $j('input.datefield').datepicker();
 		
 		<ft:field for="startDate" label="Start Date" hint="mm/dd/yyyy">
 			<cfoutput>
-			<input type="text" class="textInput datefield" name="startDate" id="endDate" value="#dateFormat(form.startDate,'mm/dd/yyyy')#" />
+			<input type="text" class="textInput datefield" name="startDate" id="startDate" value="#dateFormat(form.startDate,'mm/dd/yyyy')#" />
 			</cfoutput>
 		</ft:field>
 		
