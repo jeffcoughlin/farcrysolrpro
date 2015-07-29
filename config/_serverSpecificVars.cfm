@@ -8,7 +8,7 @@
 <cfscript>
 	// on FarCry 6, alias the jquery & jquery-ui JS/CSS assets to match FarCry 7 (so we only have one version check, rather than conditionals all over the place)
 	oSysInfo = createObject("component", application.fc.utils.getPath(package = "farcry", component = "sysinfo"));
-	if (oSysInfo.getMajorVersion() eq 6 and oSysInfo.getMinorVersion() lt 2) {
+	if (oSysInfo.getMajorVersion() eq 6) {
 		param name = "application.fc.stJSLibraries" default = {};
 		if (structKeyExists(application.fc.stJSLibraries, "jquery")) {
 			stJquery = duplicate(application.fc.stJSLibraries["jquery"]);
