@@ -1182,7 +1182,81 @@
 		<cfreturn q />
 		
 	</cffunction>
+
+	<cffunction name="lookupFacets" access="public" output="false" returntype="struct" hint="Convert facet data to FarCry object labels and offer custom sorting options">
+		<cfargument name="aFacets" type="array" required="true" hint="facet array data returned from cfsolrlib's facets array" />
+		<cfargument name="typename" type="string" required="false" hint="If facet is an array of objectIds, provide the typename for faster lookup (not required)" />
+		<cfargument name="labelFieldname" type="string" required="false" default="label" hint="Optional label fieldname to output other than the default FarCry label field." />
+		<cfargument name="sortby" type="any" required="false" default="label asc" hint="Three options: 1. label asc|desc, count asc|desc, data asc|desc. 2. Set to blank for default sort from Solr (See Solr docs for facet.sort options), 3. Use a custom sort function (reference ColdFusion docs for arraySort)" />
+		
+		<cfscript>
+			var stResults = {};
+			stResults["aFacets"] = arguments.aFacets;
+			stResults["countTotalFacets"] = 0;
+			
+			//set up sort by vars
+			var sortbyField = "";
+			var sortbyDir = "";
+			if (len(arguments.sortby)) {
+				if (!isCustomFunction(arguments.sortby)) {
+					if (reFindNoCase("^(label|count|data) (asc|desc)$", arguments.sortby) gt 0) {
+						sortbyField = listGetAt(arguments.sortby, 1, " ");
+						sortbyDir = listGetAt(arguments.sortby, 2, " ");
+					} else if (arguments.sortby neq "") {
+						sortbyField = "label";
+						sortbyDir = "asc";
+					}
+				}
+			}
+			
+			if (arrayLen(stResults.aFacets) gt 0) {
+				for (i=1; i <= arrayLen(stResults.aFacets); i++) {
+					stResults.countTotalFacets = stResults.countTotalFacets + stResults.aFacets[i].count;
+					if (isValid("uuid", stResults.aFacets[i].data)) {
+						var stArgs["objectid"] = stResults.aFacets[i].data;
+						if (arguments.typename neq "") {
+							stArgs["typename"] = arguments.typename;
+						}
+						var stObj = application.fapi.getContentObject(argumentcollection=stArgs);
+						if (structKeyExists(stObj, "bDefaultObject") and stObj.bDefaultObject is true) {
+							stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
+						} else {
+							stResults.aFacets[i]["label"] = stObj[arguments.labelFieldname];
+						}
+					} else {
+						stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
+					}
+				}
 	
+				// Sort array of structs
+				if (isCustomFunction(arguments.sortby)) {
+					var sortFunc = arguments.sortby;
+				} else {
+					var sortFunc = function (a, b) {
+						var n1 = a[sortbyField];
+						var n2 = b[sortbyField];
+						
+						if (sortbyDir eq "asc") {
+							if (n1 lt n2) { return -1; }
+							if (n1 eq n2) { return 0; }
+							if (n1 gt n2) { return 1; }
+						} else {
+							if (n1 lt n2) { return 1; }
+							if (n1 eq n2) { return 0; }
+							if (n1 gt n2) { return -1; }
+						}
+					};
+				}
+				
+				if (isCustomFunction(arguments.sortby) or sortbyField neq "") {
+					arraySort(stResults.aFacets, sortFunc);				
+				}
+	
+			}
+			return stResults;
+		</cfscript>
+	</cffunction> 
+
 	<!--- cfsolrlib abstractions --->
 	
 	<cffunction name="resetIndex" access="public" output="false" returntype="void">
