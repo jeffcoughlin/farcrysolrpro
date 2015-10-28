@@ -8,7 +8,7 @@
 		<fieldset>
 			
 			<label for="q">Search</label>
-			<input type="text" name="q" id="q" value="#htmlEditFormat(trim(url.q))#" />
+			<input type="text" name="q" id="q" value="#encodeForHTMLAttribute(trim(url.q))#" />
 			
 			<label for="operator">Search Operator</label>
 			<select name="operator" id="operator">
