@@ -55,10 +55,9 @@
 	</cffunction>
 	
 	<cffunction name="getBoostOptions" access="public" output="false" returntype="string">
-		<cfargument name="objectid" required="true" type="uuid" />
+		<cfargument name="objectid" required="false" type="uuid" />
 		
-		<!--- check config for the list of boost options, also check the current record for the value, and if not in the list from config, add it as an option --->
-		<cfset var stDocBoost = getData(arguments.objectid) />
+		<!--- Check config for the list of boost options --->
 		<cfset var defaultValue = application.fapi.getConfig(key = 'solrserver', name = 'defaultDocBoost', default = 50) />
 		<cfset var l = application.fapi.getConfig(key = 'solrserver', name = 'lDocumentBoostValues') /> 
 		<cfset var i = "" />
@@ -75,8 +74,12 @@
 			</cfif>
 		</cfloop>
 		
-		<cfif structKeyExists(stDocBoost, "boostValue") and not listContainsNoCase(finalList, stDocBoost.boostValue)>
-			<cfset finalList = listAppend(finalList, stDocBoost.boostValue) />
+		<cfif structKeyExists(arguments, "objectid")>
+			<cfset var stDocBoost = getData(arguments.objectid) />
+			<!--- Check the current record for the value. If not in the list from config add it as an option --->
+			<cfif structKeyExists(stDocBoost, "boostValue") and not listContainsNoCase(finalList, stDocBoost.boostValue)>
+				<cfset finalList = listAppend(finalList, stDocBoost.boostValue) />
+			</cfif>
 		</cfif>
 		
 		<cfreturn finalList />
