@@ -6,9 +6,9 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<skin:loadJs id="fc-jquery" />
-<skin:loadJs id="fc-jquery-ui" />
-<skin:loadCss id="jquery-ui" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
+<skin:loadCSS id="jquery-ui" />
 
 <skin:onReady>
 <cfoutput>
@@ -128,6 +128,6 @@ $j('input.datefield').datepicker();
 <admin:footer />
 
 <!--- Load Custom Webtop Styling (load after admin:header) --->
-<skin:loadCss id="solrPro-customWebtopStyles" />
+<skin:loadCSS id="solrPro-customWebtopStyles" />
 
 <cfsetting enablecfoutputonly="false" />

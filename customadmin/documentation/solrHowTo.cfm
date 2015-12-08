@@ -51,6 +51,6 @@
 <admin:footer />
 
 <!--- Load Custom Webtop Styling (load after admin:header) --->
-<skin:loadCss id="solrPro-customWebtopStyles" />
+<skin:loadCSS id="solrPro-customWebtopStyles" />
 
 <cfsetting enablecfoutputonly="false" />

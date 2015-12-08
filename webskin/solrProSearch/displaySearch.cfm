@@ -3,7 +3,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Load Search CSS --->
-<skin:loadCss id="siteSearch-css" />
+<skin:loadCSS id="siteSearch-css" />
 
 <!--- default local vars --->
 <cfparam name="stQueryStatus" default="#structNew()#" type="struct" />

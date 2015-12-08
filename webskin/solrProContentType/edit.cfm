@@ -6,12 +6,12 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<skin:loadJs id="fc-jquery" />
-<skin:loadJs id="fc-jquery-ui" />
-<skin:loadCss id="jquery-ui" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
+<skin:loadCSS id="jquery-ui" />
 
 <!--- Load Custom Webtop Styling --->
-<skin:loadCss id="solrPro-customWebtopStyles" />
+<skin:loadCSS id="solrPro-customWebtopStyles" />
 
 <cfset oIndexedProperty = application.fapi.getContentType("solrProIndexedProperty") />
 
