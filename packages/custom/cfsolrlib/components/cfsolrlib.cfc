@@ -66,6 +66,11 @@
 	<cfset var thisSuggestion = "" />
 	<cfset var iSuggestion = "" />
 	
+	<!--- Enable faceting by default --->
+	<cfif !structKeyExists(ARGUMENTS.params, "facet")>
+		<cfset ARGUMENTS.params["facet"] = true />
+	</cfif>
+	
 	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
 		<cfif isArray(ARGUMENTS.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,javaCast("string[]",ARGUMENTS.params[thisKey])) />
@@ -84,6 +89,21 @@
 		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.GET) />
 	<cfelse>
 		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.POST) />
+	</cfif>
+	
+	<!--- Faceting --->
+	<cfset ret.facets = {} />
+	<cfif ARGUMENTS.params["facet"] is true and arrayLen(response.getFacetFields()) gt 0>
+		<cfset var iFacetObject = "" />
+		<cfset var iFacetResults = "" />
+		<cfloop array="#response.getFacetFields()#" index="iFacetObject">
+			<cfif isValid("array", iFacetObject.getValues())>
+				<cfset ret.facets["#iFacetObject.getName()#"] = [] />
+				<cfloop array="#iFacetObject.getValues()#" index="iFacetResults">
+					<cfset arrayAppend(ret.facets[iFacetObject.getName()], { "data"=iFacetResults.getName(), "count"=iFacetResults.getCount() }) />
+				</cfloop>
+			</cfif>
+		</cfloop>
 	</cfif>
 	
 	<cfset ret.highlighting = response.getHighlighting() />
