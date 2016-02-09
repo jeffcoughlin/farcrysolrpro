@@ -1,6 +1,6 @@
 {
   "name": "farcrysolrpro",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "An advanced Solr search implementation for FarCry",
   "main": "www/index.cfm",
   "directories": {

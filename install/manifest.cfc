@@ -3,7 +3,7 @@
 	<cfset this.name = "FarCry Solr Pro" />
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
-	<cfset this.version = "1.3.2" />
+	<cfset this.version = "1.4.0" />
 	<cfset this.buildState = "" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
@@ -14,7 +14,35 @@
 	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
 	<cfset addSupportedCore(majorVersion="6", minorVersion="3", patchVersion="0") />
 	<cfset addSupportedCore(majorVersion="7", minorVersion="0", patchVersion="0") />
+	<cfset addSupportedCore(majorVersion="7", minorVersion="1", patchVersion="0") />
+	<cfset addSupportedCore(majorVersion="7", minorVersion="2", patchVersion="0") />
 	<cfset this.aVersions = [
+	{
+		"version"="1.4.0",
+		"releasedate"="2016-02-09",
+		"description"="",
+		"changelog"="<ul><li>Bug fixes</li><li>ColdFusion 10+ now required</li><li>Adds faceting support</li></ul>",
+		"downloads"=[
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/archive/1.4.0.zip",
+				"shortdesc"="w/ Solr 3.5",
+				"size"="38MB"
+			},
+			{
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.4.0.zip",
+				"shortdesc"="<em>(plugin only)</em>",
+				"size"="24MB"
+			}
+		],
+		"requirements"={
+			"cfml"=["ColdFusion 10","Railo 3.3"],
+			"farcry"=["7.2","7.1","7.0", "6.3", "6.2","6.1.4","6.0.19"],
+			"solr"=["3.5"]
+		},
+		"repository"={
+			"url"="https://github.com/jeffcoughlin/farcrysolrpro/tree/1.4.0"
+		}
+	},
 	{
 		"version"="1.3.2",
 		"releasedate"="2015-07-29",
