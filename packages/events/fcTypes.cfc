@@ -6,7 +6,7 @@ component {
 		if (not structKeyExists(arguments.stProperties, "bDefaultObject")) {
 			arguments.stProperties.bDefaultObject = false;
 		}
-		if (arguments.stProperties.bDefaultObject eq false and arguments.bAfterSave eq true) {
+		if (arguments.stProperties.bDefaultObject eq false and arguments.bSessionOnly eq false) {
 			variables.solrProEventHandler.afterSave(stProperties = arguments.stProperties);
 		}
 	}
