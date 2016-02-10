@@ -3,11 +3,32 @@
 module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-bump');
 
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('package.json'),
 
+		bump: {
+			options: {
+				files: ['package.json','install/manifest.cfc'],
+				updateConfigs: [ 'pkg' ],
+				commit: true,
+				commitMessage: 'release version %VERSION%',
+				commitFiles: ['package.json','install/manifest.cfc'],
+				createTag: true,
+				tagName: '%VERSION%',
+				tagMessage: 'version %VERSION%',
+				push: true,
+				pushTo: 'origin',
+				gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+				globalReplace: false,
+				prereleaseName: false,
+				metadata: '',
+				regExp: (/(['|"]?version['|"]?[ ]*[:|=][ ]*['|"]?)(\d+\.\d+\.\d+(-\.\d+)?(-\d+)?)[\d||A-a|.|-]*(['|"]?)/i)
+			}
+		},
+		
 		compress: {
 			full: {
 				options: {
