@@ -40,6 +40,10 @@
 			<cfset var oContentType = application.fapi.getContentType("solrProContentType") />
 			<cfset var stRecordToIndex = {} />
 			<cfset var stContentType = {} />
+			
+			<cfif !structKeyExists(arguments.stProperties, "typename")>
+				<cfset arguments.stProperties.typename = application.fapi.findType(arguments.stProperties.objectid) />
+			</cfif>
 
 			<!--- handle rules and types separately --->
 			<cfif left(stProperties.typename,4) eq "rule">
