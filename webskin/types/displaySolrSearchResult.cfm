@@ -101,12 +101,13 @@
 <skin:buildlink objectid="#stObj.objectID#" r_url="itemUri" />
 
 <!--- Get Abbreviated Link --->
+<cfset uriProtocol = cgi.https eq "on" ? "https" : "http" />
 <cfsavecontent variable="abbrLink">
-  <cfoutput>http://#cgi.server_name#<cfif cgi.server_port neq 80>:#cgi.server_port#</cfif>#itemUri#</cfoutput>
+  <cfoutput>#uriProtocol#://#cgi.server_name#<cfif !listFind("80,443", cgi.server_port)>:#cgi.server_port#</cfif>#itemUri#</cfoutput>
 </cfsavecontent>
 <cfif len(abbrLink) gt 83>
   <cfsavecontent variable="abbrLink">
-    <cfoutput>http://#listFirst(cgi.server_name,'.')#<cfif listLen(cgi.server_name,'.') gte 2>.#listGetAt(cgi.server_name,2,'.')#</cfif>...#right(abbrLink, 60)#</cfoutput>
+    <cfoutput>#uriProtocol#://#listFirst(cgi.server_name,'.')#<cfif listLen(cgi.server_name,'.') gte 2>.#listGetAt(cgi.server_name,2,'.')#</cfif>...#right(abbrLink, 60)#</cfoutput>
   </cfsavecontent>
 </cfif>
     <cfoutput>
