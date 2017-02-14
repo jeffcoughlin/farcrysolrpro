@@ -1088,9 +1088,10 @@
 	<cffunction name="getAllContentTypes" access="public" output="false" returntype="query">
 		<cfargument name="lObjectIds" type="string" required="false" default="" />
 		<cfargument name="bIncludeNonSearchable" type="boolean" required="false" default="false" />
+		<cfargument name="lCustomFields" type="string" required="false" default="" hint="Additional fields to return. Example: 'builtToDate, defaultDocBoost'" />
 		<cfset var q = "" />
 		<cfquery name="q" datasource="#application.dsn#">
-			select objectid, contentType, title, bEnableSearch
+			select objectid, contentType, title, bEnableSearch #(len(arguments.lCustomFields) ? ", " & arguments.lCustomFields : "")#
 			from #application.dbowner#solrProContentType
 			where 1=1
 			<cfif listLen(arguments.lObjectIds)>
@@ -1199,26 +1200,29 @@
 			var sortbyDir = "";
 			if (len(arguments.sortby)) {
 				if (!isCustomFunction(arguments.sortby)) {
-					if (reFindNoCase("^(label|count|data) (asc|desc)$", arguments.sortby) gt 0) {
+					if (reFindNoCase("^(label|count|data) (asc|desc)$", arguments.sortby) > 0) {
 						sortbyField = listGetAt(arguments.sortby, 1, " ");
 						sortbyDir = listGetAt(arguments.sortby, 2, " ");
-					} else if (arguments.sortby neq "") {
+					} else if (arguments.sortby != "") {
 						sortbyField = "label";
 						sortbyDir = "asc";
 					}
 				}
 			}
 			
-			if (arrayLen(stResults.aFacets) gt 0) {
-				for (i=1; i <= arrayLen(stResults.aFacets); i++) {
+			if (arrayLen(stResults.aFacets) > 0) {
+				if (arguments.typename != "") {
+					var oType = application.fapi.getContentType(typename = arguments.typename);
+				}
+				for (var i=1; i <= arrayLen(stResults.aFacets); i++) {
 					stResults.countTotalFacets = stResults.countTotalFacets + stResults.aFacets[i].count;
 					if (isValid("uuid", stResults.aFacets[i].data)) {
-						var stArgs["objectid"] = stResults.aFacets[i].data;
-						if (arguments.typename neq "") {
-							stArgs["typename"] = arguments.typename;
-						}
-						var stObj = application.fapi.getContentObject(argumentcollection=stArgs);
-						if (structKeyExists(stObj, "bDefaultObject") and stObj.bDefaultObject is true) {
+						if (arguments.typename != "") {
+							var stObj = oType.getData(objectId = stResults.aFacets[i].data);
+						} else {
+							var stObj = application.fapi.getContentObject(objectId = stResults.aFacets[i].data);
+						}						
+						if (structKeyExists(stObj, "bDefaultObject") && stObj.bDefaultObject is true) {
 							stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
 						} else {
 							stResults.aFacets[i]["label"] = stObj[arguments.labelFieldname];
@@ -1248,7 +1252,7 @@
 					};
 				}
 				
-				if (isCustomFunction(arguments.sortby) or sortbyField neq "") {
+				if (isCustomFunction(arguments.sortby) || sortbyField != "") {
 					arraySort(stResults.aFacets, sortFunc);				
 				}
 	
