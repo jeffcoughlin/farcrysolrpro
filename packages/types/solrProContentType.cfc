@@ -1184,10 +1184,11 @@
 		
 	</cffunction>
 
-	<cffunction name="lookupFacets" access="public" output="false" returntype="struct" hint="Convert facet data to FarCry object labels and offer custom sorting options">
+	<cffunction name="lookupFacets" access="public" output="false" returntype="struct" hint="Convert facet data to FarCry object labels and offer custom sorting options.">
 		<cfargument name="aFacets" type="array" required="true" hint="facet array data returned from cfsolrlib's facets array" />
 		<cfargument name="typename" type="string" required="false" hint="If facet is an array of objectIds, provide the typename for faster lookup (not required)" />
 		<cfargument name="labelFieldname" type="string" required="false" default="label" hint="Optional label fieldname to output other than the default FarCry label field." />
+		<cfargument name="bSearchSolr" type="boolean" required="false" default="false" hint="If enabled (and typename is provided), the label will be searched in Solr first. If not found, then it will fallback to a FarCry lookup. This is generally faster *if* the type is indexed in Solr. If not, then don't enable this feature." />
 		<cfargument name="sortby" type="any" required="false" default="label asc" hint="Three options: 1. label asc|desc, count asc|desc, data asc|desc. 2. Set to blank for default sort from Solr (See Solr docs for facet.sort options), 3. Use a custom sort function (reference ColdFusion docs for arraySort)" />
 		
 		<cfscript>
@@ -1211,21 +1212,44 @@
 			}
 			
 			if (arrayLen(stResults.aFacets) > 0) {
+				// First we check if the data is in Solr (this is faster than a FarCry lookup)
+				if (bSearchSolr is true && arguments.typename != "") {
+					var stSolrData = { "totalResults": 0 };
+					stSolrData = search(
+						q = "*:*",
+						start = 0,
+						rows = 999999999,
+						params = { "fq": "typename:" & arguments.typename },
+						method = "POST"
+					);
+				}
 				if (arguments.typename != "") {
 					var oType = application.fapi.getContentType(typename = arguments.typename);
 				}
 				for (var i=1; i <= arrayLen(stResults.aFacets); i++) {
 					stResults.countTotalFacets = stResults.countTotalFacets + stResults.aFacets[i].count;
 					if (isValid("uuid", stResults.aFacets[i].data)) {
-						if (arguments.typename != "") {
-							var stObj = oType.getData(objectId = stResults.aFacets[i].data);
-						} else {
-							var stObj = application.fapi.getContentObject(objectId = stResults.aFacets[i].data);
-						}						
-						if (structKeyExists(stObj, "bDefaultObject") && stObj.bDefaultObject is true) {
-							stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
-						} else {
-							stResults.aFacets[i]["label"] = stObj[arguments.labelFieldname];
+						stResults.aFacets[i]["label"] = "";
+						if (bSearchSolr is true && stSolrData["totalResults"] > 0) {
+							var iData = arrayFind(stSolrData.results, function(stData) {
+								return stResults.aFacets[i].data == stData.objectid;
+							});
+							if (iData > 0) {
+								stResults.aFacets[i]["label"] = stSolrData.results[iData].label;
+							}
+						}
+						if (stResults.aFacets[i]["label"] == "") {
+							// Solr did not find the data, so use FarCry to look it up (Slower option).
+							if (arguments.typename != "") {
+								var stObj = oType.getData(objectId = stResults.aFacets[i].data);
+							} else {
+								var stObj = application.fapi.getContentObject(objectId = stResults.aFacets[i].data);
+							}						
+							if (structKeyExists(stObj, "bDefaultObject") && stObj.bDefaultObject is true) {
+								stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
+							} else {
+								stResults.aFacets[i]["label"] = stObj[arguments.labelFieldname];
+							}
 						}
 					} else {
 						stResults.aFacets[i]["label"] = stResults.aFacets[i].data;
