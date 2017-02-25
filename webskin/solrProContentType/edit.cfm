@@ -661,7 +661,7 @@
 					}
 				});
 				
-				$j(".showInfoLink").on('click', 'a', function(e) {
+				$j('.showInfoLink a').click(function(e){
 					e.preventDefault();
 					showHideHelpfulInformation();
 				});
