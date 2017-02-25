@@ -292,8 +292,8 @@
 	<cfoutput>
 		<div id="helpInfo" class="ui-widget-content ui-corner-all">
 			<h3 class="ui-widget-header ui-corner-all">Information &amp; Tips</h3>
-			<div class="showInfo">
-				<a href="##" onclick="return false;" class="showHelpInfoTrue">Show Help Information</a>
+			<div class="showInfoLink">
+				<a href="##" class="displayUpArrow">Helpful Information</a>
 			</div>
 			<div id="helpInfoBody">
 				<p><img src="#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/logo-farcrySolrPro-75.png" style="float:right; margin: 0 0 10px 20px;" /><strong>Note:</strong> Any changes you make in this form will not take affect until a full re-index of the content type is made (that means resetting the index and then re-indexing it.  Usually very fast, but still a necessity if changes are made here).  The following fields are the only exception (these can be changed without the need to re-index):</p>
@@ -577,18 +577,19 @@
 			}
 			##helpInfo div##helpInfoBody {
 			  display: none; /* default value overridden by jQuery show/hide */
-			  margin-top: 10px;
+			  margin-top: 20px;
 			}
-			##helpInfo div.showInfo {
+			##helpInfo div.showInfoLink {
   				margin-top: 10px;
+  				margin-bottom: 10px;
 			}
-			##helpInfo a.showHelpInfoTrue,
-			##helpInfo a.showHelpInfoTrue:hover {
+			##helpInfo a.displayDownArrow,
+			##helpInfo a.displayDownArrow:hover {
   				background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-down.gif) no-repeat scroll right top;
   				padding-right: 13px;
 			}
-			##helpInfo a.showHelpInfoFalse,
-			##helpInfo a.showHelpInfoFalse:hover {
+			##helpInfo a.displayUpArrow,
+			##helpInfo a.displayUpArrow:hover {
 	  			background: transparent url(#application.fapi.getConfig(key = 'solrserver', name = 'pluginWebRoot')#/css/images/glyph-up.gif) no-repeat scroll right top;
   				padding-right: 13px;
 			}
@@ -660,19 +661,23 @@
 					}
 				});
 				
-				// Show/Hide Helpful Information
-				$j("a.showHelpInfoTrue").toggle(function(){
-					$j(this).html("Hide Help Information");
-					$j(this).removeClass("showHelpInfoTrue").addClass("showHelpInfoFalse");
-					$j("div##helpInfoBody").slideDown("slow");
-				},function(){
-					$j(this).html("Show Help Information");
-					$j(this).removeClass("showHelpInfoFalse").addClass("showHelpInfoTrue");
-					$j("div##helpInfoBody").slideUp("slow");
+				$j(".showInfoLink").on('click', 'a', function(e) {
+					e.preventDefault();
+					showHideHelpfulInformation();
 				});
-
 			});
 			
+			// Show/Hide Helpful Information
+			function showHideHelpfulInformation() {
+				if(!$j('##helpInfoBody').is(':visible')) {
+					$j('div##helpInfoBody').show();
+					$j('.showInfoLink a').removeClass("displayUpArrow").addClass("displayDownArrow");
+				} else {
+					$j('div##helpInfoBody').hide();
+					$j('.showInfoLink a').removeClass("displayDownArrow").addClass("displayUpArrow");
+				}
+			}
+
 			function createOptionTag(value, label, selected) {
 				var html = '<option value="' + value + '"';
 				if (selected) {
