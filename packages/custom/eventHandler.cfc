@@ -78,7 +78,7 @@
 			<cfelse>
 				<cfset stContentType = oContentType.getByContentType(stProperties.typename) />
 				<cfif structCount(stContentType) and stContentType.bIndexOnSave is true>
-					<cfset stRecordToindex = stProperties />
+					<cfset stRecordToindex = application.fapi.getContentObject(objectid = stProperties.objectId) />
 				</cfif>
 			</cfif>
 
