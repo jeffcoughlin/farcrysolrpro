@@ -1225,7 +1225,7 @@
 							var qService = new query();
 							qService.setDbType("query");
 							qService.setAttributes(qContentType = qContentType);
-							qService.addParam(name = "objectId", value = arguments.aFacets[i].data, cfsqltype = "cf_sql_varchar");
+							qService.addParam(name = "objectId", value = lCase(arguments.aFacets[i].data), cfsqltype = "cf_sql_varchar");
 							qService.setSql("select objectid, #arguments.labelFieldname# from qContentType where lower(objectId) = :objectId");
 							var qData = qService.execute().getResult();
 							if (qData.recordCount > 0) {
