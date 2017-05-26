@@ -1,3 +1,4 @@
+<cfcomponent>
 <cfscript>
 	// solr defaults
 	THIS.host = "localhost";
@@ -6,7 +7,7 @@
 	THIS.solrURL = "http://#THIS.host#:#THIS.port##THIS.path#";
 	THIS.queueSize = 100;
 	THIS.threadCount = 5;
-	
+
 	// java defaults
 	THIS.javaLoaderInstance = "";
 </cfscript>
@@ -20,9 +21,9 @@
 	<cfargument name="queueSize" required="false" type="numeric" default="100" hint="The buffer size before the documents are sent to the server">
 	<cfargument name="threadCount" required="false" type="numeric" default="5" hint="The number of background threads used to empty the queue">
 	<cfargument name="binaryEnabled" required="false" type="boolean" default="true" hint="Should we use the faster binary data transfer format?">
-	
+
 	<cfset var BinaryRequestWriter = "" />
-	
+
 	<cfset THIS.javaLoaderInstance = ARGUMENTS.javaloaderInstance />
 	<cfset THIS.host = ARGUMENTS.host />
 	<cfset THIS.port = ARGUMENTS.port />
@@ -30,14 +31,14 @@
 	<cfset THIS.solrURL = "http://#THIS.host#:#THIS.port##THIS.path#" />
 	<cfset THIS.queueSize = ARGUMENTS.queueSize />
 	<cfset THIS.threadCount = ARGUMENTS.threadCount />
-	
+
 	<cfscript>
 	// create an update server instance
 	THIS.solrUpdateServer = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.StreamingUpdateSolrServer").init(THIS.solrURL,THIS.queueSize,THIS.threadCount);
-	
+
 	// create a query server instance
 	THIS.solrQueryServer = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.CommonsHttpSolrServer").init(THIS.solrURL);
-	
+
 	// enable binary
 	if (ARGUMENTS.binaryEnabled) {
 		BinaryRequestWriter = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.BinaryRequestWriter");
@@ -65,12 +66,12 @@
 	<cfset var suggestions = "" />
 	<cfset var thisSuggestion = "" />
 	<cfset var iSuggestion = "" />
-	
+
 	<!--- Enable faceting by default --->
 	<cfif !structKeyExists(ARGUMENTS.params, "facet")>
 		<cfset ARGUMENTS.params["facet"] = true />
 	</cfif>
-	
+
 	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
 		<cfif isArray(ARGUMENTS.params[thisKey])>
 			<cfset thisQuery.setParam(thisKey,javaCast("string[]",ARGUMENTS.params[thisKey])) />
@@ -82,7 +83,7 @@
 			<cfset thisQuery.setParam(thisKey,javaCast("string[]",tempArray)) />
 		</cfif>
 	</cfloop>
-	
+
 	<!--- Query with GET or POST method --->
 	<!--- We query this way instead of making the user call java functions to work around a CF bug --->
 	<cfif arguments.method eq "GET">
@@ -90,7 +91,7 @@
 	<cfelse>
 		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.POST) />
 	</cfif>
-	
+
 	<!--- Faceting --->
 	<cfset ret.facets = {} />
 	<cfif ARGUMENTS.params["facet"] is true and arrayLen(response.getFacetFields()) gt 0>
@@ -105,7 +106,7 @@
 			</cfif>
 		</cfloop>
 	</cfif>
-	
+
 	<cfset ret.highlighting = response.getHighlighting() />
 	<cfset ret.results = response.getResults() / >
 	<cfset ret.totalResults = response.getResults().getNumFound() / >
@@ -126,7 +127,7 @@
 			<cfset arrayAppend(ret.spellCheck,thisSuggestion) />
 		</cfloop>
 	</cfif>
-	
+
 	<cfreturn duplicate(ret) /> <!--- duplicate clears out the case-sensitive structure --->
 </cffunction>
 
@@ -134,26 +135,26 @@
 	<cfargument name="paramArray" required="true" type="array" hint="An array to add your document field to." />
 	<cfargument name="name" required="true" type="string" hint="Name of your field." />
 	<cfargument name="value" required="true" type="any" hint="Value of your field." />
-	
+
 	<cfset var thisField = structNew() />
 	<cfset thisField.name = ARGUMENTS.name />
 	<cfset thisField.value = ARGUMENTS.value />
-	
+
 	<cfset arrayAppend(ARGUMENTS.paramArray,thisField) />
-	
+
 	<cfreturn ARGUMENTS.paramArray />
 </cffunction>
 
 <cffunction name="add" access="public" output="false" hint="Add a document to the Solr index">
 	<cfargument name="doc" type="array" required="true" hint="An array of field objects, with name, value, and an optional boost attribute. {name:""Some Name"",value:""Some Value""[,boost:5]}" />
 	<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
-	
+
 	<cfset var thisDoc = THIS.javaLoaderInstance.create("org.apache.solr.common.SolrInputDocument").init() />
 	<cfset var thisParam = "" />
 	<cfif isDefined("ARGUMENTS.docBoost")>
 		<cfset thisDoc.setDocumentBoost(javaCast("float",ARGUMENTS.docBoost)) />
 	</cfif>
-	
+
 	<cfloop array="#ARGUMENTS.doc#" index="thisParam">
 		<cfif isDefined("thisParam.boost")>
 			<cfset thisDoc.addField(thisParam.name,thisParam.value,thisParam.boost) />
@@ -161,7 +162,7 @@
 			<cfset thisDoc.addField(thisParam.name,thisParam.value) />
 		</cfif>
 	</cfloop>
-	
+
 	<cfreturn THIS.solrUpdateServer.add(thisDoc) />
 </cffunction>
 
@@ -170,16 +171,16 @@
 	<cfargument name="name" required="true" type="string" hint="Name of your field." />
 	<cfargument name="value" required="true" hint="Value of your field." />
 	<cfargument name="boost" required="false" type="numeric" hint="An array to add your document field to." />
-	
+
 	<cfset var thisField = structNew() />
 	<cfset thisField.name = ARGUMENTS.name />
 	<cfset thisField.value = ARGUMENTS.value />
 	<cfif isDefined("ARGUMENTS.boost")>
 		<cfset thisField.boost = ARGUMENTS.boost />
 	</cfif>
-	
+
 	<cfset arrayAppend(ARGUMENTS.documentArray,thisField) />
-	
+
 	<cfreturn ARGUMENTS.documentArray />
 </cffunction>
 
@@ -214,20 +215,20 @@
 			<cfset docRequest.setParam("literal.#thisKey#",ARGUMENTS.literalData[thisKey]) />
 		</cfloop>
 	</cfif>
-	
+
 	<cfreturn THIS.solrUpdateServer.request(docRequest) />
 </cffunction>
 
 <cffunction name="deleteByID" access="public" output="false" hint="Delete a document from the index by ID">
 	<cfargument name="id" type="string" required="true" hint="ID of object to delete.">
 	<cfargument name="idFieldName" type="string" required="false" default="id" hint="The solr unique id field name" />
-	
+
 	<cfset THIS.solrUpdateServer.deleteByQuery(ARGUMENTS.idFieldName & ":" & ARGUMENTS.id) />
 </cffunction>
 
 <cffunction name="deleteByQuery" access="public" output="false" hint="Delete a document from the index by Query">
 	<cfargument name="q" type="string" required="true" hint="Query string to delete objects with.">
-	
+
 	<cfset THIS.solrUpdateServer.deleteByQuery(ARGUMENTS.q) />
 </cffunction>
 
@@ -248,3 +249,4 @@
 <cffunction name="optimize" access="public" output="false" hint="Commit all pending changes to the index">
 	<cfset THIS.solrUpdateServer.optimize() />
 </cffunction>
+</cfcomponent>
