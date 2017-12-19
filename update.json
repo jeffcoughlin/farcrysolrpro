@@ -1,5 +1,30 @@
 [
 	{
+        "version": "1.5.0",
+        "releasedate": "2017-12-19",
+        "description": "",
+        "changelog": "<ul><li>Bug fixes</li><li>Performance increases</li><li>Allow sorting by FarCry label field</li><li>Upgrade Tika to 1.14</li></ul>",
+        "downloads": [
+        {
+            "url": "https://github.com/jeffcoughlin/farcrysolrpro/archive/1.5.0.zip",
+            "shortdesc": "w/ Solr 3.5",
+            "size": "64.9MB"
+        }, 
+        {
+            "url": "http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.5.0.zip",
+            "shortdesc": "<em>(plugin only)</em>",
+            "size": "50.3MB"
+        }],
+        "requirements": {
+            "cfml": ["ColdFusion 10", "Railo 3.3"],
+            "farcry": ["7.2", "7.1", "7.0", "6.3", "6.2", "6.1.4", "6.0.19"],
+            "solr": ["3.5"]
+        },
+        "repository": {
+            "url": "https://github.com/jeffcoughlin/farcrysolrpro/tree/1.5.0"
+        }
+	},
+	{
         "version": "1.4.1",
         "releasedate": "2016-02-10",
         "description": "",
