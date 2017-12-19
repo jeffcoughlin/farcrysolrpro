@@ -26,12 +26,12 @@
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/archive/1.5.0.zip",
 				"shortdesc"="w/ Solr 3.5",
-				"size"="36.7MB"
+				"size"="64.9MB"
 			},
 			{
 				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.5.0.zip",
 				"shortdesc"="<em>(plugin only)</em>",
-				"size"="22.7MB"
+				"size"="50.3MB"
 			}
 		],
 		"requirements"={
