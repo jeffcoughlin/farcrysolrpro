@@ -197,7 +197,7 @@
 		<!--- build the HTML and return it --->
 		<cfset var str = "" />
 		<cfsavecontent variable="str">
-			<cfoutput>Did you mean <a href="#arguments.linkUrl#">#suggestion#</a>?</cfoutput>
+			<cfoutput>Did you mean <a href="#arguments.linkUrl#">#application.stPlugins.farcrysolrpro.oCustomFunctions.xmlSafeText(suggestion)#</a>?</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn trim(str) />
