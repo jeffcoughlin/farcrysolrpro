@@ -50,6 +50,57 @@
 	<cfreturn this/>
 </cffunction>
 
+<cffunction name="groupedSearch" access="public" output="false" hint="Search for documents in the Solr index">
+	<cfargument name="q" type="string" required="true" hint="Your query string" />
+	<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
+	<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
+	<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
+	<cfargument name="method" type="string" required="false" default="GET" hint="Options are GET and POST. POST can send a longer query string, but GET can return url logging data. Niether option has any performance benefit over the other." />
+	<cfset var thisQuery = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows) />
+	<cfset var methodClass = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrRequest$METHOD") />
+	<cfset var response = "" />
+	<cfset var ret = structNew() />
+	<cfset var thisKey = "" />
+	<cfset var tempArray = [] />
+
+	<cfloop list="#structKeyList(ARGUMENTS.params)#" index="thisKey">
+		<cfif isArray(ARGUMENTS.params[thisKey])>
+			<cfset thisQuery.setParam(thisKey,javaCast("string[]",ARGUMENTS.params[thisKey])) />
+		<cfelseif isBoolean(ARGUMENTS.params[thisKey]) AND NOT isNumeric(ARGUMENTS.params[thisKey])>
+			<cfset thisQuery.setParam(thisKey,ARGUMENTS.params[thisKey]) />
+		<cfelse>
+			<cfset tempArray = arrayNew(1) />
+			<cfset arrayAppend(tempArray,ARGUMENTS.params[thisKey]) />
+			<cfset thisQuery.setParam(thisKey,javaCast("string[]",tempArray)) />
+		</cfif>
+	</cfloop>
+
+	<!--- Query with GET or POST method --->
+	<!--- We query this way instead of making the user call java functions to work around a CF bug --->
+	<cfif arguments.method eq "GET">
+		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.GET) />
+	<cfelse>
+		<cfset response = THIS.solrQueryServer.query(thisQuery, methodClass.POST) />
+	</cfif>
+
+	<cfscript>
+	var groupCommands = response.getGroupResponse().getValues();
+	var groupCommand = groupCommands[1];
+	var groups = groupCommand.getValues();
+	ret.groups = [];
+	for (group in groups) {
+		arrayAppend(ret.groups, {
+			results = group.getResult(),
+			value = group.getGroupValue()
+		});
+	}
+	</cfscript>
+	
+	<cfset ret.qTime = response.getQTime() />
+
+	<cfreturn duplicate(ret) /> <!--- duplicate clears out the case-sensitive structure --->
+</cffunction>
+
 <cffunction name="search" access="public" output="false" hint="Search for documents in the Solr index">
 	<cfargument name="q" type="string" required="true" hint="Your query string" />
 	<cfargument name="start" type="numeric" required="false" default="0" hint="Offset for results, starting with 0" />
