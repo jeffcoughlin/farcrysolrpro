@@ -1,5 +1,38 @@
 [
 	{
+		"version": "1.6.0",
+		"releasedate": "2020-10-14",
+		"description": "",
+		"changelog": "<ul><li>Removes Javaloader (Thanks Phillip! https://github.com/PhillipRasmussen)</li><li>Drops support for versions older than FarCry 7.4</li></ul>",
+		"downloads": [
+			{
+				"url": "https://github.com/jeffcoughlin/farcrysolrpro/archive/1.6.0.zip",
+				"shortdesc": "w/ Solr 3.5",
+				"size": "64.9MB"
+			},
+			{
+				"url": "http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.6.0.zip",
+				"shortdesc": "<em>(plugin only)</em>",
+				"size": "50.3MB"
+			}
+		],
+		"requirements": {
+			"cfml": [
+				"ColdFusion 10",
+				"Lucee 5.3"
+			],
+			"farcry": [
+				"7.4"
+			],
+			"solr": [
+				"3.5"
+			]
+		},
+		"repository": {
+			"url": "https://github.com/jeffcoughlin/farcrysolrpro/tree/1.6.0"
+		}
+	},
+	{
         "version": "1.5.0",
         "releasedate": "2017-12-19",
         "description": "",
