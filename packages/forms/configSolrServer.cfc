@@ -148,21 +148,10 @@
 		
 		<cfscript>
 			
-			// setup javaloader
-			var solrjLibPath = "/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/solrj-lib/";
-			application.stPlugins["farcrysolrpro"].javaloader = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.javaloader.JavaLoader").init(
-				loadPaths = [	
-					expandPath(solrjLibPath & "apache-solr-solrj-3.5.0.jar"),
-					expandPath("/farcry/plugins/farcrysolrpro/packages/custom/cfsolrlib/lib/tika-app-1.14.jar")
-				],
-				loadColdFusionClassPath = true
-			);	
-			// setup tika (note do not use this copy of tika for OpenXML files (http://en.wikipedia.org/wiki/Office_Open_XML), you must switch out the class loader, see https://github.com/markmandel/JavaLoader/wiki/Switching-the-ThreadContextClassLoader)
-			application.stPlugins["farcrysolrpro"].tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
+			application.stPlugins["farcrysolrpro"].tika = createObject("java", "org.apache.tika.Tika").init();
 			
     		// setup cfsolrlib
     		application.stPlugins["farcrysolrpro"].cfsolrlib = createObject("component", "farcry.plugins.farcrysolrpro.packages.custom.cfsolrlib.components.cfsolrlib").init(
-				javaloaderInstance = application.stPlugins["farcrysolrpro"].javaloader,
 				host = arguments.fields["host"],
 				port = arguments.fields["port"],
 				path = arguments.fields["path"],
@@ -181,7 +170,7 @@
 		<!--- only run if the config has been set at least once, manually --->
 		<cfif arguments.fields.bConfigured eq 1>
 			
-			<!--- set up javaloader and cfsolrlib --->	
+			<!--- set up cfsolrlib --->	
 			<cfset setupSolrLibrary(fields = arguments.fields) />
 			
 			<!--- ensure solr is properly set up --->

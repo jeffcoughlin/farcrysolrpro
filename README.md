@@ -85,7 +85,7 @@ Jeff Coughlin [http://jeffcoughlin.com](http://jeffcoughlin.com), Sean Coyne [ht
 ## Minimum Requirements
 
 * ColdFusion 10
-* FarCry 7.2, 7.1, 7.0, 6.3, 6.2, 6.1.4, 6.0.19
+* FarCry 7.4
 * Solr 3.5
     * Solr 3.5 is optionally included in this plugin.
     * To date, we have only tested this on Solr 3.5

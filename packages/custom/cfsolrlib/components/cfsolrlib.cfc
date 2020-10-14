@@ -7,14 +7,10 @@
 	THIS.solrURL = "http://#THIS.host#:#THIS.port##THIS.path#";
 	THIS.queueSize = 100;
 	THIS.threadCount = 5;
-
-	// java defaults
-	THIS.javaLoaderInstance = "";
 </cfscript>
 
 
 <cffunction name="init" access="public" output="false" returntype="CFSolrLib">
-	<cfargument name="javaloaderInstance" required="true" hint="An instance of JavaLoader." />
 	<cfargument name="host" required="true" type="string" default="localhost" hint="Solr Server host" />
 	<cfargument name="port" required="false" type="numeric" default="8983" hint="Port Solr server is running on" />
 	<cfargument name="path" required="false" type="string" default="/solr" hint="Path to solr instance">
@@ -23,8 +19,6 @@
 	<cfargument name="binaryEnabled" required="false" type="boolean" default="true" hint="Should we use the faster binary data transfer format?">
 
 	<cfset var BinaryRequestWriter = "" />
-
-	<cfset THIS.javaLoaderInstance = ARGUMENTS.javaloaderInstance />
 	<cfset THIS.host = ARGUMENTS.host />
 	<cfset THIS.port = ARGUMENTS.port />
 	<cfset THIS.path = ARGUMENTS.path />
@@ -34,14 +28,14 @@
 
 	<cfscript>
 	// create an update server instance
-	THIS.solrUpdateServer = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.StreamingUpdateSolrServer").init(THIS.solrURL,THIS.queueSize,THIS.threadCount);
+	THIS.solrUpdateServer = createObject("java", "org.apache.solr.client.solrj.impl.StreamingUpdateSolrServer").init(THIS.solrURL,THIS.queueSize,THIS.threadCount);
 
 	// create a query server instance
-	THIS.solrQueryServer = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.CommonsHttpSolrServer").init(THIS.solrURL);
+	THIS.solrQueryServer = createObject("java", "org.apache.solr.client.solrj.impl.CommonsHttpSolrServer").init(THIS.solrURL);
 
 	// enable binary
 	if (ARGUMENTS.binaryEnabled) {
-		BinaryRequestWriter = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.impl.BinaryRequestWriter");
+		BinaryRequestWriter = createObject("java", "org.apache.solr.client.solrj.impl.BinaryRequestWriter");
 		THIS.solrUpdateServer.setRequestWriter(BinaryRequestWriter.init()); // comment this out if you didn't enable binary
 		THIS.solrQueryServer.setRequestWriter(BinaryRequestWriter.init()); // comment this out if you didn't enable binary
 	}
@@ -56,8 +50,12 @@
 	<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
 	<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
 	<cfargument name="method" type="string" required="false" default="GET" hint="Options are GET and POST. POST can send a longer query string, but GET can return url logging data. Niether option has any performance benefit over the other." />
-	<cfset var thisQuery = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows) />
-	<cfset var methodClass = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrRequest$METHOD") />
+	
+	<cfscript>
+	var thisQuery = createObject("java", "org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows);
+	var methodClass = createObject("java", "org.apache.solr.client.solrj.SolrRequest$METHOD");
+	</cfscript>
+	
 	<cfset var response = "" />
 	<cfset var ret = structNew() />
 	<cfset var thisKey = "" />
@@ -107,8 +105,12 @@
 	<cfargument name="rows" type="numeric" required="false" default="20" hint="Number of rows you want returned" />
 	<cfargument name="params" type="struct" required="false" default="#structNew()#" hint="A struct of data to add as params. The struct key will be used as the param name, and the value as the param's value. If you need to pass in multiple values, make the value an array of values." />
 	<cfargument name="method" type="string" required="false" default="GET" hint="Options are GET and POST. POST can send a longer query string, but GET can return url logging data. Niether option has any performance benefit over the other." />
-	<cfset var thisQuery = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows) />
-	<cfset var methodClass = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.SolrRequest$METHOD") />
+	
+	<cfscript>
+	var thisQuery = createObject("java", "org.apache.solr.client.solrj.SolrQuery").init(ARGUMENTS.q).setStart(ARGUMENTS.start).setRows(ARGUMENTS.rows);
+	var methodClass = createObject("java", "org.apache.solr.client.solrj.SolrRequest$METHOD");	
+	</cfscript>
+	
 	<cfset var thisParam = "" />
 	<cfset var response = "" />
 	<cfset var ret = structNew() />
@@ -200,7 +202,7 @@
 	<cfargument name="doc" type="array" required="true" hint="An array of field objects, with name, value, and an optional boost attribute. {name:""Some Name"",value:""Some Value""[,boost:5]}" />
 	<cfargument name="docBoost" type="numeric" required="false" hint="Value of boost for this document." />
 
-	<cfset var thisDoc = THIS.javaLoaderInstance.create("org.apache.solr.common.SolrInputDocument").init() />
+	<cfset var thisDoc = createObject("java", "org.apache.solr.common.SolrInputDocument").init() />
 	<cfset var thisParam = "" />
 	<cfif isDefined("ARGUMENTS.docBoost")>
 		<cfset thisDoc.setDocumentBoost(javaCast("float",ARGUMENTS.docBoost)) />
@@ -244,7 +246,7 @@
 	<cfargument name="literalData" required="false" type="struct" hint="A struct of data to add as literal fields. The struct key will be used as the field name, and the value as the field's value. NOTE: You cannot have a literal field with the same name as a metadata field.  Solr will throw an error if you attempt to override metadata with a literal field" />
 	<cfargument name="boost" required="false" type="struct" hint="A struct of boost values.  The struct key will be the field name to boost, and its value is the numeric boost value" />
 	<cfargument name="idFieldName" required="false" type="string" default="id" hint="The name of the unique id field in the Solr schema" />
-	<cfset var docRequest = THIS.javaLoaderInstance.create("org.apache.solr.client.solrj.request.ContentStreamUpdateRequest").init("/update/extract") />
+	<cfset var docRequest = createObject("java", "org.apache.solr.client.solrj.request.ContentStreamUpdateRequest").init("/update/extract") />
 	<cfset var thisKey = "" />
 	<cfset docRequest.addFile(createObject("java","java.io.File").init(ARGUMENTS.file)) />
 	<cfset docRequest.setParam("literal.#arguments.idFieldName#",ARGUMENTS.id) />

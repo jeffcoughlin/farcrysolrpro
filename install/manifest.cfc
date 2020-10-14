@@ -3,20 +3,40 @@
 	<cfset this.name = "FarCry Solr Pro" />
 	<cfset this.description = "An advanced Solr search implementation" />
 	<cfset this.lRequiredPlugins = "" />
-	<cfset this.version = "1.5.0" />
+	<cfset this.version = "1.6.0" />
 	<cfset this.buildState = "" />
 	<cfset this.license = {
 		name = "Apache License 2.0",
 		link = "http://www.apache.org/licenses/LICENSE-2.0"
 	} />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="0", patchVersion="19") />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="1", patchVersion="4") />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="2", patchVersion="0") />
-	<cfset addSupportedCore(majorVersion="6", minorVersion="3", patchVersion="0") />
-	<cfset addSupportedCore(majorVersion="7", minorVersion="0", patchVersion="0") />
-	<cfset addSupportedCore(majorVersion="7", minorVersion="1", patchVersion="0") />
-	<cfset addSupportedCore(majorVersion="7", minorVersion="2", patchVersion="0") />
+	<cfset addSupportedCore(majorVersion="7", minorVersion="4", patchVersion="0") />
 	<cfset this.aVersions = [
+	{
+		"version"="1.6.0",
+		"releasedate"="2020-10-14",
+		"description"="",
+		"changelog"="<ul><li>Removes Javaloader (Thanks Phillip! https://github.com/PhillipRasmussen)</li><li>Drops support for versions older than FarCry 7.4</li></ul>",
+		"downloads"=[
+			{
+				"url"="https://github.com/jeffcoughlin/farcrysolrpro/archive/1.6.0.zip",
+				"shortdesc"="w/ Solr 3.5",
+				"size"="64.9MB"
+			},
+			{
+				"url"="http://www.n42designs.com/farcrysolrpro/farcrysolrpro-nosolr-1.6.0.zip",
+				"shortdesc"="<em>(plugin only)</em>",
+				"size"="50.3MB"
+			}
+		],
+		"requirements"={
+			"cfml"=["ColdFusion 10","Lucee 5.3"],
+			"farcry"=["7.4"],
+			"solr"=["3.5"]
+		},
+		"repository"={
+			"url"="https://github.com/jeffcoughlin/farcrysolrpro/tree/1.6.0"
+		}
+	},
 	{
 		"version"="1.5.0",
 		"releasedate"="2017-12-19",

@@ -1345,30 +1345,6 @@
 	
 	<!--- helper --->
 
-	<cffunction name="parseOpenXmlFile" access="private" output="false" returntype="string">
-		<cfargument name="filePath" required="true" type="string" />
-		
-		<!--- 
-			Note this method must be run within the context of Javaloader having switched out the context class loader 
-			(see https://github.com/markmandel/JavaLoader/wiki/Switching-the-ThreadContextClassLoader) 
-			
-			call it as follows:
-				javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = '/path/to/file.txt' })
-		--->
-		
-		<cfscript>	
-		// grab a new instance of tika
-		var tika = application.stPlugins["farcrysolrpro"].javaloader.create("org.apache.tika.Tika").init();
-		
-		// parse the file
-		var returnValue = tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
-		
-		// return the parsed string
-		return returnValue;
-		</cfscript>
-		
-	</cffunction>
-	
 	<cffunction name="parseFile" access="public" output="false" returntype="string" hint="Parses a file using Tika and returns the file contents as a string">
 		<cfargument name="filePath" required="true" type="string" />
 		
@@ -1376,13 +1352,8 @@
 
 		<cfscript>
 			try {
-				if (listFindNoCase(".docx,.xlsx,.pptx,.docm,.xlsm,.pptm",right(arguments.filePath,5))) {
-					// parsing OpenXML files must be done using a different context class loader
-					returnValue = application.stPlugins["farcrysolrpro"].javaloader.switchThreadContextClassLoader(parseOpenXmlFile, { filePath = arguments.filePath });
-				} else {
-					// use our cached copy of tika and parse the file
-					returnValue = application.stPlugins["farcrysolrpro"].tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
-				}
+				// use our cached copy of tika and parse the file
+				returnValue = application.stPlugins["farcrysolrpro"].tika.parseToString(createObject("java","java.io.File").init(arguments.filePath));
 			} catch (any e) {
 				WriteLog(application = true, file = 'farcrySolrPro', type = 'error', text = 'Tika failed to parse #filePath#, the error was #e.message#');
 			}
