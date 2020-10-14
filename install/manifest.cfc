@@ -15,7 +15,7 @@
 		"version"="1.6.0",
 		"releasedate"="2020-10-14",
 		"description"="",
-		"changelog"="<ul><li>Removes Javaloader (Thanks Phillip! https://github.com/PhillipRasmussen)</li><li>Drops support for versions older than FarCry 7.4</li></ul>",
+		"changelog"="<ul><li>Removes Javaloader (Thanks Phillip! https://github.com/PhillipRasmussen)</li><li>Drops support for versions older than FarCry 7.4</li><li>Fix potential XSS issue</li><li>New function to allow searching with group parameters</li></ul>",
 		"downloads"=[
 			{
 				"url"="https://github.com/jeffcoughlin/farcrysolrpro/archive/1.6.0.zip",
