@@ -94,6 +94,11 @@
 	}
 	</cfscript>
 	
+	<cfif !isnull(response.getHighlighting())>
+		<cfset ret.highlighting = response.getHighlighting() />
+	<cfelse>
+		<cfset ret.highlighting = structnew() />	
+	</cfif>
 	<cfset ret.qTime = response.getQTime() />
 
 	<cfreturn duplicate(ret) /> <!--- duplicate clears out the case-sensitive structure --->
