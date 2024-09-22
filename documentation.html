@@ -49,7 +49,7 @@ title: Documentation
 
         <h2>Install</h2>
         <p>To install, copy the plugin files to <code>/farcry/plugins/farcrysolrpro</code> and add "farcrysolrpro" to your "this.plugins" setting in your FarCry constructor.  Deploy the content types in the COAPI manager and restart the application.</p>
-        <p>You will need a copy of <a href="http://lucene.apache.org/solr/">Solr 3.5.x</a>.  One is provided in the git repository or optionally as part of the plugin distro.  Solr does not have to run from within the plugin folders.  By default our git repository has a copy of Solr under <code>/farcrysolrpro/packages/custom/cfsolrlib/solr-server</code> for convenience and because it was just easier for us to manage the files this way and offer a complete packaged solution.  However Solr can be run from anywhere (on the same server or remotely with a couple restrictions - see <a href="#solr">Running Solr</a> below) and you are not required to use the version of Solr we provide as a convenience (Solr is a pretty large download, so feel free to grab it elsewhere if desired).  The <a href="{{ site.baseurl }}/downloads.html"></a>downloads</a> page lists the version of Solr that has been tested with each corresponding plugin version.  Using a different version of Solr with the plugin is at your own risk.  If you choose to run Solr from a different location, make sure to note that in your webtop config for the plugin (and be aware of the possible speed implications that can happen from running Solr on a separate machine).</p>
+        <p>You will need a copy of <a href="https://lucene.apache.org/solr/">Solr 3.5.x</a>.  One is provided in the git repository or optionally as part of the plugin distro.  Solr does not have to run from within the plugin folders.  By default our git repository has a copy of Solr under <code>/farcrysolrpro/packages/custom/cfsolrlib/solr-server</code> for convenience and because it was just easier for us to manage the files this way and offer a complete packaged solution.  However Solr can be run from anywhere (on the same server or remotely with a couple restrictions - see <a href="#solr">Running Solr</a> below) and you are not required to use the version of Solr we provide as a convenience (Solr is a pretty large download, so feel free to grab it elsewhere if desired).  The <a href="{{ site.baseurl }}/downloads.html"></a>downloads</a> page lists the version of Solr that has been tested with each corresponding plugin version.  Using a different version of Solr with the plugin is at your own risk.  If you choose to run Solr from a different location, make sure to note that in your webtop config for the plugin (and be aware of the possible speed implications that can happen from running Solr on a separate machine).</p>
       </section><!-- /#download -->
 
       <section id="solr">
@@ -122,14 +122,14 @@ title: Documentation
         <ul>
           <li>Linux
             <ul>
-              <li>Lucid (experts on Solr) has a good tutorial for using <a href="http://www.lucidimagination.com/blog/2011/08/10/running-solr-as-a-service-on-linux/">runit with Solr</a> </li>
+              <li>Lucid (experts on Solr) has a good tutorial for using <a href="https://www.lucidimagination.com/blog/2011/08/10/running-solr-as-a-service-on-linux/">runit with Solr</a> </li>
             </ul>
           </li>
           <li>Windows
             <ul>
-              <li>Using Jetty (which comes with Solr).  Jetty comes packaged with its own Windows service installer which is better explained in this <a href="http://technologyenablingbusiness.blogspot.com/2010/12/solr-on-jetty-as-windows-service.html">blog post by Yash Ranadive</a>.</li>
-              <li><a href="http://wiki.apache.org/solr/SolrTomcat">Using Tomcat</a> makes it easy to run as a Windows service (32-bit or 64-bit).</li>
-              <li>Using third-party tools to create custom Windows services.  I've used both of these in the past for setting up custom Windows services and have had great success with both. <a href="http://nssm.cc/usage">NSSM</a> (free), and <a href="http://www.firedaemon.com/">FireDaemon</a> (not free, but more features and official support).</li>
+              <li>Using Jetty (which comes with Solr).  Jetty comes packaged with its own Windows service installer which is better explained in this <a href="https://technologyenablingbusiness.blogspot.com/2010/12/solr-on-jetty-as-windows-service.html">blog post by Yash Ranadive</a>.</li>
+              <li><a href="https://wiki.apache.org/solr/SolrTomcat">Using Tomcat</a> makes it easy to run as a Windows service (32-bit or 64-bit).</li>
+              <li>Using third-party tools to create custom Windows services.  I've used both of these in the past for setting up custom Windows services and have had great success with both. <a href="https://nssm.cc/usage">NSSM</a> (free), and <a href="https://www.firedaemon.com/">FireDaemon</a> (not free, but more features and official support).</li>
             </ul>
           </li>
         </ul>
